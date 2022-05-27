@@ -6,9 +6,9 @@ class CardCategory extends StatelessWidget {
       this.img = "https://via.placeholder.com/250",
       this.tap = defaultFunc});
 
-  final String img;
+  final String? img;
   final Function tap;
-  final String title;
+  final String? title;
 
   static void defaultFunc() {
     print("the function works!");
@@ -20,7 +20,7 @@ class CardCategory extends StatelessWidget {
         height: 252,
         width: null,
         child: GestureDetector(
-          onTap: tap,
+          onTap: tap as void Function()?,
           child: Card(
               elevation: 1,
               shape: RoundedRectangleBorder(
@@ -30,7 +30,7 @@ class CardCategory extends StatelessWidget {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(6.0)),
                         image: DecorationImage(
-                          image: NetworkImage(img),
+                          image: NetworkImage(img!),
                           fit: BoxFit.cover,
                         ))),
                 Container(
@@ -38,7 +38,7 @@ class CardCategory extends StatelessWidget {
                         color: Colors.black45,
                         borderRadius: BorderRadius.all(Radius.circular(6.0)))),
                 Center(
-                  child: Text(title,
+                  child: Text(title!,
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

@@ -91,8 +91,8 @@ class Components extends StatefulWidget {
 }
 
 class _ComponentsState extends State<Components> {
-  bool switchValueOne;
-  bool switchValueTwo;
+  late bool switchValueOne;
+  late bool switchValueTwo;
 
   void initState() {
     setState(() {
@@ -590,8 +590,8 @@ class _ComponentsState extends State<Components> {
                     padding: const EdgeInsets.only(top: 16.0),
                     child: CardHorizontal(
                         cta: "View article",
-                        title: homeCards["Ice Cream"]['title'],
-                        img: homeCards["Ice Cream"]['image'],
+                        title: homeCards["Ice Cream"]!['title'],
+                        img: homeCards["Ice Cream"]!['image'],
                         tap: () {
                           Navigator.pushReplacementNamed(context, '/pro');
                         }),
@@ -602,15 +602,15 @@ class _ComponentsState extends State<Components> {
                     children: [
                       CardSmall(
                           cta: "View article",
-                          title: homeCards["Makeup"]['title'],
-                          img: homeCards["Makeup"]['image'],
+                          title: homeCards["Makeup"]!['title'],
+                          img: homeCards["Makeup"]!['image'],
                           tap: () {
                             Navigator.pushReplacementNamed(context, '/pro');
                           }),
                       CardSmall(
                           cta: "View article",
-                          title: homeCards["Coffee"]['title'],
-                          img: homeCards["Coffee"]['image'],
+                          title: homeCards["Coffee"]!['title'],
+                          img: homeCards["Coffee"]!['image'],
                           tap: () {
                             Navigator.pushReplacementNamed(context, '/pro');
                           })
@@ -619,8 +619,8 @@ class _ComponentsState extends State<Components> {
                   SizedBox(height: 8.0),
                   CardHorizontal(
                       cta: "View article",
-                      title: homeCards["Fashion"]['title'],
-                      img: homeCards["Fashion"]['image'],
+                      title: homeCards["Fashion"]!['title'],
+                      img: homeCards["Fashion"]!['image'],
                       tap: () {
                         Navigator.pushReplacementNamed(context, '/pro');
                       }),
@@ -629,16 +629,16 @@ class _ComponentsState extends State<Components> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: CardSquare(
                         cta: "View article",
-                        title: homeCards["Argon"]['title'],
-                        img: homeCards["Argon"]['image'],
+                        title: homeCards["Argon"]!['title'],
+                        img: homeCards["Argon"]!['image'],
                         tap: () {
                           Navigator.pushReplacementNamed(context, '/pro');
                         }),
                   ),
                   CardCategory(
                       tap: () {},
-                      title: homeCards["Argon"]['title'],
-                      img: homeCards["Argon"]['image']),
+                      title: homeCards["Argon"]!['title'],
+                      img: homeCards["Argon"]!['image']),
                 ],
               ),
               Padding(
