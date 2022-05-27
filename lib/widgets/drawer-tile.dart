@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 
 class DrawerTile extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final Function onTap;
+  final String? title;
+  final IconData? icon;
+  final Function? onTap;
   final bool isSelected;
   final Color iconColor;
 
@@ -19,7 +19,7 @@ class DrawerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: onTap,
+        onTap: onTap as void Function()?,
         child: Container(
             height: 45,
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -34,7 +34,7 @@ class DrawerTile extends StatelessWidget {
                   child: Icon(icon,
                       size: 20, color: isSelected ? Colors.white : iconColor),
                 ),
-                Text(title,
+                Text(title!,
                     style: TextStyle(
                         fontSize: 15,
                         color: isSelected ? Colors.white : Colors.black))

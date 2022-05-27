@@ -9,9 +9,9 @@ class CardSmall extends StatelessWidget {
       this.tap = defaultFunc});
 
   final String cta;
-  final String img;
+  final String? img;
   final Function tap;
-  final String title;
+  final String? title;
 
   static void defaultFunc() {
     print("the function works!");
@@ -24,7 +24,7 @@ class CardSmall extends StatelessWidget {
       height: 235,
       margin: EdgeInsets.only(top: 10),
       child: GestureDetector(
-          onTap: tap,
+          onTap: tap as void Function()?,
           child: Stack(clipBehavior: Clip.antiAlias, children: [
             Card(
                 elevation: 0.7,
@@ -43,7 +43,7 @@ class CardSmall extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(title,
+                              Text(title!,
                                   style: TextStyle(
                                       color: MaterialColors.caption,
                                       fontSize: 13)),
@@ -79,7 +79,7 @@ class CardSmall extends StatelessWidget {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(4.0)),
                             image: DecorationImage(
-                              image: NetworkImage(img),
+                              image: NetworkImage(img!),
                               fit: BoxFit.cover,
                             )))))
           ])),

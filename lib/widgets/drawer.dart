@@ -6,7 +6,7 @@ import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/drawer-tile.dart';
 
 class MaterialDrawer extends StatelessWidget {
-  final String currentPage;
+  final String? currentPage;
 
   MaterialDrawer({this.currentPage});
 
