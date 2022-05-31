@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 // screens
 import 'package:material_kit_flutter/screens/home.dart';
+import 'package:material_kit_flutter/screens/login.dart';
 import 'package:material_kit_flutter/screens/profile.dart';
+import 'package:material_kit_flutter/screens/register.dart';
 import 'package:material_kit_flutter/screens/settings.dart';
 import 'package:material_kit_flutter/screens/components.dart';
 import 'package:material_kit_flutter/screens/onboarding.dart';
@@ -16,8 +18,10 @@ class MaterialKitPROFlutter extends StatelessWidget {
     return MaterialApp(
         title: "Material Kit PRO Flutter",
         debugShowCheckedModeBanner: false,
-        initialRoute: "/onboarding",
+        initialRoute: "/login",
         routes: <String, WidgetBuilder>{
+          "/login": (BuildContext context) => Login(),
+          "/register": (BuildContext context) => Register(),
           "/onboarding": (BuildContext context) => Onboarding(),
           "/pro": (BuildContext context) => Pro(),
           "/home": (BuildContext context) => Home(),

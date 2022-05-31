@@ -1,8 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 
 class Input extends StatelessWidget {
   final String? placeholder;
+  final bool obscureText;
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final Function? onTap;
@@ -21,6 +24,7 @@ class Input extends StatelessWidget {
 
   Input(
       {this.placeholder,
+      this.obscureText = false,
       this.suffixIcon,
       this.prefixIcon,
       this.onTap,
@@ -45,6 +49,7 @@ class Input extends StatelessWidget {
         onChanged: onChanged as void Function(String)?,
         controller: controller,
         autofocus: autofocus,
+        obscureText: obscureText,
         style: TextStyle(
           height: 0.85,
           fontSize: 14.0,

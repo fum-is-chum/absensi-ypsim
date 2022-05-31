@@ -134,9 +134,12 @@ class _ComponentsState extends State<Components> {
                       const EdgeInsets.only(left: 34.0, right: 34.0, top: 16),
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith((states) => MaterialColors.defaultButton),
-                      shape: MaterialStateProperty.resolveWith((states) =>  RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0),))
-                    ),
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                            (states) => MaterialColors.defaultButton),
+                        shape: MaterialStateProperty.resolveWith(
+                            (states) => RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ))),
                     onPressed: () {
                       // Respond to button press
                       Navigator.pushReplacementNamed(context, '/home');
@@ -147,7 +150,8 @@ class _ComponentsState extends State<Components> {
                         child: Text("DEFAULT",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w600, fontSize: 16.0))),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.0))),
                   ),
                 ),
               ),
@@ -158,9 +162,12 @@ class _ComponentsState extends State<Components> {
                       const EdgeInsets.only(left: 34.0, right: 34.0, top: 8),
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith((states) => MaterialColors.primary),
-                      shape: MaterialStateProperty.resolveWith((states) => RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0),))
-                    ),
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                            (states) => MaterialColors.primary),
+                        shape: MaterialStateProperty.resolveWith(
+                            (states) => RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ))),
                     onPressed: () {
                       // Respond to button press
                       Navigator.pushReplacementNamed(context, '/home');
@@ -171,7 +178,8 @@ class _ComponentsState extends State<Components> {
                         child: Text("PRIMARY",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w600, fontSize: 16.0))),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.0))),
                   ),
                 ),
               ),
@@ -182,9 +190,13 @@ class _ComponentsState extends State<Components> {
                       const EdgeInsets.only(left: 34.0, right: 34.0, top: 8),
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith((states) => MaterialColors.info,),
-                      shape: MaterialStateProperty.resolveWith((states) => RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0),))
-                    ),
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                          (states) => MaterialColors.info,
+                        ),
+                        shape: MaterialStateProperty.resolveWith(
+                            (states) => RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ))),
                     onPressed: () {
                       // Respond to button press
                       Navigator.pushReplacementNamed(context, '/home');
@@ -195,7 +207,8 @@ class _ComponentsState extends State<Components> {
                         child: Text("INFO",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w600, fontSize: 16.0))),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.0))),
                   ),
                 ),
               ),
@@ -206,9 +219,12 @@ class _ComponentsState extends State<Components> {
                       const EdgeInsets.only(left: 34.0, right: 34.0, top: 8),
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith((states) => MaterialColors.success),
-                      shape: MaterialStateProperty.resolveWith((states) => RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0),))
-                    ),
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                            (states) => MaterialColors.success),
+                        shape: MaterialStateProperty.resolveWith(
+                            (states) => RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ))),
                     onPressed: () {
                       // Respond to button press
                       Navigator.pushReplacementNamed(context, '/home');
@@ -219,7 +235,8 @@ class _ComponentsState extends State<Components> {
                         child: Text("SUCCESS",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w600, fontSize: 16.0))),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.0))),
                   ),
                 ),
               ),
@@ -230,9 +247,11 @@ class _ComponentsState extends State<Components> {
                       const EdgeInsets.only(left: 34.0, right: 34.0, top: 8),
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith((states) => MaterialColors.warning),
-                      shape: MaterialStateProperty.resolveWith((states) => RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)))
-                    ),
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                            (states) => MaterialColors.warning),
+                        shape: MaterialStateProperty.resolveWith((states) =>
+                            RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.0)))),
                     onPressed: () {
                       // Respond to button press
                       Navigator.pushReplacementNamed(context, '/home');
@@ -243,7 +262,8 @@ class _ComponentsState extends State<Components> {
                         child: Text("WARNING",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w600, fontSize: 16.0))),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.0))),
                   ),
                 ),
               ),
@@ -254,9 +274,12 @@ class _ComponentsState extends State<Components> {
                       const EdgeInsets.only(left: 34.0, right: 34.0, top: 8),
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith((states) => MaterialColors.error),
-                      shape: MaterialStateProperty.resolveWith((state) => RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0),))
-                    ),
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                            (states) => MaterialColors.error),
+                        shape: MaterialStateProperty.resolveWith(
+                            (state) => RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ))),
                     onPressed: () {
                       // Respond to button press
                       Navigator.pushReplacementNamed(context, '/home');
@@ -267,7 +290,8 @@ class _ComponentsState extends State<Components> {
                         child: Text("ERROR",
                             style: TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.w600, fontSize: 16.0))),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.0))),
                   ),
                 ),
               ),
