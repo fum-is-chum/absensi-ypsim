@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 
@@ -7,6 +5,7 @@ class Input extends StatelessWidget {
   final String? placeholder;
   final bool obscureText;
   final Widget? suffixIcon;
+  final BoxConstraints? suffixIconConstraints;
   final Widget? prefixIcon;
   final Function? onTap;
   final Function? onChanged;
@@ -27,6 +26,7 @@ class Input extends StatelessWidget {
       this.obscureText = false,
       this.suffixIcon,
       this.prefixIcon,
+      this.suffixIconConstraints,
       this.onTap,
       this.filled,
       this.fillColor,
@@ -45,26 +45,27 @@ class Input extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
         cursorColor: cursorColor,
+        cursorHeight: 14,
         onTap: onTap as void Function()?,
         onChanged: onChanged as void Function(String)?,
         controller: controller,
         autofocus: autofocus,
         obscureText: obscureText,
         style: TextStyle(
-          height: 0.85,
+          height: 1.0,
           fontSize: 14.0,
           color: textColor,
         ),
         textAlignVertical: TextAlignVertical(y: 0.5),
         decoration: InputDecoration(
-            contentPadding:
-                EdgeInsets.only(left: 16, bottom: outlineBorder ? 20 : 16),
+            contentPadding: EdgeInsets.only(left: 0, bottom: outlineBorder ? 20 : 16),
             filled: filled,
             fillColor: fillColor,
             hintStyle: TextStyle(
               color: hintTextColor,
             ),
             suffixIcon: suffixIcon,
+            suffixIconConstraints: suffixIconConstraints ,
             prefixIcon: prefixIcon,
             enabledBorder: outlineBorder
                 ? OutlineInputBorder(
