@@ -4,28 +4,34 @@ import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/custom-button.dart';
 import 'package:material_kit_flutter/widgets/input.dart';
 
-class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+class LoginView extends StatefulWidget {
+  final AnimationController animationController;
+  const LoginView({Key? key, required this.animationController}): super(key: key);
+
+  @override
+  _LoginView createState() => _LoginView();
+}
+
+class _LoginView extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
-    print('Login build');
-    return Scaffold(
-      // resizeToAvoidBottomInset: false,
-      body: Container(
+    final _introductionanimation =
+        Tween<Offset>(begin: Offset(0, 0), end: Offset(-1, 0))
+            .animate(CurvedAnimation(
+      parent: widget.animationController,
+      curve: Interval(
+        0.0,
+        0.2,
+        curve: Curves.fastOutSlowIn,
+      ),
+    ));
+
+    return SlideTransition(
+      position: _introductionanimation,
+      child: Container(
         height: MediaQuery.of(context).size.height,
         width: double.infinity,
         padding: EdgeInsets.all(20.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: <Color>[
-              MaterialColors.bgPrimary,
-              MaterialColors.bgSecondary,
-            ],
-            tileMode: TileMode.mirror,
-          ),
-        ),
         child: Center(
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 25, horizontal: 25),
@@ -85,7 +91,8 @@ class Login extends StatelessWidget {
                       bgColor: MaterialColors.defaultButton,
                       textColor: Colors.black,
                       onClick: () {
-                        Navigator.pushReplacementNamed(context, '/register');
+                        widget.animationController.animateTo(0.2);
+                        // Navigator.pushReplacementNamed(context, '/register');
                       },
                     ),
                   ),
@@ -98,7 +105,6 @@ class Login extends StatelessWidget {
     );
   }
 }
- 
 
 class PasswordField extends StatefulWidget {
   static final GlobalKey<_PasswordField> globalKey = GlobalKey();
