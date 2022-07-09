@@ -20,69 +20,76 @@ class CardSmall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Flexible(
-        child: Container(
-      height: 235,
-      margin: EdgeInsets.only(top: 10),
-      child: GestureDetector(
+      child: Container(
+        height: 180,
+        margin: EdgeInsets.only(top: 10),
+        child: GestureDetector(
           onTap: tap as void Function()?,
           child: Stack(clipBehavior: Clip.antiAlias, children: [
             Card(
-                elevation: 0.7,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0))),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(flex: 2, child: Container()),
-                    Flexible(
-                        flex: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 8.0, bottom: 8.0, left: 8.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(title!,
-                                  style: TextStyle(
-                                      color: MaterialColors.caption,
-                                      fontSize: 13)),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(cta,
-                                    style: TextStyle(
-                                        color: MaterialColors.muted,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600)),
-                              )
-                            ],
+              elevation: 0.7,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Flexible(flex: 2, child: Container()),
+                  Flexible(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          title!,
+                          style: TextStyle(
+                            color: MaterialColors.caption,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ))
-                  ],
-                )),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          cta,
+                          style: TextStyle(
+                            color: MaterialColors.muted,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
             FractionalTranslation(
-                translation: Offset(0, -0.04),
-                child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Container(
-                        height: MediaQuery.of(context).size.height * 0.185,
-                        width: MediaQuery.of(context).size.width / 2.5,
-                        padding: EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withOpacity(0.06),
-                                  spreadRadius: 2,
-                                  blurRadius: 1,
-                                  offset: Offset(0, 0))
-                            ],
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(4.0)),
-                            image: DecorationImage(
-                              image: NetworkImage(img!),
-                              fit: BoxFit.cover,
-                            )))))
-          ])),
-    ));
+              translation: Offset(0, -0.12),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.185,
+                  width: MediaQuery.of(context).size.width / 2.5,
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withOpacity(0.06),
+                          spreadRadius: 2,
+                          blurRadius: 1,
+                          offset: Offset(0, 0))
+                    ],
+                    borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                    image: DecorationImage(
+                      image: NetworkImage(img!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
   }
 }

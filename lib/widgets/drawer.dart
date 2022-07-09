@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:url_launcher/url_launcher.dart';
-
 import 'package:material_kit_flutter/constants/Theme.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
 import 'package:material_kit_flutter/widgets/drawer-tile.dart';
 
@@ -14,106 +13,85 @@ class MaterialDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-          child: Column(children: [
-        DrawerHeader(
-            decoration: BoxDecoration(color: MaterialColors.drawerHeader),
-            child: Container(
+        child: Column(children: [
+          SizedBox(
+            height: 270,
+            child: DrawerHeader(
+              child: Container(
                 // padding: EdgeInsets.symmetric(horizontal: 28.0),
                 child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://images.unsplash.com/photo-1512529920731-e8abaea917a5?fit=crop&w=840&q=80"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
-                  child: Text("Rachel Brown",
-                      style: TextStyle(color: Colors.white, fontSize: 21)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                color: MaterialColors.label),
-                            child: Text("Pro",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16))),
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: CircleAvatar(
+                        radius: 70,
+                        backgroundImage:
+                            AssetImage("assets/img/logo-ypsim.jpeg"),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16.0),
-                        child: Text("Seller",
-                            style: TextStyle(
-                                color: MaterialColors.muted, fontSize: 16)),
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: Text("4.8",
-                                style: TextStyle(
-                                    color: MaterialColors.warning,
-                                    fontSize: 16)),
-                          ),
-                          Icon(Icons.star_border,
-                              color: MaterialColors.warning, size: 20)
-                        ],
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ))),
-        Expanded(
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
+                      child: Text("John Doe",
+                          style:
+                              TextStyle(color: Colors.black87, fontSize: 21)),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          "201110349",
+                          style: TextStyle(color: Colors.black54, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
             child: ListView(
-          padding: EdgeInsets.only(top: 8, left: 8, right: 8),
-          children: [
-            DrawerTile(
-                icon: Icons.home,
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              children: [
+                Divider(),
+                SizedBox(height: 8),
+                DrawerTile(
+                    icon: Icons.home,
+                    onTap: () {
+                      if (currentPage != "Home")
+                        Navigator.pushReplacementNamed(context, '/home');
+                    },
+                    iconColor: Colors.black,
+                    title: "Home",
+                    isSelected: currentPage == "Home" ? true : false),
+                DrawerTile(
+                    icon: Icons.timelapse,
+                    onTap: () {
+                      if (currentPage != "Histories")
+                        Navigator.pushReplacementNamed(context, '/histories');
+                    },
+                    iconColor: Colors.black,
+                    title: "Riwayat Presensi",
+                    isSelected: currentPage == "Histories" ? true : false),
+                SizedBox(height: 8),
+                Divider(),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: DrawerTile(
+                icon: Icons.logout,
                 onTap: () {
-                  if (currentPage != "Home")
-                    Navigator.pushReplacementNamed(context, '/home');
+                  if (currentPage != "logout")
+                    Navigator.pushReplacementNamed(context, '/logout');
                 },
                 iconColor: Colors.black,
-                title: "Home",
-                isSelected: currentPage == "Home" ? true : false),
-            DrawerTile(
-                icon: Icons.settings_input_component,
-                onTap: () {
-                  if (currentPage != "Components")
-                    Navigator.pushReplacementNamed(context, '/components');
-                },
-                iconColor: Colors.black,
-                title: "Components",
-                isSelected: currentPage == "Components" ? true : false),
-            DrawerTile(
-                icon: Icons.account_circle,
-                onTap: () {
-                  if (currentPage != "Profile")
-                    Navigator.pushReplacementNamed(context, '/profile');
-                },
-                iconColor: Colors.black,
-                title: "Profile",
-                isSelected: currentPage == "Profile" ? true : false),
-            DrawerTile(
-                icon: Icons.settings,
-                onTap: () {
-                  if (currentPage != "Settings")
-                    Navigator.pushReplacementNamed(context, '/settings');
-                },
-                iconColor: Colors.black,
-                title: "Settings",
-                isSelected: currentPage == "Settings" ? true : false),
-          ],
-        ))
-      ])),
+                title: "Keluar",
+                isSelected: currentPage == "logout" ? true : false),
+          ),
+        ]),
+      ),
     );
   }
 }

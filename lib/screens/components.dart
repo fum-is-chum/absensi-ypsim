@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 //widgets
 import 'package:material_kit_flutter/widgets/navbar.dart';
-import 'package:material_kit_flutter/widgets/drawer.dart';
+import 'package:material_kit_flutter/widgets/drawer_old.dart';
 import 'package:material_kit_flutter/widgets/input.dart';
 import 'package:material_kit_flutter/widgets/card-horizontal.dart';
 import 'package:material_kit_flutter/widgets/card-category.dart';

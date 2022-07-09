@@ -28,4 +28,6 @@ class MaterialColors {
 
   static const Color bgPrimary = Color.fromRGBO(224, 220, 53, 1.0);
   static const Color bgSecondary = Color.fromRGBO(41, 151, 43, 1.0);
+
+  static const Color newPrimary = Color.fromRGBO(41, 94, 151, 1.0);
 }
