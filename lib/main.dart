@@ -10,6 +10,7 @@ import 'package:material_kit_flutter/screens/settings.dart';
 import 'package:material_kit_flutter/screens/components.dart';
 import 'package:material_kit_flutter/screens/onboarding.dart';
 import 'package:material_kit_flutter/screens/pro.dart';
+import 'package:material_kit_flutter/screens/verification.dart';
 
 void main() => runApp(MaterialKitPROFlutter());
 
@@ -19,10 +20,11 @@ class MaterialKitPROFlutter extends StatelessWidget {
     return MaterialApp(
         title: "Material Kit PRO Flutter",
         debugShowCheckedModeBanner: false,
-        initialRoute: "/login",
+        initialRoute: "/home",
         routes: <String, WidgetBuilder>{
           "/login": (BuildContext context) => AnimationScreen(),
           "/register": (BuildContext context) => Register(),
+          "/verification": (BuildContext context) => Verification(),
           "/onboarding": (BuildContext context) => Onboarding(),
           "/pro": (BuildContext context) => Pro(),
           "/home": (BuildContext context) => Home(),
