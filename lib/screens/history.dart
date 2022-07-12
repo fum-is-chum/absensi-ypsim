@@ -36,7 +36,7 @@ class History extends StatelessWidget {
         ),
         backgroundColor: MaterialColors.bgColorScreen,
         // key: _scaffoldKey,
-        drawer: MaterialDrawer(currentPage: "history"),
+        drawer: MaterialDrawer(currentPage: "History"),
         body: Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: SingleChildScrollView(
