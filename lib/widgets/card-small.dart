@@ -27,7 +27,7 @@ class CardSmall extends StatelessWidget {
           onTap: tap as void Function()?,
           child: Stack(clipBehavior: Clip.antiAlias, children: [
             Card(
-              elevation: 0.7,
+              elevation: 2,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),

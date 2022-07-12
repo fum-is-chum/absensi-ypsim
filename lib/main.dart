@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_kit_flutter/screens/history.dart';
 
 // screens
 import 'package:material_kit_flutter/screens/home.dart';
@@ -27,6 +28,7 @@ class MaterialKitPROFlutter extends StatelessWidget {
           "/onboarding": (BuildContext context) => Onboarding(),
           "/pro": (BuildContext context) => Pro(),
           "/home": (BuildContext context) => Home(),
+          "/history": (BuildContext context) => History(),
           "/components": (BuildContext context) => Components(),
           "/profile": (BuildContext context) => Profile(),
           "/settings": (BuildContext context) => Settings(),

@@ -67,12 +67,12 @@ class MaterialDrawer extends StatelessWidget {
                 DrawerTile(
                     icon: Icons.timelapse,
                     onTap: () {
-                      if (currentPage != "Histories")
-                        Navigator.pushReplacementNamed(context, '/histories');
+                      if (currentPage != "History")
+                        Navigator.pushReplacementNamed(context, '/history');
                     },
                     iconColor: Colors.black,
                     title: "Riwayat Presensi",
-                    isSelected: currentPage == "Histories" ? true : false),
+                    isSelected: currentPage == "History" ? true : false),
                 SizedBox(height: 8),
                 Divider(),
               ],
