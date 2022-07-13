@@ -1,5 +1,7 @@
 import 'dart:ui' show Color;
 
+import 'package:flutter/material.dart';
+
 class MaterialColors {
   static const Color defaultButton = Color.fromRGBO(220, 220, 220, 1.0);
   static const Color primary = Color.fromRGBO(156, 38, 176, 1.0);
@@ -18,7 +20,7 @@ class MaterialColors {
   static const Color priceColor = Color.fromRGBO(234, 213, 251, 1.0);
   static const Color border = Color.fromRGBO(231, 231, 231, 1.0);
   static const Color caption = Color.fromRGBO(74, 74, 74, 1.0);
-  static const Color bgColorScreen = Color.fromRGBO(238, 238, 238, 1.0);
+  static const Color bgColorScreen = Colors.white;
   static const Color drawerHeader = Color.fromRGBO(75, 25, 88, 1.0);
   static const Color signStartGradient = Color.fromRGBO(108, 36, 170, 1.0);
   static const Color signEndGradient = Color.fromRGBO(21, 0, 43, 1.0);
@@ -30,4 +32,5 @@ class MaterialColors {
   static const Color bgSecondary = Color.fromRGBO(41, 151, 43, 1.0);
 
   static const Color newPrimary = Color.fromRGBO(41, 94, 151, 1.0);
+  static const Color bgCard = Color.fromRGBO(249, 249, 249, 1.0);
 }
