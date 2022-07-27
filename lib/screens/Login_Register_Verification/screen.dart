@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/screens/Login_Register_Verification/screens/login.dart';
 import 'package:material_kit_flutter/screens/Login_Register_Verification/screens/register.dart';
-import 'package:material_kit_flutter/screens/Login_Register_Verification/screens/splash_view.dart';
 import 'package:material_kit_flutter/screens/home.dart';
-import 'package:material_kit_flutter/screens/register.dart';
 
 import '../../constants/Theme.dart';
 
@@ -59,23 +57,7 @@ class _AnimationScreen extends State<AnimationScreen> with TickerProviderStateMi
     );
   }
 
-  void _onNextClick() {
-    if (_animationController!.value >= 0 &&
-        _animationController!.value <= 0.2) {
-      _animationController?.animateTo(0.4);
-    } else if (_animationController!.value > 0.2 &&
-        _animationController!.value <= 0.4) {
-      _animationController?.animateTo(0.6);
-    } else if (_animationController!.value > 0.4 &&
-        _animationController!.value <= 0.6) {
-      _animationController?.animateTo(0.8);
-    } else if (_animationController!.value > 0.6 &&
-        _animationController!.value <= 0.8) {
-      _signUpClick();
-    }
-  }
-
-  void _signUpClick() {
+  void home() {
     Navigator.of(context).push(
       MaterialPageRoute(fullscreenDialog: true,
         builder: (context) => Home(),

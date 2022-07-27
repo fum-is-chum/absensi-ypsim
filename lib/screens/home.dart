@@ -1,13 +1,17 @@
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
-
-//widgets
-import 'package:material_kit_flutter/widgets/navbar.dart';
-import 'package:material_kit_flutter/widgets/card-horizontal.dart';
 import 'package:material_kit_flutter/widgets/card-small.dart';
-import 'package:material_kit_flutter/widgets/card-square.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../bloc/location_bloc.dart';
 
 final Map<String, Map<String, String>> homeCards = {
   "Makeup": {
@@ -37,6 +41,8 @@ class Home extends StatelessWidget {
         // key: _scaffoldKey,
         drawer: MaterialDrawer(currentPage: "Home"),
         body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: SingleChildScrollView(
             child: Column(
@@ -65,7 +71,7 @@ class Home extends StatelessWidget {
                 SizedBox(height: 20),
                 CheckIn(),
                 SizedBox(height: 120),
-                Location(),
+                LocationView(),
                 SizedBox(height: 30),
               ],
             ),
@@ -80,7 +86,7 @@ class CheckIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 0.7,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
@@ -125,74 +131,55 @@ class CheckIn extends StatelessWidget {
             height: 180,
             child: Stack(
               children: [
-                Flexible(
-                  flex: 1,
-                  child: Padding(
-                    padding: EdgeInsets.all(12),
-                    child: RichText(
-                      textAlign: TextAlign.center,
-                      text: TextSpan(
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black87,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: "Tekan tombol ",
-                          ),
-                          TextSpan(
-                            text: "Check In ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "di bawah untuk menyatakan ",
-                          ),
-                          TextSpan(
-                            text: "Waktu Masuk Kerja. ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "Pastikan ",
-                          ),
-                          TextSpan(
-                            text: "Lokasi Anda ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "terdeteksi oleh sistem",
-                          ),
-                        ],
+               Padding(
+                  padding: EdgeInsets.all(12),
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
                       ),
+                      children: [
+                        TextSpan(
+                          text: "Tekan tombol ",
+                        ),
+                        TextSpan(
+                          text: "Check In ",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "di bawah untuk menyatakan ",
+                        ),
+                        TextSpan(
+                          text: "Waktu Masuk Kerja. ",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "Pastikan ",
+                        ),
+                        TextSpan(
+                          text: "Lokasi Anda ",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "terdeteksi oleh sistem",
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                Flexible(
-                  child: Container(),
-                  flex: 2,
                 ),
                 FractionalTranslation(
                   translation: Offset(0, 0.5),
                   child: Align(
                     alignment: Alignment.bottomCenter,
-                    child: MaterialButton(
-                      onPressed: () {
-                        print("Tes");
-                      },
-                      child: Text(
-                        "Check In",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      color: Colors.green,
-                      textColor: Colors.white,
-                      padding: EdgeInsets.all(80),
-                      shape: CircleBorder(),
-                    ),
+                    child: CheckButton()
                   ),
                 )
               ],
@@ -204,9 +191,83 @@ class CheckIn extends StatelessWidget {
   }
 }
 
-class Location extends StatelessWidget {
-  const Location({Key? key}) : super(key: key);
+class CheckButton extends StatelessWidget {
+  CheckButton({Key? key}): super(key: key);
+  final LocationBloc locationBloc = new LocationBloc();
 
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: locationBloc.isLocationOn,
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if(!snapshot.hasData) {
+          return MaterialButton(
+            onPressed: () {
+              
+            },
+            child: Text(
+              "Check In",
+              style: TextStyle(fontSize: 20),
+            ),
+            color: Colors.grey,
+            textColor: Colors.white,
+            padding: EdgeInsets.all(80),
+            shape: CircleBorder(),
+          );
+        }
+        return StreamBuilder<ServiceStatus>(
+          stream: locationBloc.serviceStatusStream$,
+          initialData: snapshot.data! ? ServiceStatus.enabled : ServiceStatus.disabled,
+          builder: (BuildContext context, AsyncSnapshot<ServiceStatus> snapshot) {
+            /// index === 0 => disabled
+            if((!snapshot.hasData || snapshot.data?.index == 0 || snapshot.data == null)) {
+              return MaterialButton(
+                onPressed: () {
+                  
+                },
+                child: Text(
+                  "Check In",
+                  style: TextStyle(fontSize: 20),
+                ),
+                color: Colors.grey,
+                textColor: Colors.white,
+                padding: EdgeInsets.all(80),
+                shape: CircleBorder(),
+              );
+            }
+            return MaterialButton(
+              onPressed: () {
+                
+              },
+              child: Text(
+                "Check In",
+                style: TextStyle(fontSize: 20),
+              ),
+              color: Colors.green,
+              textColor: Colors.white,
+              padding: EdgeInsets.all(80),
+              shape: CircleBorder(),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class LocationView extends StatefulWidget {
+  LocationView({Key? key}) : super(key: key);
+  @override
+  _LocationView createState() => _LocationView();
+}
+
+class _LocationView extends State<LocationView> {
+  GlobalKey<_MyMapView> mapKey = GlobalKey();
+  @override
+  void initState() {
+    super.initState();
+    LocationBloc().init();
+  }
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -247,19 +308,163 @@ class Location extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Icon(
-                    Icons.replay_outlined,
-                    color: Colors.white,
-                  ),
+                  Material(
+                    shape: CircleBorder(),
+                    color: Colors.transparent,
+                    child: IconButton(
+                      onPressed: () {
+                        mapKey.currentState!.resetState();
+                      },
+                      splashRadius: 20.0,
+                      // splashColor: Colors.grey,
+                      padding: EdgeInsets.all(8),
+                      constraints: BoxConstraints(),
+                      icon: const Icon(Icons.replay_outlined),
+                      color: Colors.white,
+                    ),
+                  )
                 ],
               ),
             ),
           ),
           Container(
-            child: Padding(padding: EdgeInsets.all(12), child: Text("Maps")),
-          ),
+            width: MediaQuery.of(context).size.width,
+            height: 400,
+            child: MyMapView(key: mapKey)
+          )
         ],
       ),
+    );
+  }
+}
+
+class MyMapView extends StatefulWidget {
+  MyMapView({Key? key}): super(key: key);
+
+  @override
+  _MyMapView createState() => _MyMapView();
+}
+
+class _MyMapView extends State<MyMapView> {
+  late InAppWebViewController webView;
+  LocationBloc locationBloc = new LocationBloc();
+  late StreamSubscription<ServiceStatus> positionSubs;
+  bool findLocationClicked = false;
+
+  void resetState() {
+    findLocationClicked = false;
+    setState(() {
+      
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    positionSubs = locationBloc.serviceStatusStream$.listen((event) { 
+      resetState();
+    });
+  }
+
+  @override 
+  void dispose() {
+    positionSubs.cancel();
+    super.dispose();
+  }
+  
+  /// fungsi untuk mengklik tombol lokasi pada google maps webview
+  /// (suatu saat bisa saja berubah jika ada update dr Google terhadap maps webview)
+  findMyLocation(InAppWebViewController controller, Uri? url) async {
+    /// await controller.evaluateJavascript(source: "var elems = document.querySelectorAll('*'), res = Array.from(elems).find(v => v.textContent.indexOf('Lokasi Anda') === 0);alert(res.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.outerHTML);"); // tombol lokasi 
+    await controller.evaluateJavascript(source: "document.querySelector('div[role=\"checkbox\"]').click();");
+    if(!findLocationClicked) findLocationClicked = true;
+    /// await controller.evaluateJavascript(source: "document.querySelector('div[aria-label=\"Lokasi Anda\"]').click();");
+  }
+
+  @override 
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: locationBloc.isLocationOn,
+      builder: (BuildContext context, AsyncSnapshot<bool> locationSnapshot) {
+        if(!locationSnapshot.hasData || (locationSnapshot.hasData && locationSnapshot.data! == false)) {
+          return Center(child: Text('Hidupkan akses lokasi'));
+        }
+        return FutureBuilder(
+          future: locationBloc.getPosition.catchError((err) {this.resetState();}),
+          builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
+            if(!snapshot.hasData || snapshot.data?.latitude == null) {
+              return Center(child: CircularProgressIndicator());
+            }
+            return InAppWebView(
+              // gestureRecognizers: [
+              //   Factory<OneSequenceGestureRecognizer>(
+              //       () => EagerGestureRecognizer(),
+              //     ),
+              //   ].toSet(),
+              // contextMenu: contextMenu,
+              initialUrlRequest: URLRequest(url: Uri.parse('https://www.google.co.id/maps/@${snapshot.data!.latitude},${snapshot.data!.longitude},15z')),
+              // initialFile: "assets/index.html",
+              initialOptions: InAppWebViewGroupOptions(
+                crossPlatform: InAppWebViewOptions(
+                  // debuggingEnabled: true,
+                  useShouldOverrideUrlLoading: true,
+                ),
+                android: AndroidInAppWebViewOptions(
+                  //useHybridComposition: true
+                )
+              ),
+              androidOnGeolocationPermissionsShowPrompt:
+                  (InAppWebViewController controller, String origin) async {
+                    return Future.value(GeolocationPermissionShowPromptResponse(
+                      origin: origin, allow: true, retain: true));
+              },
+              onWebViewCreated: (InAppWebViewController controller) {
+                webView = controller;
+                // print("onWebViewCreated");
+              },
+              onLoadStart: (InAppWebViewController controller, Uri? url) {
+                
+              },
+              shouldOverrideUrlLoading:
+                  (controller, shouldOverrideUrlLoadingRequest) async {
+                Uri? uri = shouldOverrideUrlLoadingRequest.request.url;
+
+                if (![
+                  "http",
+                  "https",
+                  "file",
+                  "chrome",
+                  "data",
+                  "javascript",
+                  "about"
+                ].contains(uri?.scheme)) {
+                  if (await canLaunchUrl(uri!)) {
+                    // Launch the App
+                    await launchUrl(
+                      uri,
+                    );
+                    // and cancel the request
+                    return NavigationActionPolicy.CANCEL;
+                  }
+                }
+
+                return NavigationActionPolicy.ALLOW;
+              },
+              onLoadStop: !findLocationClicked ? findMyLocation : (InAppWebViewController controller, Uri? url) async {},
+              onProgressChanged:
+                  (InAppWebViewController controller, int progress) {
+
+              },
+              onUpdateVisitedHistory: (InAppWebViewController controller,
+                  Uri? url, bool? androidIsReload) {
+              },
+              onConsoleMessage: (controller, consoleMessage) {
+                // print(consoleMessage);
+              },
+            );
+          }
+        );
+      },
     );
   }
 }

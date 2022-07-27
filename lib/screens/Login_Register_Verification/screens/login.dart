@@ -4,6 +4,8 @@ import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/custom-button.dart';
 import 'package:material_kit_flutter/widgets/input.dart';
 
+import '../../home.dart';
+
 class LoginView extends StatefulWidget {
   final AnimationController animationController;
   const LoginView({Key? key, required this.animationController}): super(key: key);
@@ -81,7 +83,13 @@ class _LoginView extends State<LoginView> {
                     padding: EdgeInsets.only(top: 40),
                     child: CustomButton(
                       text: "Masuk",
-                      onClick: () {},
+                      onClick: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(fullscreenDialog: true,
+                            builder: (context) => Home(),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Padding(

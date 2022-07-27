@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/screens/Login_Register_Verification/screen.dart';
 import 'package:material_kit_flutter/screens/history.dart';
-
 // screens
 import 'package:material_kit_flutter/screens/home.dart';
-import 'package:material_kit_flutter/screens/login.dart';
 import 'package:material_kit_flutter/screens/profile.dart';
 import 'package:material_kit_flutter/screens/register.dart';
-import 'package:material_kit_flutter/screens/settings.dart';
-import 'package:material_kit_flutter/screens/components.dart';
-import 'package:material_kit_flutter/screens/onboarding.dart';
-import 'package:material_kit_flutter/screens/pro.dart';
 import 'package:material_kit_flutter/screens/verification.dart';
 
 void main() => runApp(MaterialKitPROFlutter());
@@ -26,13 +20,13 @@ class MaterialKitPROFlutter extends StatelessWidget {
           "/login": (BuildContext context) => AnimationScreen(),
           "/register": (BuildContext context) => Register(),
           "/verification": (BuildContext context) => Verification(),
-          "/onboarding": (BuildContext context) => Onboarding(),
-          "/pro": (BuildContext context) => Pro(),
+          // "/onboarding": (BuildContext context) => Onboarding(),
+          // "/pro": (BuildContext context) => Pro(),
           "/home": (BuildContext context) => Home(),
           "/history": (BuildContext context) => History(),
-          "/components": (BuildContext context) => Components(),
+          // "/components": (BuildContext context) => Components(),
           "/profile": (BuildContext context) => Profile(),
-          "/settings": (BuildContext context) => Settings(),
+          // "/settings": (BuildContext context) => Settings(),
         });
   }
 }

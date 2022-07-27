@@ -1,5 +1,3 @@
-import 'dart:ui' show Color;
-
 import 'package:flutter/material.dart';
 
 class MaterialColors {

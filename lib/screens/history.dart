@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:material_kit_flutter/constants/Theme.dart';
-import 'package:material_kit_flutter/widgets/history-item.dart';
-
-//widgets
-import 'package:material_kit_flutter/widgets/navbar.dart';
-import 'package:material_kit_flutter/widgets/card-horizontal.dart';
-import 'package:material_kit_flutter/widgets/card-small.dart';
-import 'package:material_kit_flutter/widgets/card-square.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
+import 'package:material_kit_flutter/widgets/history-item.dart';
 
 final Map<String, Map<String, String>> homeCards = {
   "Makeup": {
