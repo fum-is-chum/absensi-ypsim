@@ -265,7 +265,7 @@ class _LocationView extends State<LocationView> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 0.7,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
