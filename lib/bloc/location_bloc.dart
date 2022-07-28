@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:rxdart/rxdart.dart';
 
 class LocationBloc {
   LocationBloc._();
@@ -9,17 +10,21 @@ class LocationBloc {
   bool? serviceEnabled;
   LocationPermission? permission;
   late LocationSettings locationSettings;
+  late Position currentPos;
+  BehaviorSubject<bool> isLoading = new BehaviorSubject.seeded(false);
   factory LocationBloc() {
     return _instance; // singleton service
   }
-
-  init() async {
+  void dispose() {
+    isLoading.close();
+  }
+  void init() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       locationSettings = AndroidSettings(
         accuracy: LocationAccuracy.high,
-        // distanceFilter: 100,
+        distanceFilter: 10,
         // forceLocationManager: true,
-        intervalDuration: const Duration(seconds: 5),
+        intervalDuration: const Duration(seconds: 10),
         //(Optional) Set foreground notification config to keep the app alive 
         //when going to the background
         // foregroundNotificationConfig: const ForegroundNotificationConfig(
@@ -33,7 +38,7 @@ class LocationBloc {
       locationSettings = AppleSettings(
         accuracy: LocationAccuracy.high,
         activityType: ActivityType.fitness,
-        distanceFilter: 100,
+        distanceFilter: 50,
         pauseLocationUpdatesAutomatically: true,
         // Only set to true if our app will be started up in the background.
         showBackgroundLocationIndicator: false,
@@ -41,7 +46,7 @@ class LocationBloc {
     } else {
         locationSettings = LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 100,
+        distanceFilter: 50,
       );
     }
 
@@ -69,15 +74,8 @@ class LocationBloc {
 
   }
 
-  /*
-    serviceStatusStream$
-    return: (ServiceStatus status) {
-      _name: 'enabled' | 'disabled'
-      index: 1 | 0
-    }
-  */
   Future<Position> get getPosition async {
-
+    isLoading.sink.add(true);
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled!) {
@@ -110,10 +108,18 @@ class LocationBloc {
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition();
+    try{
+      currentPos = await Geolocator.getCurrentPosition();
+    } catch(e) {
+
+    }
+    isLoading.sink.add(false);
+    return currentPos;
   }
 
+  Position get curPos => currentPos;
+  Stream<bool> get isLoading$ => isLoading.stream.asBroadcastStream();
   Future<bool> get isLocationOn => Geolocator.isLocationServiceEnabled();
-  Stream<Position> get positionStream$ => Geolocator.getPositionStream();
+  Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: locationSettings);
   Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream();
 }

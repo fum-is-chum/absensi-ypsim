@@ -307,7 +307,7 @@ class _LocationView extends State<LocationView> {
                     color: Colors.transparent,
                     child: IconButton(
                       onPressed: () {
-                        mapKey.currentState!.resetState();
+                        mapKey.currentState!.reload();
                       },
                       splashRadius: 20.0,
                       // splashColor: Colors.grey,
@@ -341,16 +341,23 @@ class MyMapView extends StatefulWidget {
 
 class _MyMapView extends State<MyMapView> {
   late InAppWebViewController webView;
-  LocationBloc locationBloc = new LocationBloc();
+  LocationBloc locationBloc = new LocationBloc(); 
   late StreamSubscription<ServiceStatus> serviceStatus;
   late StreamSubscription<Position> positionStatus;
   bool findLocationClicked = false;
 
-  void resetState() {
-    findLocationClicked = false;
-    setState(() {
-      
-    });
+  Future<void> loadMaps(Position event) async {
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'google.com',
+      path: '/maps',
+      queryParameters: {'q': '${event.latitude},${event.longitude}'}
+    );
+    await webView.loadUrl(urlRequest: URLRequest(url: uri));
+  }
+
+  void reload() async {
+    this.locationBloc.getPosition.then(loadMaps);
   }
 
   @override
@@ -364,21 +371,14 @@ class _MyMapView extends State<MyMapView> {
       });
     });
 
-    // positionStatus = locationBloc.positionStream$.listen((event) {
-    //   Uri uri = Uri(
-    //     scheme: 'https',
-    //     host: 'google.co.id',
-    //     path: '/maps',
-    //     queryParameters: {'q': '${event.latitude},${event.longitude}'}
-    //   );
-    //   webView.loadUrl(urlRequest: URLRequest(url: uri));
-    // });
+    positionStatus = locationBloc.positionStream$.distinct().listen(loadMaps);
   }
 
   @override 
   void dispose() {
     serviceStatus.cancel();
     positionStatus.cancel();
+    locationBloc.dispose();
     super.dispose();
   }
   
@@ -405,76 +405,91 @@ class _MyMapView extends State<MyMapView> {
             if(!snapshot.hasData || snapshot.data?.latitude == null) {
               return Center(child: CircularProgressIndicator());
             }
-            return InAppWebView(
-              gestureRecognizers: [
-                Factory<OneSequenceGestureRecognizer>(
-                    () => EagerGestureRecognizer(),
-                  ),
-                ].toSet(),
-              // contextMenu: contextMenu,
-              initialUrlRequest: URLRequest(url: Uri.parse('https://www.google.co.id/maps/@${snapshot.data!.latitude},${snapshot.data!.longitude},17z')),
-              // initialUrlRequest: URLRequest(url: Uri.parse('https://www.google.co.id/maps?q=${snapshot.data!.latitude},${snapshot.data!.longitude}')),
-              // initialFile: "assets/index.html",
-              initialOptions: InAppWebViewGroupOptions(
-                crossPlatform: InAppWebViewOptions(
-                  // debuggingEnabled: true,
-                  useShouldOverrideUrlLoading: true,
-                ),
-                android: AndroidInAppWebViewOptions(
-                  //useHybridComposition: true
-                )
-              ),
-              androidOnGeolocationPermissionsShowPrompt:
-                    (InAppWebViewController controller, String origin) async {
-                      inspect(origin);
-                      return Future.value(GeolocationPermissionShowPromptResponse(
-                            origin: origin, allow: true, retain: false));
+            return Stack(
+              children: [
+                AbsorbPointer(
+                  child: InAppWebView(
+                    gestureRecognizers: [
+                      Factory<OneSequenceGestureRecognizer>(
+                          () => EagerGestureRecognizer(),
+                        ),
+                      ].toSet(),
+                    // contextMenu: contextMenu,
+                    // initialUrlRequest: URLRequest(url: Uri.parse('https://www.google.co.id/maps/@${snapshot.data!.latitude},${snapshot.data!.longitude},17z')),
+                    initialUrlRequest: URLRequest(url: Uri.parse('https://www.google.com/maps?q=${snapshot.data!.latitude},${snapshot.data!.longitude}')),
+                    // initialFile: "assets/index.html",
+                    initialOptions: InAppWebViewGroupOptions(
+                      crossPlatform: InAppWebViewOptions(
+                        // debuggingEnabled: true,
+                        useShouldOverrideUrlLoading: true,
+                      ),
+                      android: AndroidInAppWebViewOptions(
+                        //useHybridComposition: true
+                      )
+                    ),
+                    androidOnGeolocationPermissionsShowPrompt:
+                          (InAppWebViewController controller, String origin) async {
+                            inspect(origin);
+                            return Future.value(GeolocationPermissionShowPromptResponse(
+                                  origin: origin, allow: true, retain: false));
+                          },
+                    onWebViewCreated: (InAppWebViewController controller) {
+                      webView = controller;
+                      // print("onWebViewCreated");
                     },
-              onWebViewCreated: (InAppWebViewController controller) {
-                webView = controller;
-                // print("onWebViewCreated");
-              },
-              onLoadStart: (InAppWebViewController controller, Uri? url) {
-                
-              },
-              shouldOverrideUrlLoading:
-                  (controller, shouldOverrideUrlLoadingRequest) async {
-                Uri? uri = shouldOverrideUrlLoadingRequest.request.url;
+                    onLoadStart: (InAppWebViewController controller, Uri? url) {
+                      
+                    },
+                    shouldOverrideUrlLoading:
+                        (controller, shouldOverrideUrlLoadingRequest) async {
+                      Uri? uri = shouldOverrideUrlLoadingRequest.request.url;
 
-                if (![
-                  "http",
-                  "https",
-                  "file",
-                  "chrome",
-                  "data",
-                  "javascript",
-                  "about"
-                ].contains(uri?.scheme)) {
-                  if (await canLaunchUrl(uri!)) {
-                    // Launch the App
-                    await launchUrl(
-                      uri,
-                    );
-                    // and cancel the request
-                    return NavigationActionPolicy.CANCEL;
-                  }
-                }
+                      if (![
+                        "http",
+                        "https",
+                        "file",
+                        "chrome",
+                        "data",
+                        "javascript",
+                        "about"
+                      ].contains(uri?.scheme)) {
+                        if (await canLaunchUrl(uri!)) {
+                          // Launch the App
+                          await launchUrl(
+                            uri,
+                          );
+                          // and cancel the request
+                          return NavigationActionPolicy.CANCEL;
+                        }
+                      }
 
-                return NavigationActionPolicy.ALLOW;
-              },
-              onLoadStop: (InAppWebViewController controller, Uri? url) async {},
-              // !findLocationClicked ? findMyLocation : (InAppWebViewController controller, Uri? url) async {},
-              
-              onProgressChanged:
-                  (InAppWebViewController controller, int progress) {
+                      return NavigationActionPolicy.ALLOW;
+                    },
+                    onLoadStop: (InAppWebViewController controller, Uri? url) async {},
+                    // !findLocationClicked ? findMyLocation : (InAppWebViewController controller, Uri? url) async {},
+                    
+                    onProgressChanged:
+                        (InAppWebViewController controller, int progress) {
 
-              },
-              onUpdateVisitedHistory: (InAppWebViewController controller,
-                  Uri? url, bool? androidIsReload) {
-              },
-              onConsoleMessage: (controller, consoleMessage) {
-                // print(consoleMessage);
-              },
+                    },
+                    onUpdateVisitedHistory: (InAppWebViewController controller,
+                        Uri? url, bool? androidIsReload) {
+                    },
+                    onConsoleMessage: (controller, consoleMessage) {
+                      // print(consoleMessage);
+                    },
+                  ),
+                ),
+                StreamBuilder(
+                  stream: locationBloc.isLoading,
+                  builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    if(!snapshot.hasData || snapshot.data == true) {
+                      return Center(child: CircularProgressIndicator(),);
+                    }
+                    return Stack();
+                  },
+                )
+              ],
             );
           }
         );
