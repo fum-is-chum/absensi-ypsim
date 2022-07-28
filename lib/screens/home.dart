@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -264,11 +263,6 @@ class LocationView extends StatefulWidget {
 class _LocationView extends State<LocationView> {
   GlobalKey<_MyMapView> mapKey = GlobalKey();
   @override
-  void initState() {
-    super.initState();
-    LocationBloc().init();
-  }
-  @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 0.7,
@@ -348,7 +342,8 @@ class MyMapView extends StatefulWidget {
 class _MyMapView extends State<MyMapView> {
   late InAppWebViewController webView;
   LocationBloc locationBloc = new LocationBloc();
-  late StreamSubscription<ServiceStatus> positionSubs;
+  late StreamSubscription<ServiceStatus> serviceStatus;
+  late StreamSubscription<Position> positionStatus;
   bool findLocationClicked = false;
 
   void resetState() {
@@ -361,14 +356,29 @@ class _MyMapView extends State<MyMapView> {
   @override
   void initState() {
     super.initState();
-    positionSubs = locationBloc.serviceStatusStream$.listen((event) { 
-      resetState();
+    locationBloc.init();
+    serviceStatus = locationBloc.serviceStatusStream$.listen((event) { 
+      findLocationClicked = false;
+      setState(() {
+        
+      });
     });
+
+    // positionStatus = locationBloc.positionStream$.listen((event) {
+    //   Uri uri = Uri(
+    //     scheme: 'https',
+    //     host: 'google.co.id',
+    //     path: '/maps',
+    //     queryParameters: {'q': '${event.latitude},${event.longitude}'}
+    //   );
+    //   webView.loadUrl(urlRequest: URLRequest(url: uri));
+    // });
   }
 
   @override 
   void dispose() {
-    positionSubs.cancel();
+    serviceStatus.cancel();
+    positionStatus.cancel();
     super.dispose();
   }
   
@@ -390,19 +400,20 @@ class _MyMapView extends State<MyMapView> {
           return Center(child: Text('Hidupkan akses lokasi'));
         }
         return FutureBuilder(
-          future: locationBloc.getPosition.catchError((err) {this.resetState();}),
+          future: locationBloc.getPosition,
           builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
             if(!snapshot.hasData || snapshot.data?.latitude == null) {
               return Center(child: CircularProgressIndicator());
             }
             return InAppWebView(
-              // gestureRecognizers: [
-              //   Factory<OneSequenceGestureRecognizer>(
-              //       () => EagerGestureRecognizer(),
-              //     ),
-              //   ].toSet(),
+              gestureRecognizers: [
+                Factory<OneSequenceGestureRecognizer>(
+                    () => EagerGestureRecognizer(),
+                  ),
+                ].toSet(),
               // contextMenu: contextMenu,
-              initialUrlRequest: URLRequest(url: Uri.parse('https://www.google.co.id/maps/@${snapshot.data!.latitude},${snapshot.data!.longitude},15z')),
+              initialUrlRequest: URLRequest(url: Uri.parse('https://www.google.co.id/maps/@${snapshot.data!.latitude},${snapshot.data!.longitude},17z')),
+              // initialUrlRequest: URLRequest(url: Uri.parse('https://www.google.co.id/maps?q=${snapshot.data!.latitude},${snapshot.data!.longitude}')),
               // initialFile: "assets/index.html",
               initialOptions: InAppWebViewGroupOptions(
                 crossPlatform: InAppWebViewOptions(
@@ -414,10 +425,11 @@ class _MyMapView extends State<MyMapView> {
                 )
               ),
               androidOnGeolocationPermissionsShowPrompt:
-                  (InAppWebViewController controller, String origin) async {
-                    return Future.value(GeolocationPermissionShowPromptResponse(
-                      origin: origin, allow: true, retain: true));
-              },
+                    (InAppWebViewController controller, String origin) async {
+                      inspect(origin);
+                      return Future.value(GeolocationPermissionShowPromptResponse(
+                            origin: origin, allow: true, retain: false));
+                    },
               onWebViewCreated: (InAppWebViewController controller) {
                 webView = controller;
                 // print("onWebViewCreated");
@@ -450,7 +462,9 @@ class _MyMapView extends State<MyMapView> {
 
                 return NavigationActionPolicy.ALLOW;
               },
-              onLoadStop: !findLocationClicked ? findMyLocation : (InAppWebViewController controller, Uri? url) async {},
+              onLoadStop: (InAppWebViewController controller, Uri? url) async {},
+              // !findLocationClicked ? findMyLocation : (InAppWebViewController controller, Uri? url) async {},
+              
               onProgressChanged:
                   (InAppWebViewController controller, int progress) {
 
