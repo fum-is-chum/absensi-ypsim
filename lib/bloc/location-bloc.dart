@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
@@ -9,18 +7,21 @@ class LocationBloc {
   static final _instance = LocationBloc._();
   bool? serviceEnabled;
   LocationPermission? permission;
-  late LocationSettings locationSettings;
+  late LocationSettings _locationSettings;
   late Position currentPos;
-  BehaviorSubject<bool> isLoading = new BehaviorSubject.seeded(false);
+  BehaviorSubject<bool> _locationLoading = new BehaviorSubject.seeded(false);
   factory LocationBloc() {
     return _instance; // singleton service
   }
+
   void dispose() {
-    isLoading.close();
+    _locationLoading.close();
   }
-  void init() async {
+
+  /// start - Location Service
+  void initLocation() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      locationSettings = AndroidSettings(
+      _locationSettings = AndroidSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 10,
         // forceLocationManager: true,
@@ -35,7 +36,7 @@ class LocationBloc {
         // )
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
-      locationSettings = AppleSettings(
+      _locationSettings = AppleSettings(
         accuracy: LocationAccuracy.high,
         activityType: ActivityType.fitness,
         distanceFilter: 50,
@@ -44,7 +45,7 @@ class LocationBloc {
         showBackgroundLocationIndicator: false,
       );
     } else {
-        locationSettings = LocationSettings(
+        _locationSettings = LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 50,
       );
@@ -75,7 +76,7 @@ class LocationBloc {
   }
 
   Future<Position> get getPosition async {
-    isLoading.sink.add(true);
+    _locationLoading.sink.add(true);
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled!) {
@@ -113,13 +114,17 @@ class LocationBloc {
     } catch(e) {
 
     }
-    isLoading.sink.add(false);
+    _locationLoading.sink.add(false);
     return currentPos;
   }
 
   Position get curPos => currentPos;
-  Stream<bool> get isLoading$ => isLoading.stream.asBroadcastStream();
+  Stream<bool> get locationLoading$ => _locationLoading.stream.asBroadcastStream();
   Future<bool> get isLocationOn => Geolocator.isLocationServiceEnabled();
-  Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: locationSettings);
+  Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: _locationSettings);
   Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream();
+
+  // end - Location Service
+
+  // start - Camera Service
 }

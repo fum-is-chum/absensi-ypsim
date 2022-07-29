@@ -7,7 +7,11 @@ import 'package:material_kit_flutter/screens/profile.dart';
 import 'package:material_kit_flutter/screens/register.dart';
 import 'package:material_kit_flutter/screens/verification.dart';
 
-void main() => runApp(MaterialKitPROFlutter());
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MaterialKitPROFlutter());
+}
 
 class MaterialKitPROFlutter extends StatelessWidget {
   @override
