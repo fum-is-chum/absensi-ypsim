@@ -9,7 +9,7 @@ class CardSmall extends StatelessWidget {
       this.tap = defaultFunc});
 
   final String cta;
-  final String? img;
+  final dynamic img;
   final Function tap;
   final String? title;
 
@@ -53,7 +53,7 @@ class CardSmall extends StatelessWidget {
                           cta,
                           style: TextStyle(
                             color: MaterialColors.muted,
-                            fontSize: 12,
+                            fontSize: 14,
                           ),
                         ),
                       ],
@@ -80,7 +80,7 @@ class CardSmall extends StatelessWidget {
                     ],
                     borderRadius: BorderRadius.all(Radius.circular(4.0)),
                     image: DecorationImage(
-                      image: NetworkImage(img!),
+                      image: img!.runtimeType.toString() == 'String'? NetworkImage(img!): FileImage(img!) as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                   ),

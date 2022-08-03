@@ -1,14 +1,13 @@
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:material_kit_flutter/bloc/camera-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/card-small.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
-import 'package:rxdart/rxdart.dart';
 
+import '../bloc/home-bloc.dart';
 import '../bloc/location-bloc.dart';
 import '../widgets/location-view.dart';
 
@@ -47,27 +46,8 @@ class Home extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CardSmall(
-                        cta: "07:01:12 WIB",
-                        title: "IN",
-                        img: homeCards["Makeup"]!['image'],
-                        tap: () {
-                          // Navigator.pushReplacementNamed(context, '/pro');
-                        }),
-                    SizedBox(width: 8),
-                    CardSmall(
-                        cta: "16:01:12 WIB",
-                        title: "OUT",
-                        img: homeCards["Makeup"]!['image'],
-                        tap: () {
-                          // Navigator.pushReplacementNamed(context, '/pro');
-                        })
-                  ],
-                ),
+                SizedBox(height: 30,),
+                ImageRow(),
                 SizedBox(height: 20),
                 CheckIn(),
                 SizedBox(height: 120),
@@ -77,6 +57,53 @@ class Home extends StatelessWidget {
             ),
           ),
         ));
+  }
+}
+
+class ImageRow extends StatefulWidget {
+  ImageRow({Key? key}): super(key: key);
+  @override
+  _ImageRow createState() => _ImageRow();
+}
+
+class _ImageRow extends State<ImageRow> {
+  final CameraBloc cameraBloc = new CameraBloc();
+  final HomeBloc homeBloc = new HomeBloc();
+  @override
+  void dispose() {
+    cameraBloc.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: cameraBloc.imageStream,
+      builder: (BuildContext context, AsyncSnapshot<File?> snapshot) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CardSmall(
+              cta: cameraBloc.snapTime != '' && !homeBloc.statusAbsensi() ? cameraBloc.snapTime : "07:01:12 WIB",
+              title: "IN",
+              img: snapshot.hasData && snapshot.data != null && !homeBloc.statusAbsensi() ? snapshot.data :homeCards["Makeup"]!['image'],
+              tap: () {
+                // Navigator.pushReplacementNamed(context, '/pro');
+              }
+            ),
+            SizedBox(width: 8),
+            CardSmall(
+              cta: cameraBloc.snapTime != '' && homeBloc.statusAbsensi() ? cameraBloc.snapTime : "16:01:12 WIB",
+              title: "OUT",
+              img: snapshot.hasData && snapshot.data != null && homeBloc.statusAbsensi() ? snapshot.data : homeCards["Makeup"]!['image'],
+              tap: () {
+                // Navigator.pushReplacementNamed(context, '/pro');
+              }
+            )
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -229,19 +256,7 @@ class CheckInButton extends StatefulWidget {
 }
 
 class _CheckInButton extends State<CheckInButton> {
-  // File? image;
-  Future pickImage() async {
-    try {
-      final img = await ImagePicker().pickImage(source: ImageSource.camera);
-      inspect(img);
-      // final File imageTemp = File();
-      // setState(() => this.image = imageTemp);
-    } on PlatformException catch(e) {
-      print('Failed to pick image: $e');
-    } 
-    return;
-  }
-
+  final CameraBloc cameraBloc = new CameraBloc();
   @override 
   void dispose() {
     super.dispose();
@@ -252,8 +267,7 @@ class _CheckInButton extends State<CheckInButton> {
       color: Colors.transparent,
       child: MaterialButton(
         onPressed: () async {
-            print('camera');
-            await pickImage();
+            await cameraBloc.pickImage();
         },
         child: Container(
           padding: EdgeInsets.all(80),
