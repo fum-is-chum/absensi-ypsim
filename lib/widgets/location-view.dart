@@ -134,7 +134,7 @@ class _MyMapView extends State<MyMapView> {
   void dispose() {
     serviceStatus.cancel();
     positionStatus.cancel();
-    locationBloc.dispose();
+    // locationBloc.dispose();
     super.dispose();
   }
   

@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
@@ -17,6 +19,12 @@ class LocationBloc {
   void dispose() {
     _locationLoading.close();
   }
+
+  Position get curPos => currentPos;
+  Stream<bool> get locationLoading$ => _locationLoading.stream.asBroadcastStream();
+  Future<bool> get isLocationOn => Geolocator.isLocationServiceEnabled();
+  Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: _locationSettings);
+  Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream();
 
   /// start - Location Service
   void initLocation() async {
@@ -117,14 +125,10 @@ class LocationBloc {
     _locationLoading.sink.add(false);
     return currentPos;
   }
-
-  Position get curPos => currentPos;
-  Stream<bool> get locationLoading$ => _locationLoading.stream.asBroadcastStream();
-  Future<bool> get isLocationOn => Geolocator.isLocationServiceEnabled();
-  Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: _locationSettings);
-  Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream();
-
   // end - Location Service
 
-  // start - Camera Service
+  bool isInValidLocation() { // 
+    // Geolocator.distanceBetween(startLatitude, startLongitude, endLatitude, endLongitude); // return distance in meter
+    return true;
+  }
 }
