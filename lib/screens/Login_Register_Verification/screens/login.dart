@@ -136,7 +136,7 @@ class _PasswordField extends State<PasswordField> {
     return StreamBuilder<bool>(
       stream: _bloc.counterObservable,
       builder: (context, snapshot) {
-        print('password field build');
+        // print('password field build');
         return Padding(
           padding: EdgeInsets.only(top: 12),
           child: Input(

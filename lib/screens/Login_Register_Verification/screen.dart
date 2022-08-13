@@ -5,14 +5,14 @@ import 'package:material_kit_flutter/screens/home.dart';
 
 import '../../constants/Theme.dart';
 
-class AnimationScreen extends StatefulWidget{
-  const AnimationScreen({Key? key}): super(key: key);
+class LoginAnimation extends StatefulWidget{
+  const LoginAnimation({Key? key}): super(key: key);
 
   @override
-  _AnimationScreen createState() => _AnimationScreen();
+  _LoginAnimation createState() => _LoginAnimation();
 }
 
-class _AnimationScreen extends State<AnimationScreen> with TickerProviderStateMixin{
+class _LoginAnimation extends State<LoginAnimation> with TickerProviderStateMixin{
   AnimationController? _animationController;
   @override 
   void initState() {

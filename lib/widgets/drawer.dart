@@ -64,6 +64,15 @@ class MaterialDrawer extends StatelessWidget {
                     title: "Home",
                     isSelected: currentPage == "Home" ? true : false),
                 DrawerTile(
+                    icon: Icons.post_add,
+                    onTap: () {
+                      if (currentPage != "Request")
+                        Navigator.pushReplacementNamed(context, '/request');
+                    },
+                    iconColor: Colors.black,
+                    title: "Pengajuan Izin",
+                    isSelected: currentPage == "Request" ? true : false),
+                DrawerTile(
                     icon: Icons.timelapse,
                     onTap: () {
                       if (currentPage != "History")
