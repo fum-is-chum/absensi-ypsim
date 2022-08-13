@@ -50,9 +50,20 @@ class Home extends StatelessWidget {
                 ImageRow(),
                 SizedBox(height: 20),
                 CheckIn(),
-                SizedBox(height: 120),
-                LocationView(),
-                SizedBox(height: 30),
+                FractionalTranslation(
+                  translation: Offset(0, -0.5),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: CheckInButtonContainer()
+                  ),
+                ),
+                FractionalTranslation(
+                  translation: Offset(0, -0.1),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: LocationView(),
+                  ),
+                ),
               ],
             ),
           ),
@@ -158,7 +169,7 @@ class CheckIn extends StatelessWidget {
             height: 180,
             child: Stack(
               children: [
-               Padding(
+              Padding(
                   padding: EdgeInsets.all(12),
                   child: RichText(
                     textAlign: TextAlign.center,
@@ -202,13 +213,13 @@ class CheckIn extends StatelessWidget {
                     ),
                   ),
                 ),
-                FractionalTranslation(
-                  translation: Offset(0, 0.5),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: CheckInButtonContainer()
-                  ),
-                )
+                // FractionalTranslation(
+                //   translation: Offset(0, 0.5),
+                //   child: Align(
+                //     alignment: Alignment.bottomCenter,
+                //     child: CheckInButtonContainer()
+                //   ),
+                // )
               ],
             ),
           ),
@@ -235,11 +246,20 @@ class CheckInButtonContainer extends StatelessWidget {
           initialData: snapshot.data! ? ServiceStatus.enabled : ServiceStatus.disabled,
           builder: (BuildContext context, AsyncSnapshot<ServiceStatus> snapshot) {
             /// index === 0 => disabled
-            return CheckInButton(disabled: false);
-            // if((!snapshot.hasData || snapshot.data?.index == 0 || snapshot.data == null)) {
-            //  return CheckInButton(disabled: true);
-            // }
             // return CheckInButton(disabled: false);
+            if((!snapshot.hasData || snapshot.data?.index == 0 || snapshot.data == null)) {
+             return CheckInButton(disabled: true);
+            }
+            return FutureBuilder(
+              future: locationBloc.getPosition,
+              builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
+                if(snapshot.hasData) {
+                  // setelah dapat data lokasi, hitung jarak koordinat ke lokasi, kirim ke api
+                  return CheckInButton(disabled: false);
+                }
+                return CheckInButton(disabled: true);
+              }
+            );
           },
         );
       },
@@ -257,32 +277,47 @@ class CheckInButton extends StatefulWidget {
 
 class _CheckInButton extends State<CheckInButton> {
   final CameraBloc cameraBloc = new CameraBloc();
+
   @override 
   void dispose() {
     super.dispose();
   }
   @override 
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: MaterialButton(
-        onPressed: () async {
-            await cameraBloc.pickImage();
-        },
-        child: Container(
-          padding: EdgeInsets.all(80),
-          decoration: BoxDecoration(
-            color: (widget.disabled) ? Colors.grey : Colors.green,
-            shape: BoxShape.circle
-          ),
-          child: Text(
-            "Check In",
-            style: TextStyle(fontSize: 20, color: Colors.white),
-          ),
-        ),
-        color: (widget.disabled) ? Colors.grey : Colors.green,
-        shape: CircleBorder(),
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        primary: (widget.disabled) ? Colors.grey : Colors.green,
+        shape: const CircleBorder(), 
+        padding: const EdgeInsets.all(80)
       ),
+      child: Text(
+        "Check In",
+        style: TextStyle(fontSize: 20, color: Colors.white),
+      ),
+      onPressed: () {
+        if(!widget.disabled) cameraBloc.pickImage();
+      },
     );
+      // Material(
+      //   color: Colors.transparent,
+      //   child: MaterialButton(
+      //     onPressed: () async {
+              
+      //     },
+      //     child: Container(
+      //       padding: EdgeInsets.all(80),
+      //       decoration: BoxDecoration(
+      //         color: (widget.disabled) ? Colors.grey : Colors.green,
+      //         shape: BoxShape.circle
+      //       ),
+      //       child: Text(
+      //         "Check In",
+      //         style: TextStyle(fontSize: 20, color: Colors.white),
+      //       ),
+      //     ),
+      //     color: (widget.disabled) ? Colors.grey : Colors.green,
+      //     shape: CircleBorder(),
+      //   ),
+      // );
   }
 }
