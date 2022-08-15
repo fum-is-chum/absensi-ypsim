@@ -5,10 +5,12 @@ class RequestModel {
   // lampiran
 
   RequestModel ({
-    this.tanggalAwal,
-    this.tanggalAkhir,
-    this.keterangan
-  });
+    String? tanggalAwal,
+    String? tanggalAkhir,
+    String? keterangan
+  }): this.tanggalAwal = tanggalAwal ?? DateTime.now().toIso8601String(),
+      this.tanggalAkhir = tanggalAkhir ?? DateTime.now().toIso8601String(),
+      this.keterangan = keterangan ?? '';
 
   /*
     VSCode Regex:
@@ -36,13 +38,15 @@ class RequestModel {
 }
 
 class RequestBloc {
-  RequestModel _requestModel = new RequestModel();
-  RequestBloc();
+  late Map<String, dynamic> _requestModel;
 
-  // void patchValue(String key, dynamic value) {
-  //   _requestModel[key] = value;
-  // }
-  // Future<void> submitIzin() {
-    
-  // }
+  RequestBloc() {
+    _requestModel = new RequestModel().toJson();
+  }
+
+  void setValue(String key, dynamic value) => _requestModel[key] = value;
+
+  String getValue(String key) => _requestModel[key];
+
+  Map<String, dynamic> getRawValue() => _requestModel;
 }
