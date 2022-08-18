@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../bloc/location-bloc.dart';
 import '../constants/Theme.dart';
@@ -96,20 +95,38 @@ class MyMapView extends StatefulWidget {
 }
 
 class _MyMapView extends State<MyMapView> {
-  InAppWebViewController? webView;
+  WebViewController? webView;
   LocationBloc locationBloc = new LocationBloc(); 
   late StreamSubscription<ServiceStatus> serviceStatus;
   late StreamSubscription<Position> positionStatus;
   bool findLocationClicked = false;
 
   Future<void> loadMaps(Position event) async {
-    Uri uri = Uri(
-      scheme: 'https',
-      host: 'google.com',
-      path: '/maps',
-      queryParameters: {'q': '${event.latitude},${event.longitude}'}
-    );
-    await webView?.loadUrl(urlRequest: URLRequest(url: uri));
+    await webView?.loadUrl(Uri.dataFromString("""
+      <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            *{
+              box-sizing: border-box;
+            }
+            body{
+              margin: 0px;
+            }
+            iframe{
+              height: 100vh;
+              width: 100vw;
+            }
+          </style>
+        </head>
+        <body>
+          <iframe height="auto" frameBorder="0" src="https://maps.google.com/maps?q=${event.latitude},${event.longitude}&z=15&output=embed"></iframe>
+        </body>
+      </html>""", mimeType: 'text/html'
+    ).toString());
   }
 
   void reload() async {
@@ -121,7 +138,6 @@ class _MyMapView extends State<MyMapView> {
     super.initState();
     locationBloc.initLocation();
     serviceStatus = locationBloc.serviceStatusStream$.listen((event) { 
-      findLocationClicked = false;
       setState(() {
         
       });
@@ -136,15 +152,6 @@ class _MyMapView extends State<MyMapView> {
     positionStatus.cancel();
     // locationBloc.dispose();
     super.dispose();
-  }
-  
-  /// fungsi untuk mengklik tombol lokasi pada google maps webview
-  /// (suatu saat bisa saja berubah jika ada update dr Google terhadap maps webview)
-  findMyLocation(InAppWebViewController controller, Uri? url) async {
-    /// await controller.evaluateJavascript(source: "var elems = document.querySelectorAll('*'), res = Array.from(elems).find(v => v.textContent.indexOf('Lokasi Anda') === 0);alert(res.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.outerHTML);"); // tombol lokasi 
-    await controller.evaluateJavascript(source: "document.querySelector('div[role=\"checkbox\"]').click();");
-    if(!findLocationClicked) findLocationClicked = true;
-    /// await controller.evaluateJavascript(source: "document.querySelector('div[aria-label=\"Lokasi Anda\"]').click();");
   }
 
   @override 
@@ -163,77 +170,40 @@ class _MyMapView extends State<MyMapView> {
             }
             return Stack(
               children: [
-                AbsorbPointer(
-                  child: InAppWebView(
-                    // gestureRecognizers: [
-                    //   Factory<OneSequenceGestureRecognizer>(
-                    //       () => EagerGestureRecognizer(),
-                    //     ),
-                    //   ].toSet(),
-                    // contextMenu: contextMenu,
-                    // initialUrlRequest: URLRequest(url: Uri.parse('https://www.google.co.id/maps/@${snapshot.data!.latitude},${snapshot.data!.longitude},17z')),
-                    initialUrlRequest: URLRequest(url: Uri.parse('https://www.google.com/maps?q=${snapshot.data!.latitude},${snapshot.data!.longitude}')),
-                    // initialFile: "assets/index.html",
-                    initialOptions: InAppWebViewGroupOptions(
-                      crossPlatform: InAppWebViewOptions(
-                        // debuggingEnabled: true,
-                        useShouldOverrideUrlLoading: true,
-                      ),
-                      android: AndroidInAppWebViewOptions(
-                        //useHybridComposition: true
-                      )
+                // https://maps.google.com/maps?q=${currentLocation!!.latitude},${currentLocation!!.longitude}&z=15&output=embed
+                WebView(
+                  initialUrl: Uri.dataFromString("""
+                    <!DOCTYPE html>
+                      <html lang="en">
+                      <head>
+                        <meta charset="UTF-8">
+                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <style>
+                          *{
+                            box-sizing: border-box;
+                          }
+                          body{
+                            margin: 0px;
+                          }
+                          iframe{
+                            height: 100vh;
+                            width: 100vw;
+                          }
+                        </style>
+                      </head>
+                      <body>
+                        <iframe height="auto" frameBorder="0" src="https://maps.google.com/maps?q=${snapshot.data!.latitude},${snapshot.data!.longitude}&z=15&output=embed"></iframe>
+                      </body>
+                    </html>""", 
+                    mimeType: 'text/html'
+                  ).toString(),
+                  javascriptMode: JavascriptMode.unrestricted,
+                  gestureRecognizers: [
+                    Factory<OneSequenceGestureRecognizer>(
+                      () => EagerGestureRecognizer(),
                     ),
-                    androidOnGeolocationPermissionsShowPrompt:
-                          (InAppWebViewController controller, String origin) async {
-                            return Future.value(GeolocationPermissionShowPromptResponse(
-                                  origin: origin, allow: true, retain: false));
-                          },
-                    onWebViewCreated: (InAppWebViewController controller) {
-                      webView = controller;
-                      // print("onWebViewCreated");
-                    },
-                    onLoadStart: (InAppWebViewController controller, Uri? url) {
-                      
-                    },
-                    shouldOverrideUrlLoading:
-                        (controller, shouldOverrideUrlLoadingRequest) async {
-                      Uri? uri = shouldOverrideUrlLoadingRequest.request.url;
-
-                      if (![
-                        "http",
-                        "https",
-                        "file",
-                        "chrome",
-                        "data",
-                        "javascript",
-                        "about"
-                      ].contains(uri?.scheme)) {
-                        if (await canLaunchUrl(uri!)) {
-                          // Launch the App
-                          await launchUrl(
-                            uri,
-                          );
-                          // and cancel the request
-                          return NavigationActionPolicy.CANCEL;
-                        }
-                      }
-
-                      return NavigationActionPolicy.ALLOW;
-                    },
-                    onLoadStop: (InAppWebViewController controller, Uri? url) async {},
-                    // !findLocationClicked ? findMyLocation : (InAppWebViewController controller, Uri? url) async {},
-                    
-                    onProgressChanged:
-                        (InAppWebViewController controller, int progress) {
-
-                    },
-                    onUpdateVisitedHistory: (InAppWebViewController controller,
-                        Uri? url, bool? androidIsReload) {
-                    },
-                    onConsoleMessage: (controller, consoleMessage) {
-                      // print(consoleMessage);
-                    },
-                  ),
+                  ].toSet(),
                 ),
                 StreamBuilder(
                   stream: locationBloc.locationLoading$,
