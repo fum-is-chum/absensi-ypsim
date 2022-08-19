@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 
 import 'package:material_kit_flutter/constants/Theme.dart';
 
-class HistoryItem extends StatelessWidget {
-  HistoryItem(
+class HistoryIzinItem extends StatelessWidget {
+  HistoryIzinItem(
       {this.date = "Sabtu, 14 Mei 2022",
-      this.checkIn = "07:30",
-      this.checkOut = "16:30",
+      this.mulai = "07:30",
+      this.selesai = "16:30",
       this.status = "Tepat Waktu",
       this.tap = defaultFunc});
 
   final String date;
-  final String checkIn;
-  final String checkOut;
+  final String mulai;
+  final String selesai;
   final String status;
   final Function tap;
 
@@ -46,13 +46,13 @@ class HistoryItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Check In",
+                            "Mulai",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           SizedBox(height: 8),
-                          Text(checkIn),
+                          Text(mulai),
                         ],
                       ),
                       SizedBox(width: 20),
@@ -60,13 +60,13 @@ class HistoryItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Check Out",
+                            "Selesai",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           SizedBox(height: 8),
-                          Text(checkOut),
+                          Text(selesai),
                         ],
                       ),
                     ],
@@ -84,13 +84,11 @@ class HistoryItem extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                       color: (() {
-                        if (status == "Telat") {
+                        if (status == "Menunggu") {
                           return MaterialColors.bgPrimary;
-                        } else if (status == "Absen") {
+                        } else if (status == "Ditolak") {
                           return MaterialColors.error;
-                        } else if (status == "Cepat Pulang") {
-                          return MaterialColors.info;
-                        } else {
+                        } else if (status == "Diterima") {
                           return MaterialColors.bgSecondary;
                         }
                       }()),
@@ -105,7 +103,7 @@ class HistoryItem extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 10,
-                            color: status == "Telat"
+                            color: status == "Menunggu"
                                 ? Colors.black87
                                 : Colors.white,
                             fontWeight: FontWeight.bold,

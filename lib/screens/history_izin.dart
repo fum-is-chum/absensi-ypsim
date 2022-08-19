@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:material_kit_flutter/bloc/history-bloc.dart';
+import 'package:material_kit_flutter/bloc/history-izin-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
 import 'package:material_kit_flutter/widgets/history-item.dart';
+import 'package:material_kit_flutter/widgets/history-izin-item.dart';
 
 final Map<String, Map<String, String>> homeCards = {
   "Makeup": {
@@ -14,16 +15,16 @@ final Map<String, Map<String, String>> homeCards = {
   },
 };
 
-final historyBloc = new HistoryBloc();
+final historyIzinBloc = new HistoryIzinBloc();
 
-class History extends StatelessWidget {
+class HistoryIzin extends StatelessWidget {
   // final GlobalKey _scaffoldKey = new GlobalKey();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            "Riwayat Presensi",
+            "Riwayat Izin",
             style: TextStyle(
               color: Colors.black,
             ),
@@ -34,7 +35,7 @@ class History extends StatelessWidget {
         ),
         backgroundColor: MaterialColors.bgColorScreen,
         // key: _scaffoldKey,
-        drawer: MaterialDrawer(currentPage: "History"),
+        drawer: MaterialDrawer(currentPage: "History Izin"),
         body: Container(
           child: SingleChildScrollView(
             child: Column(
@@ -66,49 +67,39 @@ class History extends StatelessWidget {
                   padding: EdgeInsets.all(18),
                   child: Column(
                     children: [
-                      HistoryItem(
+                      HistoryIzinItem(
                         date: "Sabtu, 14 Mei 2022",
-                        checkIn: "07:30",
-                        checkOut: "16:50",
-                        status: "Tepat Waktu",
+                        mulai: "15 Mei 2022",
+                        selesai: "20 Mei 2022",
+                        status: "Diterima",
                         tap: () {
                           Navigator.pushReplacementNamed(
-                              context, '/history_detail');
+                              context, '/history_izin_detail');
                         },
                       ),
                       SizedBox(height: 12),
-                      HistoryItem(
-                        date: "Senin, 16 Mei 2022",
-                        checkIn: "08:30",
-                        checkOut: "16:50",
-                        status: "Telat",
+                      HistoryIzinItem(
+                        date: "Sabtu, 14 Mei 2022",
+                        mulai: "15 Mei 2022",
+                        selesai: "20 Mei 2022",
+                        status: "Menunggu",
                         tap: () {
                           Navigator.pushReplacementNamed(
-                              context, '/history_detail');
+                              context, '/history_izin_detail');
                         },
                       ),
                       SizedBox(height: 12),
-                      HistoryItem(
-                        date: "Selasa, 17 Mei 2022",
-                        checkIn: "00:00",
-                        checkOut: "00:00",
-                        status: "Absen",
+                      HistoryIzinItem(
+                        date: "Sabtu, 14 Mei 2022",
+                        mulai: "15 Mei 2022",
+                        selesai: "20 Mei 2022",
+                        status: "Ditolak",
                         tap: () {
                           Navigator.pushReplacementNamed(
-                              context, '/history_detail');
+                              context, '/history_izin_detail');
                         },
                       ),
                       SizedBox(height: 12),
-                      HistoryItem(
-                        date: "Rabu, 18 Mei 2022",
-                        checkIn: "07:30",
-                        checkOut: "16:00",
-                        status: "Cepat Pulang",
-                        tap: () {
-                          Navigator.pushReplacementNamed(
-                              context, '/history_detail');
-                        },
-                      ),
                     ],
                   ),
                 ),
@@ -133,7 +124,7 @@ class _TanggalField extends State<TanggalField> {
   void initState() {
     super.initState();
     _controller.text = DateFormat('yyyy-MM-dd')
-        .format(DateTime.parse(historyBloc.getValue('tanggalAkhir')));
+        .format(DateTime.parse(historyIzinBloc.getValue('tanggalAkhir')));
   }
 
   @override
@@ -150,16 +141,16 @@ class _TanggalField extends State<TanggalField> {
               onPressed: () {
                 showDatePicker(
                         context: context,
-                        initialDate:
-                            DateTime.parse(historyBloc.getValue('tanggalAwal')),
+                        initialDate: DateTime.parse(
+                            historyIzinBloc.getValue('tanggalAwal')),
                         firstDate: widget.isAkhir
                             ? DateTime.parse(
-                                historyBloc.getValue('tanggalAwal'))
+                                historyIzinBloc.getValue('tanggalAwal'))
                             : DateTime.fromMillisecondsSinceEpoch(0),
                         lastDate: DateTime(DateTime.now().year + 10))
                     .then((DateTime? value) {
                   if (value != null) {
-                    historyBloc.setValue(
+                    historyIzinBloc.setValue(
                         widget.isAkhir ? 'tanggalAkhir' : 'tanggalAwal',
                         DateFormat('yyyy-MM-dd').format(value).toString());
                     _controller.text = DateFormat('yyyy-MM-dd').format(value);
@@ -174,14 +165,14 @@ class _TanggalField extends State<TanggalField> {
           showDatePicker(
                   context: context,
                   initialDate:
-                      DateTime.parse(historyBloc.getValue('tanggalAwal')),
+                      DateTime.parse(historyIzinBloc.getValue('tanggalAwal')),
                   firstDate: widget.isAkhir
-                      ? DateTime.parse(historyBloc.getValue('tanggalAwal'))
+                      ? DateTime.parse(historyIzinBloc.getValue('tanggalAwal'))
                       : DateTime.fromMillisecondsSinceEpoch(0),
                   lastDate: DateTime(DateTime.now().year + 10))
               .then((DateTime? value) {
             if (value != null) {
-              historyBloc.setValue(
+              historyIzinBloc.setValue(
                   widget.isAkhir ? 'tanggalAkhir' : 'tanggalAwal',
                   DateFormat('yyyy-MM-dd').format(value).toString());
               _controller.text = DateFormat('yyyy-MM-dd').format(value);
