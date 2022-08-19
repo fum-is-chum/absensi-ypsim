@@ -20,6 +20,7 @@ class LocationBloc {
 
   Position get curPos => currentPos;
   Stream<bool> get locationLoading$ => _locationLoading.stream.asBroadcastStream();
+  bool get isLoading => _locationLoading.value;
   Future<bool> get isLocationOn => Geolocator.isLocationServiceEnabled();
   Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: _locationSettings);
   Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream();
@@ -31,7 +32,7 @@ class LocationBloc {
         accuracy: LocationAccuracy.high,
         distanceFilter: 10,
         // forceLocationManager: true,
-        intervalDuration: const Duration(seconds: 10),
+        intervalDuration: const Duration(seconds: 8),
         //(Optional) Set foreground notification config to keep the app alive 
         //when going to the background
         // foregroundNotificationConfig: const ForegroundNotificationConfig(
@@ -81,8 +82,11 @@ class LocationBloc {
 
   }
 
+  void updateLoadingStatus(bool value) {
+    _locationLoading.sink.add(value);
+  }
+
   Future<Position> get getPosition async {
-    _locationLoading.sink.add(true);
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled!) {
@@ -120,7 +124,6 @@ class LocationBloc {
     } catch(e) {
 
     }
-    _locationLoading.sink.add(false);
     return currentPos;
   }
   // end - Location Service

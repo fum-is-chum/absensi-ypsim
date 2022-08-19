@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:material_kit_flutter/iframe/iframe.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../bloc/location-bloc.dart';
@@ -102,35 +104,18 @@ class _MyMapView extends State<MyMapView> {
   bool findLocationClicked = false;
 
   Future<void> loadMaps(Position event) async {
-    await webView?.loadUrl(Uri.dataFromString("""
-      <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta http-equiv="X-UA-Compatible" content="IE=edge">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            *{
-              box-sizing: border-box;
-            }
-            body{
-              margin: 0px;
-            }
-            iframe{
-              height: 100vh;
-              width: 100vw;
-            }
-          </style>
-        </head>
-        <body>
-          <iframe height="auto" frameBorder="0" src="https://maps.google.com/maps?q=${event.latitude},${event.longitude}&z=15&output=embed"></iframe>
-        </body>
-      </html>""", mimeType: 'text/html'
-    ).toString());
+    await webView?.runJavascript(redrawMaps(event.latitude, event.longitude));
+    locationBloc.updateLoadingStatus(false);
+    // setState(() {
+      
+    // });
   }
 
   void reload() async {
-    this.locationBloc.getPosition.then(loadMaps);
+    if(!locationBloc.isLoading) {
+      locationBloc.updateLoadingStatus(true);
+      await locationBloc.getPosition.then(loadMaps);
+    }
   }
 
   @override
@@ -172,9 +157,17 @@ class _MyMapView extends State<MyMapView> {
               children: [
                 // https://maps.google.com/maps?q=${currentLocation!!.latitude},${currentLocation!!.longitude}&z=15&output=embed
                 WebView(
+                  gestureRecognizers: [
+                    Factory<OneSequenceGestureRecognizer>(
+                      () => EagerGestureRecognizer(),
+                    ),
+                  ].toSet(),
+                  onWebViewCreated: (WebViewController wv) {
+                    webView = wv;
+                  },
                   initialUrl: Uri.dataFromString("""
-                    <!DOCTYPE html>
-                      <html lang="en">
+                   <!DOCTYPE html>
+                    <html lang="en">
                       <head>
                         <meta charset="UTF-8">
                         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -193,17 +186,12 @@ class _MyMapView extends State<MyMapView> {
                         </style>
                       </head>
                       <body>
-                        <iframe height="auto" frameBorder="0" src="https://maps.google.com/maps?q=${snapshot.data!.latitude},${snapshot.data!.longitude}&z=15&output=embed"></iframe>
+                        <iframe id="embed-maps" height="auto" frameBorder="0" src="https://maps.google.com/maps?q=2,${snapshot.data!.longitude}&z=15&output=embed"></iframe>
                       </body>
                     </html>""", 
                     mimeType: 'text/html'
                   ).toString(),
                   javascriptMode: JavascriptMode.unrestricted,
-                  gestureRecognizers: [
-                    Factory<OneSequenceGestureRecognizer>(
-                      () => EagerGestureRecognizer(),
-                    ),
-                  ].toSet(),
                 ),
                 StreamBuilder(
                   stream: locationBloc.locationLoading$,
