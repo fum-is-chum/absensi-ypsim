@@ -27,7 +27,7 @@ class MaterialKitPROFlutter extends StatelessWidget {
         child: MaterialApp(
             title: "Material Kit PRO Flutter",
             debugShowCheckedModeBanner: false,
-            initialRoute: "/login",
+            initialRoute: "/history",
             routes: <String, WidgetBuilder>{
               "/login": (BuildContext context) => LoginAnimation(),
               "/register": (BuildContext context) => Register(),

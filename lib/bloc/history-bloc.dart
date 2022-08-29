@@ -1,3 +1,5 @@
+import 'package:rxdart/rxdart.dart';
+
 class HistoryModel {
   String? tanggalAwal;
   String? tanggalAkhir;
@@ -31,6 +33,7 @@ class HistoryModel {
 
 class HistoryBloc {
   late Map<String, dynamic> _historyModel;
+  // BehaviorSubject<bool> expandedSubject = new BehaviorSubject<bool>.seeded(true); 
 
   HistoryBloc() {
     _historyModel = new HistoryModel().toJson();
@@ -38,7 +41,12 @@ class HistoryBloc {
 
   void setValue(String key, dynamic value) => _historyModel[key] = value;
 
-  String getValue(String key) => _historyModel[key];
+  // Stream<bool> get expanded$ => expandedSubject.asBroadcastStream();
 
+  // void toggleExpand() {
+  //   expandedSubject.sink.add(!expandedSubject.value);
+  // }
+
+  String getValue(String key) => _historyModel[key];
   Map<String, dynamic> getRawValue() => _historyModel;
 }

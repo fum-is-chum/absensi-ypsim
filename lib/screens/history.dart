@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_kit_flutter/bloc/history-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
-import 'package:material_kit_flutter/widgets/drawer.dart';
-import 'package:material_kit_flutter/widgets/history-item.dart';
+import 'package:material_kit_flutter/screens/history-dummy.dart';
+
+import '../widgets/drawer.dart';
+import '../widgets/history-item.dart';
 
 final Map<String, Map<String, String>> homeCards = {
   "Makeup": {
@@ -16,37 +18,41 @@ final Map<String, Map<String, String>> homeCards = {
 
 final historyBloc = new HistoryBloc();
 
-class History extends StatelessWidget {
-  // final GlobalKey _scaffoldKey = new GlobalKey();
+class History extends StatefulWidget {
+  final List<Map<String,dynamic>> log = list;
+  History({Key? key}) : super(key: key);
+
+  @override
+  State<History> createState() => _History();
+}
+
+class _History extends State<History> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Riwayat Presensi",
-            style: TextStyle(
-              color: Colors.black,
-            ),
-          ),
-          elevation: 0,
-          backgroundColor: MaterialColors.bgColorScreen,
-          iconTheme: IconThemeData(color: Colors.black),
-        ),
-        backgroundColor: MaterialColors.bgColorScreen,
-        // key: _scaffoldKey,
-        drawer: MaterialDrawer(currentPage: "History"),
-        body: Container(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(boxShadow: <BoxShadow>[
-                    BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: 8.0,
-                        offset: Offset(0.0, 0.75))
-                  ], color: Colors.white),
+      drawer: MaterialDrawer(currentPage: "History"),
+      backgroundColor: MaterialColors.bgColorScreen,
+      body: Container(
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height,
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              forceElevated: true,
+              title: Text("Riwayat Presensi",
+                style: TextStyle(color: Colors.black),
+              ),
+              backgroundColor: MaterialColors.bgColorScreen,
+              iconTheme: IconThemeData(color: Colors.black),
+              pinned: true,
+              snap: true,
+              floating: true,
+              expandedHeight: 144,
+              flexibleSpace: FlexibleSpaceBar(
+                background: AnimatedContainer(
+                  duration: Duration(milliseconds: 500),
+                  padding: EdgeInsets.only(top: 56 + 24),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -60,62 +66,34 @@ class History extends StatelessWidget {
                         width: MediaQuery.of(context).size.width / 2.3,
                       ),
                     ],
-                  ),
+                  )
                 ),
-                Container(
-                  padding: EdgeInsets.all(18),
-                  child: Column(
-                    children: [
-                      HistoryItem(
-                        date: "Sabtu, 14 Mei 2022",
-                        checkIn: "07:30",
-                        checkOut: "16:50",
-                        status: "Tepat Waktu",
-                        tap: () {
-                          Navigator.pushReplacementNamed(
-                              context, '/history_detail');
-                        },
-                      ),
-                      SizedBox(height: 12),
-                      HistoryItem(
-                        date: "Senin, 16 Mei 2022",
-                        checkIn: "08:30",
-                        checkOut: "16:50",
-                        status: "Telat",
-                        tap: () {
-                          Navigator.pushReplacementNamed(
-                              context, '/history_detail');
-                        },
-                      ),
-                      SizedBox(height: 12),
-                      HistoryItem(
-                        date: "Selasa, 17 Mei 2022",
-                        checkIn: "00:00",
-                        checkOut: "00:00",
-                        status: "Absen",
-                        tap: () {
-                          Navigator.pushReplacementNamed(
-                              context, '/history_detail');
-                        },
-                      ),
-                      SizedBox(height: 12),
-                      HistoryItem(
-                        date: "Rabu, 18 Mei 2022",
-                        checkIn: "07:30",
-                        checkOut: "16:00",
-                        status: "Cepat Pulang",
-                        tap: () {
-                          Navigator.pushReplacementNamed(
-                              context, '/history_detail');
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ));
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return HistoryItem(
+                      date: widget.log[index]['date'],
+                      checkIn: widget.log[index]['checkIn'],
+                      checkOut: widget.log[index]['checkOut'],
+                      status: widget.log[index]['status'],
+                      tap: () {
+                        Navigator.pushNamed(
+                            context, widget.log[index]['link']);
+                      },
+                    );
+                  },
+                  childCount: widget.log.length,
+                ),
+              ),
+            )
+          ]
+        ),
+      )
+    );
   }
 }
 

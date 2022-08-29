@@ -186,7 +186,7 @@ class _MyMapView extends State<MyMapView> {
                         </style>
                       </head>
                       <body>
-                        <iframe id="embed-maps" height="auto" frameBorder="0" src="https://maps.google.com/maps?q=2,${snapshot.data!.longitude}&z=15&output=embed"></iframe>
+                        <iframe id="embed-maps" height="auto" frameBorder="0" src="https://maps.google.com/maps?q=${snapshot.data!.latitude},${snapshot.data!.longitude}&z=15&output=embed"></iframe>
                       </body>
                     </html>""", 
                     mimeType: 'text/html'
