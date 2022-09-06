@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:material_kit_flutter/bloc/camera-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
+import 'package:material_kit_flutter/screens/camera.dart';
 import 'package:material_kit_flutter/widgets/card-small.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
 
@@ -82,7 +84,7 @@ class _ImageRow extends State<ImageRow> {
   final HomeBloc homeBloc = new HomeBloc();
   @override
   void dispose() {
-    cameraBloc.dispose();
+    // cameraBloc.dispose();
     super.dispose();
   }
 
@@ -294,8 +296,11 @@ class _CheckInButton extends State<CheckInButton> {
         "Check In",
         style: TextStyle(fontSize: 20, color: Colors.white),
       ),
-      onPressed: () {
-        if(!widget.disabled) cameraBloc.pickImage();
+      onPressed: () async {
+        // if(!widget.disabled) cameraBloc.openCamera();
+        if(!widget.disabled) await availableCameras().then((value) => 
+          Navigator.push(context, MaterialPageRoute(builder: (_) => CameraPage(cameras: value)))
+        );
       },
     );
       // Material(
