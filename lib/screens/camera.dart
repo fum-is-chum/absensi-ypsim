@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,12 +20,12 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   late CameraController _cameraController;
-  bool _isRearCameraSelected = true;
+  bool _isRearCameraSelected = false;
 
   @override
   void dispose() {
-    _cameraController.dispose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    _cameraController.dispose();
     super.dispose();
   }
 
@@ -31,7 +33,7 @@ class _CameraPageState extends State<CameraPage> {
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     // super.initState();
-    initCamera(widget.cameras![0]);
+    initCamera(widget.cameras![1]);
   }
 
   Future takePicture() async {
@@ -121,6 +123,14 @@ class _CameraPageState extends State<CameraPage> {
               : Container(
                   color: Colors.black,
                   child: const Center(child: CircularProgressIndicator())),
+            IgnorePointer(
+              child: ClipPath(
+                clipper: InvertedCircleClipper(),
+                child: Container(
+                  color: Color.fromRGBO(0, 0, 0, 0.2),
+                ),
+              ),
+            ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -153,7 +163,7 @@ class _CameraPageState extends State<CameraPage> {
                     ),
                     IconButton(
                       onPressed: takePicture,
-                      iconSize: 50,
+                      iconSize: 64,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       icon: const Icon(Icons.circle, color: Colors.white),
@@ -187,4 +197,19 @@ class _CameraPageState extends State<CameraPage> {
       )
     );
   }
+}
+
+class InvertedCircleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    return Path()
+      ..addOval(Rect.fromCircle(
+          center: Offset(size.width / 2, size.height / 2),
+          radius: size.width * 0.4))
+      ..addRect(Rect.fromLTWH(0.0, 0.0, size.width, size.height))
+      ..fillType = PathFillType.evenOdd;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
