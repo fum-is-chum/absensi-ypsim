@@ -1,10 +1,10 @@
 import 'package:rxdart/rxdart.dart';
 
-class RegisterBloc {
+class LoginBloc {
   bool state = true;
   late BehaviorSubject<bool> _obscureText$;
-
-  RegisterBloc(this.state){
+  
+  LoginBloc(this.state){
     _obscureText$ = BehaviorSubject<bool>.seeded(state);
   }
 

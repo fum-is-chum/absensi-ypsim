@@ -69,7 +69,7 @@ class PreviewPage extends StatelessWidget {
                         ),
                         onPressed: () {
                           CameraBloc().pickImage(picture);
-                          Navigator.pushReplacementNamed(context, '/home');
+                          Navigator.pushNamedAndRemoveUntil(context, "/home" , (Route route) => false);
                         },
                       ),
                     ),

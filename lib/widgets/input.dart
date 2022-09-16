@@ -3,6 +3,7 @@ import 'package:material_kit_flutter/constants/Theme.dart';
 
 class Input extends StatelessWidget {
   final String? placeholder;
+  final String? labelText;
   final bool obscureText;
   final Widget? suffixIcon;
   final BoxConstraints? suffixIconConstraints;
@@ -23,6 +24,7 @@ class Input extends StatelessWidget {
 
   Input(
       {this.placeholder,
+      this.labelText,
       this.obscureText = false,
       this.suffixIcon,
       this.prefixIcon,
@@ -52,7 +54,7 @@ class Input extends StatelessWidget {
         autofocus: autofocus,
         obscureText: obscureText,
         style: TextStyle(
-          height: 1.0,
+          height: 0.5,
           fontSize: 14.0,
           color: textColor,
         ),
@@ -77,6 +79,7 @@ class Input extends StatelessWidget {
                     borderSide: BorderSide(color: focusedBorderColor))
                 : UnderlineInputBorder(
                     borderSide: BorderSide(color: focusedBorderColor)),
-            hintText: placeholder));
+            hintText: placeholder,
+            labelText: labelText));
   }
 }

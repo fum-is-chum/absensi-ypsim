@@ -1,18 +1,39 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/bloc/register_bloc.dart';
+import 'package:material_kit_flutter/bloc/register-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/custom-button.dart';
-import 'package:material_kit_flutter/widgets/input.dart';
 
-class RegisterView extends StatelessWidget {
+final RegisterBloc _bloc = RegisterBloc();
+
+void onSaved(String? val, String field) {
+  _bloc.model[field] = val;
+}
+
+class RegisterView extends StatefulWidget {
   final AnimationController animationController;
   const RegisterView({Key? key, required this.animationController}) : super(key: key);
 
   @override
+  State<RegisterView> createState() => _RegisterView();
+}
+
+class _RegisterView extends State<RegisterView> {
+
+  final _formKey = GlobalKey<FormState>();
+
+  @override 
+  void dispose() {
+    _bloc.dispose();
+    super.dispose();
+  }
+  
+  @override
   Widget build(BuildContext context) {
     final _firstHalfAnimation = Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0)).animate(
       CurvedAnimation(
-        parent: animationController,
+        parent: widget.animationController,
         curve: Interval(
           0.0,
           0.2,
@@ -23,7 +44,7 @@ class RegisterView extends StatelessWidget {
     
     final _secondHalfAnimation = Tween<Offset>(begin: Offset(0, 0), end: Offset(-1, 0)).animate(
       CurvedAnimation(
-        parent: animationController,
+        parent: widget.animationController,
         curve: Interval(
           0.2,
           0.4,
@@ -39,17 +60,6 @@ class RegisterView extends StatelessWidget {
         child: Container(
         height: double.infinity,
         padding: EdgeInsets.all(20.0),
-        // decoration: const BoxDecoration(
-        //   gradient: LinearGradient(
-        //     begin: Alignment.topCenter,
-        //     end: Alignment.bottomCenter,
-        //     colors: <Color>[
-        //       MaterialColors.bgPrimary,
-        //       MaterialColors.bgSecondary,
-        //     ],
-        //     tileMode: TileMode.mirror,
-        //   ),
-        // ),
         child: Center(
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 25, horizontal: 25),
@@ -66,108 +76,79 @@ class RegisterView extends StatelessWidget {
               ]
             ),
             child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    "assets/img/logo-ypsim.jpeg",
-                    width: 200,
-                    fit: BoxFit.fitWidth
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: Input(
-                      placeholder: "Nomor Induk Pegawai",
-                      focusedBorderColor: MaterialColors.muted,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/img/logo-ypsim.jpeg",
+                      width: 150,
+                      fit: BoxFit.fitWidth
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: Input(
-                      placeholder: "Username",
-                      focusedBorderColor: MaterialColors.muted,
+                    Padding(
+                      padding: EdgeInsets.only(top: 12),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: "NIK",
+                          isDense: true
+                        ),
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (String? value) {
+                          if(value == null || value.isEmpty) {
+                            return 'NIK tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                        onSaved: (String? value) => onSaved(value, 'nik'),
+                      ),
                     ),
-                  ),
-                  PasswordField(),
-                  Padding(
-                    padding: EdgeInsets.only(top: 40),
-                    child: CustomButton(
-                      text: "Daftar",
-                      onClick: () {},
+                    Padding(
+                      padding: EdgeInsets.only(top: 12),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: "Username",
+                          isDense: true,
+                        ),
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        validator: (String? value) {
+                          if(value == null || value.isEmpty) {
+                            return 'Username tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                        onSaved: (String? value) => onSaved(value, 'username'),
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: CustomButton(
-                      text: "Kembali",
-                      bgColor: MaterialColors.defaultButton,
-                      textColor: Colors.black,
-                      onClick: () {
-                        animationController.animateTo(0.0);
-                        // Navigator.pushReplacementNamed(context, '/login');
-                      },
+                    PasswordField(),
+                    Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: CustomButton(
+                        text: "Daftar",
+                        onClick: () async {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            if(await _bloc.registerUser(context)) _formKey.currentState!.reset();
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: EdgeInsets.only(top: 12),
+                      child: CustomButton(
+                        text: "Kembali",
+                        bgColor: MaterialColors.defaultButton,
+                        textColor: Colors.black,
+                        onClick: () {
+                          widget.animationController.animateTo(0.0);
+                          // Navigator.pushReplacementNamed(context, '/login');
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               )
             )
-
-            // Wrap(
-            //   alignment: WrapAlignment.center,
-            //   children: [
-            //     Image.asset(
-            //       "assets/img/logo-ypsim.jpeg",
-            //       scale: 1.8,
-            //     ),
-            //     Padding(
-            //       padding: EdgeInsets.only(top: 12),
-            //       child: Input(
-            //         placeholder: "Nomor Induk Pegawai",
-            //         focusedBorderColor: MaterialColors.muted,
-            //       ),
-            //     ),
-            //     Padding(
-            //       padding: EdgeInsets.only(top: 12),
-            //       child: Input(
-            //         placeholder: "Username",
-            //         focusedBorderColor: MaterialColors.muted,
-            //       ),
-            //     ),
-            //     Padding(
-            //       padding: EdgeInsets.only(top: 12),
-            //       child: Input(
-            //         placeholder: "Kata Sandi",
-            //         obscureText: true,
-            //         focusedBorderColor: MaterialColors.muted,
-            //         suffixIcon: GestureDetector(
-            //           onTap: () {},
-            //           child: Icon(
-            //             Icons.visibility_outlined,
-            //             color: MaterialColors.muted,
-            //           ),
-            //         ),
-            //       ),
-            //     ),
-            //     Padding(
-            //       padding: EdgeInsets.only(top: 40),
-            //       child: CustomButton(
-            //         text: "Daftar",
-            //         onClick: () {},
-            //       ),
-            //     ),
-            //     Padding(
-            //       padding: EdgeInsets.only(top: 12),
-            //       child: CustomButton(
-            //         text: "Kembali",
-            //         bgColor: MaterialColors.defaultButton,
-            //         textColor: Colors.black,
-            //         onClick: () {
-            //           Navigator.pushReplacementNamed(context, '/login');
-            //         },
-            //       ),
-            //     ),
-            //   ],
-            // ),
           ),
         ),
       ),
@@ -185,36 +166,57 @@ class PasswordField extends StatefulWidget {
 }
 
 class _PasswordField extends State<PasswordField> {
-  final RegisterBloc _bloc = RegisterBloc(true);
   @override
 
   void dispose() {
-    _bloc.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<bool>(
-      stream: _bloc.counterObservable,
+      stream: _bloc.obscureObservable,
       builder: (context, snapshot) {
         print('password field build');
         return Padding(
           padding: EdgeInsets.only(top: 12),
-          child: Input(
-            placeholder: "Kata Sandi",
-            obscureText: snapshot.data ?? true,
-            focusedBorderColor: MaterialColors.muted,
-            suffixIcon:  IconButton(
-              padding: EdgeInsets.zero,
-              icon: const Icon(Icons.visibility_outlined),
-              color: MaterialColors.muted,
-              onPressed: (){
-                _bloc.toggle();
-              },
+          child: TextFormField(
+            decoration: InputDecoration(
+              labelText: "Kata Sandi",
+              isDense: true,
+              suffixIcon:  IconButton(
+                padding: EdgeInsets.zero,
+                icon: snapshot.data ?? true ? const Icon(Icons.visibility_outlined) : const Icon(Icons.visibility_off_outlined),
+                color: MaterialColors.muted,
+                iconSize: 24,
+                onPressed: (){
+                  _bloc.toggle();
+                },
+              )
             ),
-            suffixIconConstraints: BoxConstraints(maxHeight: 16),
-          ),
+            obscureText: snapshot.data ?? true,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: (String? value) {
+              if(value == null || value.isEmpty) return 'Password tidak boleh kosong';
+              if(value.length < 8) return 'Password minimal 8 karakter';
+              return null;
+            },
+            onSaved: (String? value) => onSaved(value, 'password'),
+          )
+          // child: Input(
+          //   labelText: "Kata Sandi",
+          //   obscureText: snapshot.data ?? true,
+          //   focusedBorderColor: MaterialColors.muted,
+          //   suffixIcon:  IconButton(
+          //     padding: EdgeInsets.zero,
+          //     icon: const Icon(Icons.visibility_outlined),
+          //     color: MaterialColors.muted,
+          //     onPressed: (){
+          //       _bloc.toggle();
+          //     },
+          //   ),
+          //   suffixIconConstraints: BoxConstraints(maxHeight: 16),
+          // ),
         );
       },
     );
