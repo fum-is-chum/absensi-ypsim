@@ -12,93 +12,86 @@ class Login extends StatelessWidget {
     return Scaffold(
       // resizeToAvoidBottomInset: false,
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: double.infinity,
-        padding: EdgeInsets.all(20.0),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: <Color>[
-              MaterialColors.bgPrimary,
-              MaterialColors.bgSecondary,
-            ],
-            tileMode: TileMode.mirror,
-          ),
-        ),
-        child: Center(
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 25, horizontal: 25),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(12.0)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
-                  spreadRadius: 0,
-                  blurRadius: 4,
-                  offset: Offset(0, 4), // changes position of shadow
-                ),
-              ]
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          padding: EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[
+                MaterialColors.bgPrimary,
+                MaterialColors.bgSecondary,
+              ],
+              tileMode: TileMode.mirror,
             ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset("assets/img/logo-ypsim.jpeg",
-                    width: 200,
-                    fit: BoxFit.fitWidth
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: Input(
-                      placeholder: "Nomor Induk Pegawai",
-                      focusedBorderColor: MaterialColors.muted,
+          ),
+          child: Center(
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 25, horizontal: 25),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.25),
+                      spreadRadius: 0,
+                      blurRadius: 4,
+                      offset: Offset(0, 4), // changes position of shadow
                     ),
-                  ),
-                  PasswordField(),
-                  Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        child: Text(
-                          "Lupa Kata Sandi?",
-                          style: TextStyle(
-                            color: MaterialColors.info
+                  ]),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset("assets/img/logo-ypsim.jpeg",
+                        width: 200, fit: BoxFit.fitWidth),
+                    Padding(
+                      padding: EdgeInsets.only(top: 12),
+                      child: Input(
+                        placeholder: "Nomor Induk Pegawai",
+                        focusedBorderColor: MaterialColors.muted,
+                      ),
+                    ),
+                    PasswordField(),
+                    Padding(
+                      padding: EdgeInsets.only(top: 12),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          child: Text(
+                            "Lupa Kata Sandi?",
+                            style: TextStyle(color: MaterialColors.info),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 40),
-                    child: CustomButton(
-                      text: "Masuk",
-                      onClick: () {},
+                    Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: CustomButton(
+                        text: "Masuk",
+                        onClick: () {},
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: CustomButton(
-                      text: "Daftar",
-                      bgColor: MaterialColors.defaultButton,
-                      textColor: Colors.black,
-                      onClick: () {
-                        Navigator.pushReplacementNamed(context, '/register');
-                      },
+                    Padding(
+                      padding: EdgeInsets.only(top: 12),
+                      child: CustomButton(
+                        text: "Daftar",
+                        bgColor: MaterialColors.defaultButton,
+                        textColor: Colors.black,
+                        onClick: () {
+                          Navigator.pushReplacementNamed(context, '/register');
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        )
-      ),
+          )),
     );
   }
 }
- 
 
 class PasswordField extends StatefulWidget {
   static final GlobalKey<_PasswordField> globalKey = GlobalKey();
@@ -109,9 +102,8 @@ class PasswordField extends StatefulWidget {
 }
 
 class _PasswordField extends State<PasswordField> {
-  final LoginBloc _bloc = LoginBloc(true);
+  final LoginBloc _bloc = LoginBloc();
   @override
-
   void dispose() {
     _bloc.dispose();
     super.dispose();
@@ -129,11 +121,11 @@ class _PasswordField extends State<PasswordField> {
             placeholder: "Kata Sandi",
             obscureText: snapshot.data ?? true,
             focusedBorderColor: MaterialColors.muted,
-            suffixIcon:  IconButton(
+            suffixIcon: IconButton(
               padding: EdgeInsets.zero,
               icon: const Icon(Icons.visibility_outlined),
               color: MaterialColors.muted,
-              onPressed: (){
+              onPressed: () {
                 _bloc.toggle();
               },
             ),

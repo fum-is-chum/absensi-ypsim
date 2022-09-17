@@ -4,13 +4,10 @@ class Register {
   String? password;
   // lampiran
 
-  Register ({
-    String? nik,
-    String? username,
-    String? password
-  }): this.nik = nik ?? '',
-      this.username = username ?? '',
-      this.password = password ?? '';
+  Register({String? nik, String? username, String? password})
+      : this.nik = nik ?? '',
+        this.username = username ?? '',
+        this.password = password ?? '';
 
   /*
     VSCode Regex:

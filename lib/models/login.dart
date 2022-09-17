@@ -1,23 +1,18 @@
-class Register {
-  String? nik;
+class Login {
   String? username;
   String? password;
   // lampiran
 
-  Register ({
-    String? nik,
-    String? username,
-    String? password
-  }): this.nik = nik ?? '',
-      this.username = username ?? '',
-      this.password = password ?? '';
+  Login({String? nik, String? username, String? password})
+      : this.username = username ?? '',
+        this.password = password ?? '';
 
   /*
     VSCode Regex:
     - this\.(.*),
     - $1 = json['$1'];
   */
-  Register.fromJson(Map<String, dynamic> json) {
+  Login.fromJson(Map<String, dynamic> json) {
     username = json['username'];
     password = json['password'];
   }
