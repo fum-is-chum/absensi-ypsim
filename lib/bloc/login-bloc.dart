@@ -32,7 +32,10 @@ class LoginBloc {
   Future<bool> loginUser(BuildContext context) async {
     try {
       http.Response resp = await login();
-      if (resp.statusCode != 200)
+      if (resp.statusCode == 401) {
+        Navigator.pushNamed(context, '/verification');
+        return false;
+      } else if (resp.statusCode != 200)
         throw 'Error ${resp.statusCode}\n${jsonDecode(resp.body)['Message']}';
       ArtSweetAlert.show(
           context: context,
