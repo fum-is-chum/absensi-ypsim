@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:material_kit_flutter/http.interceptor.dart';
 import 'package:material_kit_flutter/models/login.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginBloc {
   bool state = true;
@@ -37,13 +38,24 @@ class LoginBloc {
         return false;
       } else if (resp.statusCode != 200)
         throw 'Error ${resp.statusCode}\n${jsonDecode(resp.body)['Message']}';
-      ArtSweetAlert.show(
-          context: context,
-          artDialogArgs: ArtDialogArgs(
-              type: ArtSweetAlertType.success,
-              title: "Berhasil",
-              text: "Login berhasil"));
-      return true;
+      else {
+        String accessToken =
+            '${jsonDecode(resp.body)['Result']['TokenType']} ${jsonDecode(resp.body)['Result']['AccessToken']}';
+
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        sharedPreferences.setString('access_token', accessToken);
+
+        print(sharedPreferences.getString('access_token'));
+
+        ArtSweetAlert.show(
+            context: context,
+            artDialogArgs: ArtDialogArgs(
+                type: ArtSweetAlertType.success,
+                title: "Berhasil",
+                text: "Login berhasil"));
+        return true;
+      }
     } catch (e) {
       ArtSweetAlert.show(
           context: context,
