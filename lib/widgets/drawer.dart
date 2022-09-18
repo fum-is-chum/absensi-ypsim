@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:material_kit_flutter/token-getter.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 import 'package:material_kit_flutter/widgets/drawer-tile.dart';
+import 'package:material_kit_flutter/widgets/spinner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MaterialDrawer extends StatelessWidget {
   final String? currentPage;
@@ -101,9 +104,19 @@ class MaterialDrawer extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 8),
             child: DrawerTile(
                 icon: Icons.logout,
-                onTap: () {
-                  if (currentPage != "logout")
-                    Navigator.pushReplacementNamed(context, '/logout');
+                onTap: () async {
+                  if (currentPage != "logout") {
+                    Spinner sp = new Spinner();
+                    sp.show(context: context);
+                    SharedPreferences sharedPref = await SharedPreferences.getInstance();
+                    // inspect(sharedPref!.getString('user'));
+                    sharedPref.remove('user');
+                    TokenGetter().reset();
+                    sp.hide();
+                    Navigator.pushNamedAndRemoveUntil(
+                      context, '/login', (Route<dynamic> route) => false
+                    );
+                  }
                 },
                 iconColor: Colors.black,
                 title: "Keluar",

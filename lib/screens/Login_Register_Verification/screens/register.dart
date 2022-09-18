@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/bloc/register-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
@@ -58,100 +56,105 @@ class _RegisterView extends State<RegisterView> {
       child: SlideTransition(
         position: _secondHalfAnimation,
         child: Container(
-        height: double.infinity,
-        padding: EdgeInsets.all(20.0),
-        child: Center(
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 25, horizontal: 25),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(12.0)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
-                  spreadRadius: 0,
-                  blurRadius: 4,
-                  offset: Offset(0, 4), // changes position of shadow
-                ),
-              ]
-            ),
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      "assets/img/logo-ypsim.jpeg",
-                      width: 150,
-                      fit: BoxFit.fitWidth
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 12),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: "NIK",
-                          isDense: true
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.all(20.0),
+          child: Center(
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 25, horizontal: 25),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    spreadRadius: 0,
+                    blurRadius: 4,
+                    offset: Offset(0, 4), // changes position of shadow
+                  ),
+                ]
+              ),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        "assets/img/logo-ypsim.jpeg",
+                        width: 150,
+                        fit: BoxFit.fitWidth
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 12),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: "NIK",
+                            isDense: true
+                          ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (String? value) {
+                            if(value == null || value.isEmpty) {
+                              return 'NIK tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                          onSaved: (String? value) => onSaved(value, 'nik'),
                         ),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (String? value) {
-                          if(value == null || value.isEmpty) {
-                            return 'NIK tidak boleh kosong';
-                          }
-                          return null;
-                        },
-                        onSaved: (String? value) => onSaved(value, 'nik'),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 12),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: "Username",
-                          isDense: true,
+                      Padding(
+                        padding: EdgeInsets.only(top: 12),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: "Username",
+                            isDense: true,
+                          ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          validator: (String? value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Username tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                          onSaved: (String? value) => onSaved(value, 'username'),
                         ),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (String? value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Username tidak boleh kosong';
-                          }
-                          return null;
-                        },
-                        onSaved: (String? value) => onSaved(value, 'username'),
                       ),
-                    ),
-                    PasswordField(),
-                    Padding(
-                      padding: EdgeInsets.only(top: 40),
-                      child: CustomButton(
-                        text: "Daftar",
-                        onClick: () async {
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            if(await _bloc.registerUser(context)) _formKey.currentState!.reset();
-                          }
-                        },
+                      PasswordField(),
+                      Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: CustomButton(
+                          text: "Daftar",
+                          onClick: () async {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              _bloc.setLoading(true);
+                              bool resp = await _bloc.registerUser(context);
+                              if(resp) {
+                                _formKey.currentState!.reset();
+                              }
+                              // print('HIDE');
+                            }
+                          },
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 12),
-                      child: CustomButton(
-                        text: "Kembali",
-                        bgColor: MaterialColors.defaultButton,
-                        textColor: Colors.black,
-                        onClick: () {
-                          widget.animationController.animateTo(0.0);
-                          // Navigator.pushReplacementNamed(context, '/login');
-                        },
+                      Padding(
+                        padding: EdgeInsets.only(top: 12),
+                        child: CustomButton(
+                          text: "Kembali",
+                          bgColor: MaterialColors.defaultButton,
+                          textColor: Colors.black,
+                          onClick: () {
+                            widget.animationController.animateTo(0.0);
+                            // Navigator.pushReplacementNamed(context, '/login');
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                )
               )
-            )
-          ),
+            ),
+          )
         ),
-      ),
       )
     );
   }
@@ -177,7 +180,7 @@ class _PasswordField extends State<PasswordField> {
     return StreamBuilder<bool>(
       stream: _bloc.obscureObservable,
       builder: (context, snapshot) {
-        print('password field build');
+        // print('password field build');
         return Padding(
           padding: EdgeInsets.only(top: 12),
           child: TextFormField(
@@ -190,7 +193,7 @@ class _PasswordField extends State<PasswordField> {
                 color: MaterialColors.muted,
                 iconSize: 24,
                 onPressed: (){
-                  _bloc.toggle();
+                  _bloc.toggleObscure();
                 },
               )
             ),

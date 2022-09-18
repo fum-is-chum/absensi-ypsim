@@ -3,7 +3,7 @@ class Login {
   String? password;
   // lampiran
 
-  Login({String? nik, String? username, String? password})
+  Login({String? username, String? password})
       : this.username = username ?? '',
         this.password = password ?? '';
 

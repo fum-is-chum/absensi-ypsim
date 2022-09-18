@@ -1,37 +1,51 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:art_sweetalert/art_sweetalert.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:material_kit_flutter/http.interceptor.dart';
+import 'package:material_kit_flutter/models/api-response.dart';
 import 'package:material_kit_flutter/models/register.dart';
+import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:rxdart/rxdart.dart';
+
+import '../dio-interceptor.dart';
 
 class RegisterBloc {
   bool state = true;
   late BehaviorSubject<bool> _obscureText$;
+  late BehaviorSubject<bool> _loading$;
+  Spinner sp = Spinner();
   Map<String, dynamic> model = new Register().toJson();
 
   RegisterBloc() {
     _obscureText$ = BehaviorSubject<bool>.seeded(true);
+    _loading$ = BehaviorSubject<bool>.seeded(false);
   }
 
   Stream<bool> get obscureObservable {
-    return _obscureText$.stream;
+    return _obscureText$.asBroadcastStream();
   }
 
-  toggle() {
+  Stream<bool> get loadingObservable {
+    return _loading$.asBroadcastStream();
+  }
+
+  toggleObscure() {
     state = !state;
     _obscureText$.sink.add(state);
   }
 
+  setLoading(bool val) {
+    _loading$.sink.add(val);
+  }
+
   Future<bool> registerUser(BuildContext context) async {
+    sp.show(context: context);
     try {
-      http.Response resp = await register();
-      if (resp.statusCode != 200)
-        throw 'Error ${resp.statusCode}\n${jsonDecode(resp.body)['Message']}';
+      await register();
       ArtSweetAlert.show(
           context: context,
           artDialogArgs: ArtDialogArgs(
@@ -40,23 +54,30 @@ class RegisterBloc {
               text: "Registrasi berhasil"));
       return true;
     } catch (e) {
+      sp.hide();
+      DioError err = e as DioError;
+      String error = "";
+      if(err.response != null) {
+        error = "${err.message}\n${err.response != null ? err.response!.data['Message'] : err.response.toString()}";
+      } else if(err.error is SocketException) {
+        error = "Tidak ada koneksi";
+      } else if(err.error is TimeoutException) {
+        error = "${err.requestOptions.baseUrl}${err.requestOptions.path}\nRequest Timeout";
+      }
       ArtSweetAlert.show(
-          context: context,
-          artDialogArgs: ArtDialogArgs(
-              type: ArtSweetAlertType.danger,
-              title: "Gagal",
-              text: e.toString()));
+        context: context,
+        artDialogArgs: ArtDialogArgs(
+          type: ArtSweetAlertType.danger,
+          title: "Gagal",
+          text: error
+        )
+      );
       return false;
     }
   }
 
-  Future<http.Response> register() {
-    const url = 'https://presensi.ypsimlibrary.com/api/register';
-    return AuthenticatedHttpClient().post(Uri.parse(url),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8'
-        },
-        body: jsonEncode(model));
+  Future<Response> register() {
+    return DioClient().dio.post('/register', data: model);
   }
 
   void dispose() {

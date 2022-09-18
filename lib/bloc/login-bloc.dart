@@ -1,21 +1,24 @@
-import 'package:rxdart/rxdart.dart';
-
+import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:art_sweetalert/art_sweetalert.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:material_kit_flutter/http.interceptor.dart';
+import 'package:material_kit_flutter/dio-interceptor.dart';
 import 'package:material_kit_flutter/models/login.dart';
+import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/login-result.dart';
 
 class LoginBloc {
   bool state = true;
   late BehaviorSubject<bool> _obscureText$;
   Map<String, dynamic> model = new Login().toJson();
-
+  Spinner sp = Spinner();
   LoginBloc() {
     _obscureText$ = BehaviorSubject<bool>.seeded(true);
   }
@@ -29,38 +32,48 @@ class LoginBloc {
     _obscureText$.sink.add(state);
   }
 
+  saveCredentials(LoginResult cred) async {
+    SharedPreferences sharedPref = await SharedPreferences.getInstance();
+    sharedPref.setString('user', jsonEncode(cred.toJson()));
+  }
+
   Future<bool> loginUser(BuildContext context) async {
+    sp.show(context: context);
     try {
-      http.Response resp = await login();
-      if (resp.statusCode != 200)
-        throw 'Error ${resp.statusCode}\n${jsonDecode(resp.body)['Message']}';
-      ArtSweetAlert.show(
-          context: context,
-          artDialogArgs: ArtDialogArgs(
-              type: ArtSweetAlertType.success,
-              title: "Berhasil",
-              text: "Login berhasil"));
+      Response resp = await login();
+      await saveCredentials(LoginResult.fromJson(resp.data.Result));
+      sp.hide();
       return true;
     } catch (e) {
+      sp.hide();
+      String error = "";
+      if(e is DioError) {
+        if(e.response != null) {
+          error = "${e.message}\n${e.response != null ? e.response!.data['Message'] : e.response.toString()}";
+        } else if(e.error is SocketException) {
+          error = "Tidak ada koneksi";
+        } else if(e.error is TimeoutException) {
+          error = "${e.requestOptions.baseUrl}${e.requestOptions.path}\nRequest Timeout";
+        }
+      } else {
+        error = e.toString();
+      }
       ArtSweetAlert.show(
-          context: context,
-          artDialogArgs: ArtDialogArgs(
-              type: ArtSweetAlertType.danger,
-              title: "Gagal",
-              text: e.toString()));
+        context: context,
+        artDialogArgs: ArtDialogArgs(
+          type: ArtSweetAlertType.danger,
+          title: "Gagal",
+          text: error
+        )
+      );
       return false;
     }
   }
 
-  Future<http.Response> login() {
-    const url = 'https://presensi.ypsimlibrary.com/api/login';
-    return AuthenticatedHttpClient().post(Uri.parse(url),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8'
-        },
-        body: jsonEncode(model));
+  Future<Response> login() {
+    return DioClient().dio.post('/login', data: model);
   }
-
+  
   void dispose() {
     _obscureText$.close();
   }
