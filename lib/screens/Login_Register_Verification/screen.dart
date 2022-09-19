@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/screens/Login_Register_Verification/screens/login.dart';
 import 'package:material_kit_flutter/screens/Login_Register_Verification/screens/register.dart';

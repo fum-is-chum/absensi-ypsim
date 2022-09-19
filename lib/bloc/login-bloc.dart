@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:art_sweetalert/art_sweetalert.dart';
@@ -12,6 +13,7 @@ import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../crypto.dart';
 import '../models/login-result.dart';
 
 class LoginBloc {
@@ -32,16 +34,17 @@ class LoginBloc {
     _obscureText$.sink.add(state);
   }
 
-  saveCredentials(LoginResult cred) async {
+  Future<void> saveCredentials(LoginResult cred) async {
     SharedPreferences sharedPref = await SharedPreferences.getInstance();
-    sharedPref.setString('user', jsonEncode(cred.toJson()));
+    sharedPref.setString('user', encryptAESCryptoJS(jsonEncode(cred.toJson()),'1!1!'));
   }
 
   Future<bool> loginUser(BuildContext context) async {
     sp.show(context: context);
     try {
       Response resp = await login();
-      await saveCredentials(LoginResult.fromJson(resp.data.Result));
+      // inspect(resp.data['Result']);
+      await saveCredentials(LoginResult.fromJson(resp.data['Result']));
       sp.hide();
       return true;
     } catch (e) {

@@ -65,6 +65,7 @@ class _LoginView extends State<LoginView> {
                       Padding(
                         padding: EdgeInsets.only(top: 12),
                         child: TextFormField(
+                          initialValue: 'alvinchrist',
                           decoration: InputDecoration(
                             labelText: "Username",
                             isDense: true,
@@ -100,7 +101,7 @@ class _LoginView extends State<LoginView> {
                           onClick: () async {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              if (await _bloc.loginUser(context))
+                              if (await _bloc.loginUser(context)){}
                                 _formKey.currentState!.reset();
                                 Navigator.pushNamedAndRemoveUntil(
                                   context, '/home', (Route<dynamic> route) => false
@@ -155,20 +156,21 @@ class _PasswordField extends State<PasswordField> {
         return Padding(
           padding: EdgeInsets.only(top: 12),
           child: TextFormField(
+            initialValue: '123456789',
             decoration: InputDecoration(
-                labelText: "Kata Sandi",
-                isDense: true,
-                suffixIcon: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: snapshot.data ?? true
-                      ? const Icon(Icons.visibility_outlined)
-                      : const Icon(Icons.visibility_off_outlined),
-                  color: MaterialColors.muted,
-                  iconSize: 24,
-                  onPressed: () {
-                    _bloc.toggle();
-                  },
-                )),
+              labelText: "Kata Sandi",
+              isDense: true,
+              suffixIcon: IconButton(
+                padding: EdgeInsets.zero,
+                icon: snapshot.data ?? true
+                    ? const Icon(Icons.visibility_outlined)
+                    : const Icon(Icons.visibility_off_outlined),
+                color: MaterialColors.muted,
+                iconSize: 24,
+                onPressed: () {
+                  _bloc.toggle();
+                },
+              )),
             obscureText: snapshot.data ?? true,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (String? value) {

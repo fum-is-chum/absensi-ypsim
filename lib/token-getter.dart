@@ -4,37 +4,38 @@ import 'dart:developer';
 import 'package:material_kit_flutter/models/login-result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'crypto.dart';
+
 class TokenGetter {
   TokenGetter._sharedInstance();
   static final TokenGetter _shared = TokenGetter._sharedInstance();
   factory TokenGetter() => _shared;
   SharedPreferences? sharedPref;
-  String _inMemoryToken = '';
+  LoginResult? _inMemoryUserData;
 
   Future<String> get userAccessToken async {
     // use in memory token if available
-    if (_inMemoryToken.isNotEmpty) return _inMemoryToken;
+    if (_inMemoryUserData != null && _inMemoryUserData!.AccessToken!.isNotEmpty) return _inMemoryUserData!.AccessToken!;
 
     // otherwise load it from local storage
-    _inMemoryToken = await _loadTokenFromSharedPreference();
-    return _inMemoryToken;
+    _inMemoryUserData = await _loadTokenFromSharedPreference();
+    return _inMemoryUserData?.AccessToken! ?? '';
   }
 
-  Future<String> _loadTokenFromSharedPreference() async {
+  Future<LoginResult?> _loadTokenFromSharedPreference() async {
     if(sharedPref == null) {
       sharedPref = await SharedPreferences.getInstance();
     }
-    inspect(sharedPref!.getString('user'));
     if(sharedPref!.getString('user') != null) {
-      LoginResult user = LoginResult.fromJson(jsonDecode(sharedPref!.getString('user')!));
+      LoginResult user = LoginResult.fromJson(jsonDecode(decryptAESCryptoJS(sharedPref!.getString('user')!,'1!1!')));
       if(user.AccessToken != null) {
-        return user.AccessToken!;
+        return user;
       }
     }
-    return '';
+    return null;
   }
 
   void reset() {
-    _inMemoryToken = '';
+    _inMemoryUserData = null;
   }
 }
