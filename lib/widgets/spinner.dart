@@ -3,13 +3,37 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../constants/Theme.dart';
 
-SpinKitCircle loadingSpinner() {
-  return SpinKitCircle(
-    color: MaterialColors.bgSecondary,
+SpinKitFoldingCube loadingSpinner() {
+  return SpinKitFoldingCube(
+    color: MaterialColors.bgPrimary,
     size: 64,
   );
 }
 
+Widget splashScreen(BuildContext context) {
+  return Container(
+    height: MediaQuery.of(context).size.height,
+    width: double.infinity,
+    padding: EdgeInsets.all(20.0),
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: <Color>[
+          MaterialColors.bgPrimary,
+          MaterialColors.bgSecondary,
+        ],
+        tileMode: TileMode.mirror,
+      ),
+    ),
+    child: Center(
+      child: SpinKitFoldingCube(
+        color: MaterialColors.bgPrimary,
+        size: 48,
+      ),
+    ),
+  );
+}
 
 class Spinner {
   BuildContext? dialogContext;
@@ -23,7 +47,7 @@ class Spinner {
         return loadingSpinner();
       },
       barrierDismissible: false,
-      barrierColor: const Color.fromRGBO(0, 0, 0, 0),
+      barrierColor: const Color.fromRGBO(0, 0, 0, 0.2),
       transitionDuration: const Duration(milliseconds: 600),
       transitionBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget child) {

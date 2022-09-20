@@ -1,15 +1,14 @@
 import 'dart:convert';
-import 'dart:developer';
 
-import 'package:material_kit_flutter/models/login-result.dart';
+import 'package:material_kit_flutter/screens/Login-Register-Verification/screens/login/models/login-result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'crypto.dart';
 
-class TokenGetter {
-  TokenGetter._sharedInstance();
-  static final TokenGetter _shared = TokenGetter._sharedInstance();
-  factory TokenGetter() => _shared;
+class CredentialGetter {
+  CredentialGetter._sharedInstance();
+  static final CredentialGetter _shared = CredentialGetter._sharedInstance();
+  factory CredentialGetter() => _shared;
   SharedPreferences? sharedPref;
   LoginResult? _inMemoryUserData;
 
@@ -22,11 +21,25 @@ class TokenGetter {
     return _inMemoryUserData?.AccessToken! ?? '';
   }
 
+  // Future<LoginData?> get userData async {
+  //   if(_inMemoryUserData != null) return _inMemoryUserData!.Data!;
+
+  //   _inMemoryUserData = await _loadTokenFromSharedPreference();
+  //   return _inMemoryUserData?.Data! ?? null;
+  // }
+
+  Future<int> get userId async {
+    if(_inMemoryUserData != null) return _inMemoryUserData!.Data!.id!;
+
+    _inMemoryUserData = await _loadTokenFromSharedPreference();
+    return _inMemoryUserData?.Data!.id ?? 0;
+  }
+
   Future<LoginResult?> _loadTokenFromSharedPreference() async {
     if(sharedPref == null) {
       sharedPref = await SharedPreferences.getInstance();
     }
-    if(sharedPref!.getString('user') != null) {
+    if(sharedPref!.containsKey('user')) {
       LoginResult user = LoginResult.fromJson(jsonDecode(decryptAESCryptoJS(sharedPref!.getString('user')!,'1!1!')));
       if(user.AccessToken != null) {
         return user;

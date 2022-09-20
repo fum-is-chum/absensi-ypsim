@@ -4,6 +4,7 @@ class LoggingInterceptors extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     print("--> ${options.method.toUpperCase()}");
+    print("${options.baseUrl}${options.path}");
     print("Headers:");
     options.headers.forEach((k, v) => print(' $k: $v'));
     if (options.queryParameters.isNotEmpty) {

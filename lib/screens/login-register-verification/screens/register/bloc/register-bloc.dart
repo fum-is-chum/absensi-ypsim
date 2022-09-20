@@ -1,17 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/models/api-response.dart';
-import 'package:material_kit_flutter/models/register.dart';
+import 'package:material_kit_flutter/dio-interceptor.dart';
+import 'package:material_kit_flutter/screens/Login-Register-Verification/screens/register/models/register.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:rxdart/rxdart.dart';
-
-import '../dio-interceptor.dart';
 
 class RegisterBloc {
   bool state = true;

@@ -8,22 +8,25 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/dio-interceptor.dart';
-import 'package:material_kit_flutter/models/login.dart';
+import 'package:material_kit_flutter/main.dart';
+import 'package:material_kit_flutter/misc/credential-getter.dart';
+import 'package:material_kit_flutter/misc/crypto.dart';
+import 'package:material_kit_flutter/screens/Login-Register-Verification/screens/login/models/login.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../crypto.dart';
 import '../models/login-result.dart';
 
 class LoginBloc {
+  LoginBloc._sharedInstance();
+  static final LoginBloc _shared = LoginBloc._sharedInstance();
+  factory LoginBloc() => _shared;
+
   bool state = true;
-  late BehaviorSubject<bool> _obscureText$;
+  BehaviorSubject<bool> _obscureText$ = BehaviorSubject<bool>.seeded(true);
   Map<String, dynamic> model = new Login().toJson();
   Spinner sp = Spinner();
-  LoginBloc() {
-    _obscureText$ = BehaviorSubject<bool>.seeded(true);
-  }
 
   Stream<bool> get counterObservable {
     return _obscureText$.stream;
@@ -36,6 +39,7 @@ class LoginBloc {
 
   Future<void> saveCredentials(LoginResult cred) async {
     SharedPreferences sharedPref = await SharedPreferences.getInstance();
+    inspect(cred.toJson());
     sharedPref.setString('user', encryptAESCryptoJS(jsonEncode(cred.toJson()),'1!1!'));
   }
 
@@ -52,7 +56,7 @@ class LoginBloc {
       String error = "";
       if(e is DioError) {
         if(e.response != null) {
-          error = "${e.message}\n${e.response != null ? e.response!.data['Message'] : e.response.toString()}";
+          error = "${e.message}\n${e.response.toString()}";
         } else if(e.error is SocketException) {
           error = "Tidak ada koneksi";
         } else if(e.error is TimeoutException) {
@@ -73,8 +77,51 @@ class LoginBloc {
     }
   }
 
+  Future<bool> logoutUser(BuildContext context) async {
+    try {
+      sp.show(context: context);
+      Response resp = await logout();
+      sp.hide();
+      return true;
+    } catch (e) {
+       sp.hide();
+      String error = "";
+      if(e is DioError) {
+        if(e.response != null) {
+          error = "${e.message}\n${e.response.toString()}";
+        } else if(e.error is SocketException) {
+          error = "Tidak ada koneksi";
+        } else if(e.error is TimeoutException) {
+          error = "${e.requestOptions.baseUrl}${e.requestOptions.path}\nRequest Timeout";
+        }
+      } else {
+        error = e.toString();
+      }
+        ArtSweetAlert.show(
+          context: context,
+          artDialogArgs: ArtDialogArgs(
+            type: ArtSweetAlertType.danger,
+            title: "Gagal",
+            text: error
+          )
+        );
+      return false;
+    }
+  }
   Future<Response> login() {
     return DioClient().dio.post('/login', data: model);
+  }
+
+  Future<Response> logout() {
+    return DioClient().dio.post(
+      '/logout',
+      data: null,
+      options: Options(
+        headers: {
+          'RequireToken': ''
+        }
+      )
+    );
   }
   
   void dispose() {

@@ -5,11 +5,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../bloc/request-bloc.dart';
-import '../constants/Theme.dart';
-import '../widgets/drawer.dart';
+import '../../constants/Theme.dart';
+import '../../widgets/drawer.dart';
+import 'bloc/pengajuan-izin-bloc.dart';
 
-final requestBloc = new RequestBloc();
+final pengajuanIzinBloc = new PengajuanIzinBloc();
 
 class Request extends StatelessWidget {
   Request({Key? key}): super(key: key);
@@ -17,7 +17,7 @@ class Request extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('request rebuilds');
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -83,9 +83,11 @@ class Request extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                      onPressed: (){
-                        _key.currentState!.save();
-                        inspect(requestBloc.getRawValue());
+                      onPressed: () async {
+                        if(_key.currentState!.validate()) {
+                          _key.currentState!.save();
+                          await pengajuanIzinBloc.createIzin(context);
+                        }
                       },
                         child: Text('Submit')
                       ),
@@ -111,10 +113,15 @@ class TanggalField extends StatefulWidget {
 
 class _TanggalField extends State<TanggalField> {
   final TextEditingController _controller = TextEditingController();
+
+  String dFormat(String dateString) {
+    return DateFormat('yyyy-MM-dd').format(DateTime.parse(dateString));
+  }
+
   @override 
   void initState() {
     super.initState();
-    _controller.text = DateFormat('yyyy-MM-dd').format(DateTime.parse(requestBloc.getValue('tanggalAkhir')));
+    _controller.text = pengajuanIzinBloc.getValue('endDate');
   }
 
   @override
@@ -122,6 +129,14 @@ class _TanggalField extends State<TanggalField> {
     return TextFormField(
       controller: _controller,
       readOnly: true,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (String? val) {
+
+        if(val != null && widget.isAkhir && DateTime.parse(val).isBefore(DateTime.parse(pengajuanIzinBloc.getValue('startDate')))) {
+          return 'Tanggal Akhir harus lebih besar atau sama dengan tanggal awal';
+        }
+        return null;
+      },
       decoration: InputDecoration(
         suffixIcon: IconButton(
           padding: EdgeInsets.zero,
@@ -130,12 +145,12 @@ class _TanggalField extends State<TanggalField> {
           onPressed: (){
             showDatePicker(
               context: context,
-              initialDate: DateTime.parse(requestBloc.getValue('tanggalAwal')),
-              firstDate: widget.isAkhir? DateTime.parse(requestBloc.getValue('tanggalAwal')) : DateTime.fromMillisecondsSinceEpoch(0),
+              initialDate: DateTime.parse(pengajuanIzinBloc.getValue('startDate')),
+              firstDate: widget.isAkhir? DateTime.parse(pengajuanIzinBloc.getValue('startDate')) : DateTime.now(),
               lastDate: DateTime(DateTime.now().year + 10)
             ).then((DateTime? value) {
               if(value != null){
-                requestBloc.setValue(widget.isAkhir? 'tanggalAkhir': 'tanggalAwal', DateFormat('yyyy-MM-dd').format(value).toString());
+                pengajuanIzinBloc.setValue(widget.isAkhir? 'endDate': 'startDate', DateFormat('yyyy-MM-dd').format(value).toString());
                 _controller.text = DateFormat('yyyy-MM-dd').format(value);
                 setState(() {
                   
@@ -150,12 +165,12 @@ class _TanggalField extends State<TanggalField> {
       onTap: (){
         showDatePicker(
           context: context,
-          initialDate: DateTime.parse(requestBloc.getValue('tanggalAwal')),
-          firstDate: widget.isAkhir? DateTime.parse(requestBloc.getValue('tanggalAwal')) : DateTime.fromMillisecondsSinceEpoch(0),
+          initialDate: DateTime.parse(pengajuanIzinBloc.getValue('startDate')),
+          firstDate: widget.isAkhir? DateTime.parse(pengajuanIzinBloc.getValue('startDate')) : DateTime.fromMillisecondsSinceEpoch(0),
           lastDate: DateTime(DateTime.now().year + 10)
         ).then((DateTime? value) {
           if(value != null){
-            requestBloc.setValue(widget.isAkhir? 'tanggalAkhir': 'tanggalAwal', DateFormat('yyyy-MM-dd').format(value).toString());
+            pengajuanIzinBloc.setValue(widget.isAkhir? 'endDate': 'startDate', DateFormat('yyyy-MM-dd').format(value).toString());
             _controller.text = DateFormat('yyyy-MM-dd').format(value);
             setState(() {
               
@@ -182,8 +197,14 @@ class _KeteranganField extends State<KeteranganField> {
       keyboardType: TextInputType.multiline,
       maxLines: null,
       minLines: 5,
+      validator: (String? val) {
+        if(val == null || val.isEmpty) {
+          return 'Silahkan isi keterangan';
+        }
+        return null;
+      },
       onSaved: (String? value) {
-        requestBloc.setValue('keterangan', value);
+        pengajuanIzinBloc.setValue('remark', value);
       },
       decoration: InputDecoration(
         hintText: 'Keterangan Izin',
@@ -226,7 +247,8 @@ class _LampiranField extends State<LampiranField> {
               FilePickerResult? result = await FilePicker.platform.pickFiles();
               if(result != null) {
                 pickedFile = File(result.files.single.path!);
-                // requestBloc.setValue('file')
+                pengajuanIzinBloc.setValue('file', pickedFile);
+                // pengajuanIzinBloc.setValue('file')
                 setState(() {
                   
                 });

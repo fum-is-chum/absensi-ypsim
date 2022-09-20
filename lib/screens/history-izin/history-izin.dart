@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:material_kit_flutter/bloc/history-izin-bloc.dart';
+import 'package:material_kit_flutter/screens/History-Izin/bloc/history-izin-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
-import 'package:material_kit_flutter/widgets/history-item.dart';
 import 'package:material_kit_flutter/widgets/history-izin-item.dart';
 
 final Map<String, Map<String, String>> homeCards = {

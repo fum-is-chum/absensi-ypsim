@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/token-getter.dart';
+import 'package:material_kit_flutter/misc/credential-getter.dart';
+import 'package:material_kit_flutter/screens/Login-Register-Verification/screens/login/bloc/login-bloc.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 import 'package:material_kit_flutter/widgets/drawer-tile.dart';
@@ -106,13 +107,10 @@ class MaterialDrawer extends StatelessWidget {
                 icon: Icons.logout,
                 onTap: () async {
                   if (currentPage != "logout") {
-                    Spinner sp = new Spinner();
-                    sp.show(context: context);
+                    await LoginBloc().logoutUser(context);
                     SharedPreferences sharedPref = await SharedPreferences.getInstance();
-                    // inspect(sharedPref!.getString('user'));
                     sharedPref.remove('user');
-                    TokenGetter().reset();
-                    sp.hide();
+                    CredentialGetter().reset();
                     Navigator.pushNamedAndRemoveUntil(
                       context, '/login', (Route<dynamic> route) => false
                     );

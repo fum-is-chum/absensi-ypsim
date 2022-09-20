@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/bloc/login-bloc.dart';
+import 'package:material_kit_flutter/screens/Login-Register-Verification/screens/login/bloc/login-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/custom-button.dart';
 
@@ -101,8 +101,8 @@ class _LoginView extends State<LoginView> {
                           onClick: () async {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              if (await _bloc.loginUser(context)){}
-                                _formKey.currentState!.reset();
+                              if (await _bloc.loginUser(context))
+                                // _formKey.currentState!.reset();
                                 Navigator.pushNamedAndRemoveUntil(
                                   context, '/home', (Route<dynamic> route) => false
                                 );

@@ -12,7 +12,10 @@ class DioClient {
     Dio dio = Dio(
       BaseOptions(
         baseUrl: "https://presensi.ypsimlibrary.com/api",
-        contentType: 'application/json;charset=utf-8'
+        contentType: 'application/json;charset=utf-8',
+        headers: {
+          'Accept': 'application/json'
+        }
       )
     );
 
