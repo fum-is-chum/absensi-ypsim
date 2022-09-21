@@ -3,7 +3,7 @@ import 'package:material_kit_flutter/screens/Login-Register-Verification/screens
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/custom-button.dart';
 
-final RegisterBloc _bloc = RegisterBloc();
+late RegisterBloc _bloc;
 
 void onSaved(String? val, String field) {
   _bloc.model[field] = val;
@@ -21,6 +21,11 @@ class _RegisterView extends State<RegisterView> {
 
   final _formKey = GlobalKey<FormState>();
 
+  @override 
+  void initState() {
+    _bloc = RegisterBloc();
+    super.initState();
+  }
   @override 
   void dispose() {
     _bloc.dispose();

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/screens/Pengajuan-Izin/pengajuan-izin.dart';
 import 'package:material_kit_flutter/screens/history-izin/history-izin-detail.dart';
 import 'package:material_kit_flutter/screens/history-izin/history-izin.dart';
-import 'package:material_kit_flutter/screens/history.dart';
-import 'package:material_kit_flutter/screens/history_detail.dart';
+import 'package:material_kit_flutter/screens/history-presensi/history-presensi-detail.dart';
+import 'package:material_kit_flutter/screens/history-presensi/history-presensi.dart';
+
 // screens
 import 'package:material_kit_flutter/screens/home.dart';
 import 'package:material_kit_flutter/screens/login-register-verification/screen.dart';
@@ -40,10 +41,10 @@ class MaterialKitPROFlutter extends StatelessWidget {
               "/login": (BuildContext context) => LoginAnimation(),
               "/verification": (BuildContext context) => Verification(),
               "/home": (BuildContext context) => Home(),
-              "/history": (BuildContext context) => History(),
-              "/history_detail": (BuildContext context) => HistoryDetail(),
-              "/history_izin": (BuildContext context) => HistoryIzin(),
-              "/history_izin_detail": (BuildContext context) =>
+              "/history-presensi": (BuildContext context) => History(),
+              "/history-presensi-detail": (BuildContext context) => HistoryDetail(),
+              "/history-izin": (BuildContext context) => HistoryIzin(),
+              "/history-izin-detail": (BuildContext context) =>
                   HistoryIzinDetail(),
               "/request": (BuildContext context) => Request(),
               "/profile": (BuildContext context) => Profile(),

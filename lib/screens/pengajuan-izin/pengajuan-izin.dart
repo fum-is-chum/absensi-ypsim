@@ -1,11 +1,13 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:material_kit_flutter/services/shared-service.dart';
 
 import '../../constants/Theme.dart';
+import '../../services/hide_keyboard.dart';
 import '../../widgets/drawer.dart';
 import 'bloc/pengajuan-izin-bloc.dart';
 
@@ -17,88 +19,93 @@ class Request extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Pengajuan Izin",
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black),
-      ),
-      backgroundColor: MaterialColors.bgColorScreen,
-      // key: _scaffoldKey,
-      drawer: MaterialDrawer(currentPage: "Request"),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.all(24),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _key,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Tanggal Awal',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold
-                  ),
-                ),
-                const SizedBox(height: 4,),
-                TanggalField(),
-                const SizedBox(height: 16,),
-                Text(
-                  'Tanggal Akhir',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold
-                  ),
-                ),
-                const SizedBox(height: 4,),
-                TanggalField(isAkhir: true,),
-                const SizedBox(height: 16,),
-                Text(
-                  'Keterangan',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold
-                  ),
-                ),
-                const SizedBox(height: 4,),
-                KeteranganField(),
-                const SizedBox(height: 16),
-                Text(
-                  'Lampiran',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold
-                  )
-                ),
-                const SizedBox(height: 4,),
-                LampiranField(),
-                const SizedBox(height: 16,),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                      onPressed: () async {
-                        if(_key.currentState!.validate()) {
-                          _key.currentState!.save();
-                          await pengajuanIzinBloc.createIzin(context);
-                        }
-                      },
-                        child: Text('Submit')
-                      ),
-                    )
-                  ],
-                )
-              ]
+    return GestureDetector(
+      onTap: () {
+        hideKeyboard(context);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Pengajuan Izin",
+            style: TextStyle(
+              color: Colors.black,
             ),
-          )
+          ),
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
         ),
-      )
+        backgroundColor: MaterialColors.bgColorScreen,
+        // key: _scaffoldKey,
+        drawer: MaterialDrawer(currentPage: "Request"),
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.all(24),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _key,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tanggal Awal',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const SizedBox(height: 4,),
+                  TanggalField(),
+                  const SizedBox(height: 16,),
+                  Text(
+                    'Tanggal Akhir',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const SizedBox(height: 4,),
+                  TanggalField(isAkhir: true,),
+                  const SizedBox(height: 16,),
+                  Text(
+                    'Keterangan',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const SizedBox(height: 4,),
+                  KeteranganField(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Lampiran',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold
+                    )
+                  ),
+                  const SizedBox(height: 4,),
+                  LampiranField(),
+                  const SizedBox(height: 16,),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                        onPressed: () async {
+                          if(_key.currentState!.validate()) {
+                            _key.currentState!.save();
+                            if(await pengajuanIzinBloc.createIzin(context))
+                              _key.currentState!.reset();
+                          }
+                        },
+                          child: Text('Submit')
+                        ),
+                      )
+                    ],
+                  )
+                ]
+              ),
+            )
+          ),
+        )
+      ),
     );
   }
 }
@@ -113,11 +120,7 @@ class TanggalField extends StatefulWidget {
 
 class _TanggalField extends State<TanggalField> {
   final TextEditingController _controller = TextEditingController();
-
-  String dFormat(String dateString) {
-    return DateFormat('yyyy-MM-dd').format(DateTime.parse(dateString));
-  }
-
+  
   @override 
   void initState() {
     super.initState();
@@ -133,7 +136,7 @@ class _TanggalField extends State<TanggalField> {
       validator: (String? val) {
 
         if(val != null && widget.isAkhir && DateTime.parse(val).isBefore(DateTime.parse(pengajuanIzinBloc.getValue('startDate')))) {
-          return 'Tanggal Akhir harus lebih besar atau sama dengan tanggal awal';
+          return '';
         }
         return null;
       },
@@ -150,8 +153,8 @@ class _TanggalField extends State<TanggalField> {
               lastDate: DateTime(DateTime.now().year + 10)
             ).then((DateTime? value) {
               if(value != null){
-                pengajuanIzinBloc.setValue(widget.isAkhir? 'endDate': 'startDate', DateFormat('yyyy-MM-dd').format(value).toString());
-                _controller.text = DateFormat('yyyy-MM-dd').format(value);
+                pengajuanIzinBloc.setValue(widget.isAkhir? 'endDate': 'startDate', formatDateOnly(value));
+                _controller.text = formatDateOnly(value);
                 setState(() {
                   
                 });
@@ -170,8 +173,8 @@ class _TanggalField extends State<TanggalField> {
           lastDate: DateTime(DateTime.now().year + 10)
         ).then((DateTime? value) {
           if(value != null){
-            pengajuanIzinBloc.setValue(widget.isAkhir? 'endDate': 'startDate', DateFormat('yyyy-MM-dd').format(value).toString());
-            _controller.text = DateFormat('yyyy-MM-dd').format(value);
+            pengajuanIzinBloc.setValue(widget.isAkhir? 'endDate': 'startDate', formatDateOnly(value).toString());
+            _controller.text = formatDateOnly(value);
             setState(() {
               
             });
@@ -197,6 +200,7 @@ class _KeteranganField extends State<KeteranganField> {
       keyboardType: TextInputType.multiline,
       maxLines: null,
       minLines: 5,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (String? val) {
         if(val == null || val.isEmpty) {
           return 'Silahkan isi keterangan';
@@ -237,34 +241,52 @@ class _LampiranField extends State<LampiranField> {
       ),
       padding: EdgeInsets.all(12.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.grey[300])
-            ),
-            onPressed: () async {
-              FilePickerResult? result = await FilePicker.platform.pickFiles();
-              if(result != null) {
-                pickedFile = File(result.files.single.path!);
-                pengajuanIzinBloc.setValue('file', pickedFile);
-                // pengajuanIzinBloc.setValue('file')
-                setState(() {
-                  
-                });
-              }
-            }, 
-            child: Text(
-              'Tambah Lampiran',
-              style: TextStyle(
-                color: Colors.black
-              )
-            )
-          ),
-          const SizedBox(width: 5,),
           Expanded(
-            child: Text(pickedFile != null? pickedFile!.path.split('/').last : ''),
-          )
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.grey[300])
+                  ),
+                  onPressed: () async {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    FilePickerResult? result = await FilePicker.platform.pickFiles();
+                    if(result != null) {
+                      pickedFile = File(result.files.single.path!);
+                      pengajuanIzinBloc.setValue('file', pickedFile);
+                      // pengajuanIzinBloc.setValue('file')
+                      setState(() {
+                        
+                      });
+                    }
+                  }, 
+                  child: Text(
+                    'Browse',
+                    style: TextStyle(
+                      color: Colors.black
+                    )
+                  )
+                ),
+                const SizedBox(width: 5,),
+                Expanded(
+                  child: Text(pickedFile != null? pickedFile!.path.split('/').last : ''),
+                )
+              ],
+            ),
+          ),
+          pickedFile == null ? Container(): 
+            IconButton(
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(),
+              onPressed: () {
+                pickedFile = null;
+                setState(() {});
+              },
+              icon: Icon(CupertinoIcons.xmark, size: 16)
+            ), 
         ],
       ),
     );

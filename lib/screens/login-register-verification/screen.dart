@@ -4,7 +4,6 @@ import 'package:material_kit_flutter/screens/Login-Register-Verification/screens
 import 'package:material_kit_flutter/screens/home.dart';
 
 import '../../constants/Theme.dart';
-import '../../misc/credential-getter.dart';
 
 class LoginAnimation extends StatefulWidget{
   const LoginAnimation({Key? key}): super(key: key);

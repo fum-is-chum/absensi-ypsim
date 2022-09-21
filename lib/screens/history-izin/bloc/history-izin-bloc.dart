@@ -1,20 +1,12 @@
 
 
-import 'package:material_kit_flutter/widgets/spinner.dart';
-
 import '../models/history-izin.dart';
 
 class HistoryIzinBloc {
-  late Map<String, dynamic> _historyIzinModel;
-  Spinner sp = Spinner();
+  List<HistoryIzinModel> _historyIzinModel = [];
+  HistoryIzinFilter _filter = HistoryIzinFilter();
 
-  HistoryIzinBloc() {
-    _historyIzinModel = new HistoryIzinModel().toJson();
-  }
+  HistoryIzinBloc();
 
-  void setValue(String key, dynamic value) => _historyIzinModel[key] = value;
-
-  String getValue(String key) => _historyIzinModel[key];
-
-  Map<String, dynamic> getRawValue() => _historyIzinModel;
+  HistoryIzinFilter get filter => _filter;
 }

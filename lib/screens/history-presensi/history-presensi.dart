@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:material_kit_flutter/bloc/history-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/screens/history-dummy.dart';
+import 'package:material_kit_flutter/services/shared-service.dart';
+import 'package:material_kit_flutter/widgets/drawer.dart';
 
-import '../widgets/drawer.dart';
-import '../widgets/history-item.dart';
+import 'widgets/history-presensi-item.dart';
 
-final Map<String, Map<String, String>> homeCards = {
-  "Makeup": {
-    "title": "Find the cheapest deals on our range...",
-    "image":
-        "https://images.unsplash.com/photo-1515709980177-7a7d628c09ba?crop=entropy&w=840&h=840&fit=crop",
-    "price": "220"
-  },
-};
 
-final historyBloc = new HistoryBloc();
+final historyPresensiBloc = new HistoryBloc();
 
 class History extends StatefulWidget {
   final List<Map<String,dynamic>> log = list;
@@ -31,7 +23,7 @@ class _History extends State<History> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: MaterialDrawer(currentPage: "History"),
+      drawer: MaterialDrawer(currentPage: "History Presensi"),
       backgroundColor: MaterialColors.bgColorScreen,
       body: Container(
         width: double.infinity,
@@ -75,7 +67,7 @@ class _History extends State<History> {
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) {
-                    return HistoryItem(
+                    return HistoryPresensiItem(
                       date: widget.log[index]['date'],
                       checkIn: widget.log[index]['checkIn'],
                       checkOut: widget.log[index]['checkOut'],
@@ -110,8 +102,7 @@ class _TanggalField extends State<TanggalField> {
   @override
   void initState() {
     super.initState();
-    _controller.text = DateFormat('yyyy-MM-dd')
-        .format(DateTime.parse(historyBloc.getValue('tanggalAkhir')));
+    _controller.text = formatDateOnly(historyPresensiBloc.getValue('tanggalAkhir'));
   }
 
   @override
@@ -129,18 +120,18 @@ class _TanggalField extends State<TanggalField> {
                 showDatePicker(
                         context: context,
                         initialDate:
-                            DateTime.parse(historyBloc.getValue('tanggalAwal')),
+                            DateTime.parse(historyPresensiBloc.getValue('tanggalAwal')),
                         firstDate: widget.isAkhir
                             ? DateTime.parse(
-                                historyBloc.getValue('tanggalAwal'))
+                                historyPresensiBloc.getValue('tanggalAwal'))
                             : DateTime.fromMillisecondsSinceEpoch(0),
                         lastDate: DateTime(DateTime.now().year + 10))
                     .then((DateTime? value) {
                   if (value != null) {
-                    historyBloc.setValue(
+                    historyPresensiBloc.setValue(
                         widget.isAkhir ? 'tanggalAkhir' : 'tanggalAwal',
-                        DateFormat('yyyy-MM-dd').format(value).toString());
-                    _controller.text = DateFormat('yyyy-MM-dd').format(value);
+                        formatDateOnly(value));
+                    _controller.text = formatDateOnly(value);
                     setState(() {});
                   }
                 });
@@ -152,17 +143,17 @@ class _TanggalField extends State<TanggalField> {
           showDatePicker(
                   context: context,
                   initialDate:
-                      DateTime.parse(historyBloc.getValue('tanggalAwal')),
+                      DateTime.parse(historyPresensiBloc.getValue('tanggalAwal')),
                   firstDate: widget.isAkhir
-                      ? DateTime.parse(historyBloc.getValue('tanggalAwal'))
+                      ? DateTime.parse(historyPresensiBloc.getValue('tanggalAwal'))
                       : DateTime.fromMillisecondsSinceEpoch(0),
                   lastDate: DateTime(DateTime.now().year + 10))
               .then((DateTime? value) {
             if (value != null) {
-              historyBloc.setValue(
+              historyPresensiBloc.setValue(
                   widget.isAkhir ? 'tanggalAkhir' : 'tanggalAwal',
-                  DateFormat('yyyy-MM-dd').format(value).toString());
-              _controller.text = DateFormat('yyyy-MM-dd').format(value);
+                  formatDateOnly(value));
+              _controller.text = formatDateOnly(value);
               setState(() {});
             }
           });

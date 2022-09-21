@@ -1,16 +1,17 @@
-import 'dart:io';
+import 'package:material_kit_flutter/screens/history-presensi/history-presensi.dart';
+import 'package:material_kit_flutter/services/shared-service.dart';
 
 class HistoryIzinModel {
-  String? startDate;
-  String? endDate;
+  int? id;
+  int? employee_id;
+  String? start_date;
+  String? end_date;
+  String? file;
   String? remark;
-  File? file;
-
-  HistoryIzinModel({String? startDate, String? endDate, String? remark, File? file})
-      : this.startDate = startDate ?? DateTime.now().toIso8601String(),
-        this.endDate = endDate ?? DateTime.now().toIso8601String(),
-        this.remark = remark ?? '',
-        this.file = file ?? null;
+  String? status;
+  String? reason; // alasan penolakan (?)
+  String? created_at;
+  String? updated_at;
 
   /*
     VSCode Regex:
@@ -18,21 +19,26 @@ class HistoryIzinModel {
     - $1 = json['$1'];
   */
   HistoryIzinModel.fromJson(Map<String, dynamic> json) {
-    startDate = json['startDate'];
-    endDate = json['endDate'];
+    id = json['id'];
+    employee_id = json['employee_id'];
+    start_date = formatDateOnly(DateTime.parse(json['start_date']));
+    end_date = formatDateOnly(DateTime.parse(json['end_date']));
+    file = json['file']; // load file from path
     remark = json['remark'];
+    status = json['status'];
+    reason = json['reason'];
+    created_at = json['created_at'];
+    updated_at = json['updated_at'];
   }
+}
 
-/*
-    VSCode Regex:
-    - this\.(.*),
-    - data['$1'] = this.$1;
-  */
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['startDate'] = this.startDate;
-    data['endDate'] = this.endDate;
-    data['remark'] = this.remark;
-    return data;
-  }
+
+class HistoryIzinFilter {
+  String? startDate;
+  String? endDate;
+
+  HistoryIzinFilter({String? startDate, String? endDate}) 
+    : this.startDate = formatDateOnly(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 7)),
+      this.endDate = formatDateOnly(DateTime.now());
+
 }

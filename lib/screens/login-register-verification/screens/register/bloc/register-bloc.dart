@@ -43,6 +43,7 @@ class RegisterBloc {
     sp.show(context: context);
     try {
       await register();
+      sp.hide();
       ArtSweetAlert.show(
           context: context,
           artDialogArgs: ArtDialogArgs(

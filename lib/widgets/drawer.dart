@@ -79,8 +79,8 @@ class MaterialDrawer extends StatelessWidget {
                 DrawerTile(
                     icon: Icons.timelapse,
                     onTap: () {
-                      if (currentPage != "History")
-                        Navigator.pushReplacementNamed(context, '/history');
+                      if (currentPage != "History Presensi")
+                        Navigator.pushReplacementNamed(context, '/history-presensi');
                     },
                     iconColor: Colors.black,
                     title: "Riwayat Presensi",
@@ -91,7 +91,7 @@ class MaterialDrawer extends StatelessWidget {
                     onTap: () {
                       if (currentPage != "History Izin")
                         Navigator.pushReplacementNamed(
-                            context, '/history_izin');
+                            context, '/history-izin');
                     },
                     iconColor: Colors.black,
                     title: "Riwayat Izin",

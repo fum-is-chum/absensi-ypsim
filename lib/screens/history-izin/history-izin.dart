@@ -1,52 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:material_kit_flutter/screens/History-Izin/bloc/history-izin-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
+import 'package:material_kit_flutter/screens/History-Izin/bloc/history-izin-bloc.dart';
+import 'package:material_kit_flutter/screens/history-izin/history-izin-dummy.dart';
+import 'package:material_kit_flutter/services/shared-service.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
 import 'package:material_kit_flutter/widgets/history-izin-item.dart';
 
-final Map<String, Map<String, String>> homeCards = {
-  "Makeup": {
-    "title": "Find the cheapest deals on our range...",
-    "image":
-        "https://images.unsplash.com/photo-1515709980177-7a7d628c09ba?crop=entropy&w=840&h=840&fit=crop",
-    "price": "220"
-  },
-};
-
 final historyIzinBloc = new HistoryIzinBloc();
 
-class HistoryIzin extends StatelessWidget {
-  // final GlobalKey _scaffoldKey = new GlobalKey();
+class HistoryIzin extends StatefulWidget {
+  final List<Map<String,dynamic>> log = list;
+  HistoryIzin({Key? key}) : super(key: key);
+  
+  @override
+  State<HistoryIzin> createState() => _HistoryIzin();
+}
+
+class _HistoryIzin extends State<HistoryIzin> {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Riwayat Izin",
-            style: TextStyle(
-              color: Colors.black,
-            ),
-          ),
-          elevation: 0,
-          backgroundColor: MaterialColors.bgColorScreen,
-          iconTheme: IconThemeData(color: Colors.black),
-        ),
-        backgroundColor: MaterialColors.bgColorScreen,
-        // key: _scaffoldKey,
-        drawer: MaterialDrawer(currentPage: "History Izin"),
-        body: Container(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(boxShadow: <BoxShadow>[
-                    BoxShadow(
-                        color: Colors.black54,
-                        blurRadius: 8.0,
-                        offset: Offset(0.0, 0.75))
-                  ], color: Colors.white),
+      drawer: MaterialDrawer(currentPage: "History Izin",),
+      backgroundColor: MaterialColors.bgColorScreen,
+      body: Container(
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height,
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverAppBar(
+              forceElevated: true,
+              title: Text("Riwayat Izin",
+                style: TextStyle(color: Colors.black)
+              ),
+              backgroundColor: MaterialColors.bgColorScreen,
+              iconTheme: IconThemeData(color: Colors.black),
+              pinned: true,
+              snap: true,
+              floating: true,
+              expandedHeight: 144,
+              flexibleSpace: FlexibleSpaceBar(
+                background: AnimatedContainer(
+                  duration: Duration(milliseconds: 500),
+                  padding: EdgeInsets.only(top: 56 + 24),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -60,52 +56,34 @@ class HistoryIzin extends StatelessWidget {
                         width: MediaQuery.of(context).size.width / 2.3,
                       ),
                     ],
-                  ),
+                  )
                 ),
-                Container(
-                  padding: EdgeInsets.all(18),
-                  child: Column(
-                    children: [
-                      HistoryIzinItem(
-                        date: "Sabtu, 14 Mei 2022",
-                        mulai: "15 Mei 2022",
-                        selesai: "20 Mei 2022",
-                        status: "Diterima",
-                        tap: () {
-                          Navigator.pushReplacementNamed(
-                              context, '/history_izin_detail');
-                        },
-                      ),
-                      SizedBox(height: 12),
-                      HistoryIzinItem(
-                        date: "Sabtu, 14 Mei 2022",
-                        mulai: "15 Mei 2022",
-                        selesai: "20 Mei 2022",
-                        status: "Menunggu",
-                        tap: () {
-                          Navigator.pushReplacementNamed(
-                              context, '/history_izin_detail');
-                        },
-                      ),
-                      SizedBox(height: 12),
-                      HistoryIzinItem(
-                        date: "Sabtu, 14 Mei 2022",
-                        mulai: "15 Mei 2022",
-                        selesai: "20 Mei 2022",
-                        status: "Ditolak",
-                        tap: () {
-                          Navigator.pushReplacementNamed(
-                              context, '/history_izin_detail');
-                        },
-                      ),
-                      SizedBox(height: 12),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ));
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return HistoryIzinItem(
+                        date: widget.log[index]['date'],
+                        mulai: widget.log[index]['mulai'],
+                        selesai: widget.log[index]['selesai'],
+                        status: widget.log[index]['status'],
+                        tap: () {
+                          Navigator.pushNamed(
+                              context, widget.log[index]['link']);
+                        },
+                    );
+                  },
+                  childCount: widget.log.length,
+                )
+              )
+            )
+          ],
+        ),
+      )
+    );
   }
 }
 
@@ -122,8 +100,7 @@ class _TanggalField extends State<TanggalField> {
   @override
   void initState() {
     super.initState();
-    _controller.text = DateFormat('yyyy-MM-dd')
-        .format(DateTime.parse(historyIzinBloc.getValue('tanggalAkhir')));
+    _controller.text = formatDateOnly(historyIzinBloc.filter.startDate);
   }
 
   @override
@@ -141,18 +118,19 @@ class _TanggalField extends State<TanggalField> {
                 showDatePicker(
                         context: context,
                         initialDate: DateTime.parse(
-                            historyIzinBloc.getValue('tanggalAwal')),
+                            historyIzinBloc.filter.startDate!),
                         firstDate: widget.isAkhir
                             ? DateTime.parse(
-                                historyIzinBloc.getValue('tanggalAwal'))
+                                historyIzinBloc.filter.startDate!)
                             : DateTime.fromMillisecondsSinceEpoch(0),
                         lastDate: DateTime(DateTime.now().year + 10))
                     .then((DateTime? value) {
                   if (value != null) {
-                    historyIzinBloc.setValue(
-                        widget.isAkhir ? 'tanggalAkhir' : 'tanggalAwal',
-                        DateFormat('yyyy-MM-dd').format(value).toString());
-                    _controller.text = DateFormat('yyyy-MM-dd').format(value);
+                    if(widget.isAkhir) {
+                      historyIzinBloc.filter.endDate = formatDateOnly(value);
+                    } else {
+                      historyIzinBloc.filter.startDate = formatDateOnly(value);
+                    }
                     setState(() {});
                   }
                 });
@@ -162,22 +140,24 @@ class _TanggalField extends State<TanggalField> {
         ),
         onTap: () {
           showDatePicker(
-                  context: context,
-                  initialDate:
-                      DateTime.parse(historyIzinBloc.getValue('tanggalAwal')),
-                  firstDate: widget.isAkhir
-                      ? DateTime.parse(historyIzinBloc.getValue('tanggalAwal'))
-                      : DateTime.fromMillisecondsSinceEpoch(0),
-                  lastDate: DateTime(DateTime.now().year + 10))
-              .then((DateTime? value) {
-            if (value != null) {
-              historyIzinBloc.setValue(
-                  widget.isAkhir ? 'tanggalAkhir' : 'tanggalAwal',
-                  DateFormat('yyyy-MM-dd').format(value).toString());
-              _controller.text = DateFormat('yyyy-MM-dd').format(value);
-              setState(() {});
-            }
-          });
-        });
+              context: context,
+              initialDate:
+                  DateTime.parse(historyIzinBloc.filter.startDate!),
+              firstDate: widget.isAkhir
+                  ? DateTime.parse(historyIzinBloc.filter.startDate!)
+                  : DateTime.fromMillisecondsSinceEpoch(0),
+              lastDate: DateTime(DateTime.now().year + 10))
+          .then((DateTime? value) {
+        if (value != null) {
+          if(widget.isAkhir) {
+            historyIzinBloc.filter.endDate = formatDateOnly(value);
+          } else {
+            historyIzinBloc.filter.startDate = formatDateOnly(value);
+          }
+          _controller.text = formatDateOnly(value);
+          setState(() {});
+        }
+      });
+    });
   }
 }

@@ -1,8 +1,6 @@
 import 'dart:convert';
-
 import 'package:material_kit_flutter/screens/Login-Register-Verification/screens/login/models/login-result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'crypto.dart';
 
 class CredentialGetter {

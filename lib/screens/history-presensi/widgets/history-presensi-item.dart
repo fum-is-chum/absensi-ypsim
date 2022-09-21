@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:material_kit_flutter/constants/Theme.dart';
 
-class HistoryItem extends StatelessWidget {
-  HistoryItem(
+class HistoryPresensiItem extends StatelessWidget {
+  HistoryPresensiItem(
       {this.date = "Sabtu, 14 Mei 2022",
       this.checkIn = "07:30",
       this.checkOut = "16:30",

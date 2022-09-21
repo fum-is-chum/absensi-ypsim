@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
-import 'package:material_kit_flutter/widgets/drawer.dart';
 
 class HistoryIzinDetail extends StatelessWidget {
   // final GlobalKey _scaffoldKey = new GlobalKey();
@@ -20,7 +19,7 @@ class HistoryIzinDetail extends StatelessWidget {
         ),
         backgroundColor: MaterialColors.bgColorScreen,
         // key: _scaffoldKey,
-        drawer: MaterialDrawer(currentPage: "History Izin"),
+        // drawer: MaterialDrawer(currentPage: "History Izin"),
         body: Container(
           padding: EdgeInsets.all(18),
           child: SingleChildScrollView(

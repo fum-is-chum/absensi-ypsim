@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:intl/intl.dart';
+import 'package:material_kit_flutter/services/shared-service.dart';
 
 class PengajuanIzinModel {
   String? startDate;
@@ -9,8 +9,8 @@ class PengajuanIzinModel {
   File? file;
 
   PengajuanIzinModel({String? startDate, String? endDate, String? remark, File? file})
-      : this.startDate = startDate ?? DateFormat('yyyy-MM-dd').format(DateTime.now()),
-        this.endDate = endDate ?? DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      : this.startDate = startDate ?? formatDateOnly(DateTime.now()),
+        this.endDate = endDate ?? formatDateOnly(DateTime.now()),
         this.remark = remark ?? '',
         this.file = file ?? null;
 

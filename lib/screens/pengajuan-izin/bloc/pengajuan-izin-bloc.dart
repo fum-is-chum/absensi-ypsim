@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/dio-interceptor.dart';
 import 'package:material_kit_flutter/misc/credential-getter.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
+import 'package:path/path.dart';
 
 import '../models/pengajuan-izin-model.dart';
 
@@ -68,16 +69,18 @@ class PengajuanIzinBloc {
 
   Future<Response> create() async {
     int userId = await CredentialGetter().userId;
-    _pengajuanIzinModel.remove('file');
-    var formData = FormData.fromMap(_pengajuanIzinModel);
-    // var formData = FormData.fromMap({
-    //   ..._pengajuanIzinModel,
-    //   'file': MultipartFile.fromBytes(
-    //     (_pengajuanIzinModel['file'] as File).readAsBytesSync(),
-    //     filename: basename((_pengajuanIzinModel['file'] as File).path)
-    //   )
-    // });
-    return DioClient().dio.post(
+    // _pengajuanIzinModel.remove('file');
+    // var formData = FormData.fromMap(_pengajuanIzinModel);
+    var formData = FormData.fromMap({
+      ..._pengajuanIzinModel,
+      'file': _pengajuanIzinModel['file'] != null ?
+              MultipartFile.fromBytes(
+              (_pengajuanIzinModel['file'] as File).readAsBytesSync(),
+              filename: basename((_pengajuanIzinModel['file'] as File).path)) 
+              : null
+    });
+    
+    return DioClient().dioWithResponseType(ResponseType.plain).post(
       '/permission/$userId',
       data: formData,
       options: Options(
