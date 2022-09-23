@@ -2,28 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/bloc/history-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/screens/history-dummy.dart';
+import 'package:material_kit_flutter/screens/riwayat-presensi/widgets/history-presensi-item.dart';
 import 'package:material_kit_flutter/services/shared-service.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
-
-import 'widgets/history-presensi-item.dart';
 
 
 final historyPresensiBloc = new HistoryBloc();
 
-class History extends StatefulWidget {
+class RiwayatPresensi extends StatefulWidget {
   final List<Map<String,dynamic>> log = list;
-  History({Key? key}) : super(key: key);
+  RiwayatPresensi({Key? key}) : super(key: key);
 
   @override
-  State<History> createState() => _History();
+  State<RiwayatPresensi> createState() => _History();
 }
 
-class _History extends State<History> {
+class _History extends State<RiwayatPresensi> {
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: MaterialDrawer(currentPage: "History Presensi"),
+      drawer: MaterialDrawer(currentPage: "Riwayat Presensi"),
       backgroundColor: MaterialColors.bgColorScreen,
       body: Container(
         width: double.infinity,
@@ -38,12 +37,13 @@ class _History extends State<History> {
               backgroundColor: MaterialColors.bgColorScreen,
               iconTheme: IconThemeData(color: Colors.black),
               pinned: true,
-              snap: true,
-              floating: true,
+              // snap: true,
+              // floating: true,
               expandedHeight: 144,
+              collapsedHeight: 144,
               flexibleSpace: FlexibleSpaceBar(
-                background: AnimatedContainer(
-                  duration: Duration(milliseconds: 500),
+                background: Container(
+                  // duration: Duration(milliseconds: 500),
                   padding: EdgeInsets.only(top: 56 + 24),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

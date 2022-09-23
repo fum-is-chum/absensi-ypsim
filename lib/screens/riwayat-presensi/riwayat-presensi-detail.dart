@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
 
-class HistoryDetail extends StatelessWidget {
+class RiwayatPresensiDetail extends StatelessWidget {
   // final GlobalKey _scaffoldKey = new GlobalKey();
   @override
   Widget build(BuildContext context) {

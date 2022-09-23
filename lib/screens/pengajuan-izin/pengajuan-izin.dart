@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:material_kit_flutter/services/shared-service.dart';
 
 import '../../constants/Theme.dart';
@@ -13,9 +12,10 @@ import 'bloc/pengajuan-izin-bloc.dart';
 
 final pengajuanIzinBloc = new PengajuanIzinBloc();
 
-class Request extends StatelessWidget {
-  Request({Key? key}): super(key: key);
+class PengajuanIzin extends StatelessWidget {
+  PengajuanIzin({Key? key}): super(key: key);
   final GlobalKey<FormState> _key = new GlobalKey<FormState>();
+  final GlobalKey<_LampiranField> _lampiranKey = new GlobalKey<_LampiranField>();
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class Request extends StatelessWidget {
         ),
         backgroundColor: MaterialColors.bgColorScreen,
         // key: _scaffoldKey,
-        drawer: MaterialDrawer(currentPage: "Request"),
+        drawer: MaterialDrawer(currentPage: "Pengajuan Izin"),
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
@@ -82,7 +82,7 @@ class Request extends StatelessWidget {
                     )
                   ),
                   const SizedBox(height: 4,),
-                  LampiranField(),
+                  LampiranField(key: _lampiranKey),
                   const SizedBox(height: 16,),
                   Row(
                     children: [
@@ -93,6 +93,7 @@ class Request extends StatelessWidget {
                             _key.currentState!.save();
                             if(await pengajuanIzinBloc.createIzin(context))
                               _key.currentState!.reset();
+                              _lampiranKey.currentState!.reset();
                           }
                         },
                           child: Text('Submit')
@@ -227,6 +228,14 @@ class LampiranField extends StatefulWidget {
 
 class _LampiranField extends State<LampiranField> {
   File? pickedFile;
+
+  void reset() {
+    pickedFile = null;
+    setState(() {
+      
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -281,10 +290,7 @@ class _LampiranField extends State<LampiranField> {
             IconButton(
               padding: EdgeInsets.zero,
               constraints: BoxConstraints(),
-              onPressed: () {
-                pickedFile = null;
-                setState(() {});
-              },
+              onPressed: reset,
               icon: Icon(CupertinoIcons.xmark, size: 16)
             ), 
         ],

@@ -1,14 +1,20 @@
 import 'dart:convert';
-import 'package:material_kit_flutter/screens/Login-Register-Verification/screens/login/models/login-result.dart';
+
+import 'package:material_kit_flutter/screens/login-register-verification/screens/login/models/login-result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'crypto.dart';
 
 class CredentialGetter {
   CredentialGetter._sharedInstance();
   static final CredentialGetter _shared = CredentialGetter._sharedInstance();
   factory CredentialGetter() => _shared;
-  SharedPreferences? sharedPref;
+  late SharedPreferences sharedPref;
   LoginResult? _inMemoryUserData;
+
+  Future<void> init() async {
+    sharedPref = await SharedPreferences.getInstance();
+  }
 
   Future<String> get userAccessToken async {
     // use in memory token if available
@@ -19,12 +25,11 @@ class CredentialGetter {
     return _inMemoryUserData?.AccessToken! ?? '';
   }
 
-  // Future<LoginData?> get userData async {
-  //   if(_inMemoryUserData != null) return _inMemoryUserData!.Data!;
-
-  //   _inMemoryUserData = await _loadTokenFromSharedPreference();
-  //   return _inMemoryUserData?.Data! ?? null;
-  // }
+  Future<LoginData> get userData async {
+    if(_inMemoryUserData != null) return _inMemoryUserData!.Data!;
+    _inMemoryUserData = await _loadTokenFromSharedPreference();
+    return _inMemoryUserData!.Data!;
+  }
 
   Future<int> get userId async {
     if(_inMemoryUserData != null) return _inMemoryUserData!.Data!.id!;
@@ -34,11 +39,8 @@ class CredentialGetter {
   }
 
   Future<LoginResult?> _loadTokenFromSharedPreference() async {
-    if(sharedPref == null) {
-      sharedPref = await SharedPreferences.getInstance();
-    }
-    if(sharedPref!.containsKey('user')) {
-      LoginResult user = LoginResult.fromJson(jsonDecode(decryptAESCryptoJS(sharedPref!.getString('user')!,'1!1!')));
+    if(sharedPref.containsKey('user')) {
+      LoginResult user = LoginResult.fromJson(jsonDecode(decryptAESCryptoJS(sharedPref.getString('user')!,'1!1!')));
       if(user.AccessToken != null) {
         return user;
       }

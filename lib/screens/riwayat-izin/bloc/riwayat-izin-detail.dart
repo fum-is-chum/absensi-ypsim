@@ -2,7 +2,7 @@
 
 // import 'package:material_kit_flutter/widgets/spinner.dart';
 
-// import '../models/history-izin.dart';
+// import '../models/riwayat-izin.dart';
 
 // class HistoryIzinBloc {
 //   late Map<String, dynamic> _historyIzinModel;

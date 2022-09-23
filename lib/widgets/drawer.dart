@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/misc/credential-getter.dart';
-import 'package:material_kit_flutter/screens/Login-Register-Verification/screens/login/bloc/login-bloc.dart';
+import 'package:material_kit_flutter/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
+import 'package:material_kit_flutter/screens/login-register-verification/screens/login/models/login-result.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 import 'package:material_kit_flutter/widgets/drawer-tile.dart';
-import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MaterialDrawer extends StatelessWidget {
@@ -22,33 +22,7 @@ class MaterialDrawer extends StatelessWidget {
             child: DrawerHeader(
               child: Container(
                 // padding: EdgeInsets.symmetric(horizontal: 28.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: CircleAvatar(
-                        radius: 70,
-                        backgroundImage:
-                            AssetImage("assets/img/logo-ypsim.jpeg"),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
-                      child: Text("John Doe",
-                          style:
-                              TextStyle(color: Colors.black87, fontSize: 21)),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "201110349",
-                          style: TextStyle(color: Colors.black54, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                child: UserInfo(),
               ),
             ),
           ),
@@ -70,32 +44,32 @@ class MaterialDrawer extends StatelessWidget {
                 DrawerTile(
                     icon: Icons.post_add,
                     onTap: () {
-                      if (currentPage != "Request")
-                        Navigator.pushReplacementNamed(context, '/request');
+                      if (currentPage != "Pengajuan-Izin")
+                        Navigator.pushReplacementNamed(context, '/pengajuan-izin');
                     },
                     iconColor: Colors.black,
                     title: "Pengajuan Izin",
-                    isSelected: currentPage == "Request" ? true : false),
+                    isSelected: currentPage == "Pengajuan Izin" ? true : false),
                 DrawerTile(
                     icon: Icons.timelapse,
                     onTap: () {
-                      if (currentPage != "History Presensi")
-                        Navigator.pushReplacementNamed(context, '/history-presensi');
+                      if (currentPage != "Riwayat Presensi")
+                        Navigator.pushReplacementNamed(context, '/riwayat-presensi');
                     },
                     iconColor: Colors.black,
                     title: "Riwayat Presensi",
-                    isSelected: currentPage == "History" ? true : false),
+                    isSelected: currentPage == "Riwayat Presensi" ? true : false),
                 SizedBox(height: 8),
                 DrawerTile(
                     icon: Icons.timelapse,
                     onTap: () {
-                      if (currentPage != "History Izin")
+                      if (currentPage != "Riwayat Izin")
                         Navigator.pushReplacementNamed(
-                            context, '/history-izin');
+                            context, '/riwayat-izin');
                     },
                     iconColor: Colors.black,
                     title: "Riwayat Izin",
-                    isSelected: currentPage == "History Izin" ? true : false),
+                    isSelected: currentPage == "Riwayat Izin" ? true : false),
                 SizedBox(height: 8),
                 Divider(),
               ],
@@ -122,6 +96,61 @@ class MaterialDrawer extends StatelessWidget {
           ),
         ]),
       ),
+    );
+  }
+}
+
+class UserInfo extends StatefulWidget {
+
+  const UserInfo({Key? key}) : super(key: key);
+  @override 
+  State<UserInfo> createState() => _UserInfo();
+}
+
+class _UserInfo extends State<UserInfo> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: CircleAvatar(
+            radius: 70,
+            backgroundImage:
+                AssetImage("assets/img/logo-ypsim.jpeg"),
+          ),
+        ),
+        FutureBuilder<LoginData>(
+          future: CredentialGetter().userData,
+          builder: (BuildContext context, AsyncSnapshot<LoginData> snapshot) {
+            if(!snapshot.hasData) {
+              return Container();
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
+                  child: Text(
+                    snapshot.data!.nama!,
+                    style: TextStyle(color: Colors.black87, fontSize: 21)
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      snapshot.data!.nik!,
+                      style: TextStyle(color: Colors.black54, fontSize: 16),
+                    ),
+                  ],
+                )
+              ],
+            );
+          }
+        ),
+      ],
     );
   }
 }

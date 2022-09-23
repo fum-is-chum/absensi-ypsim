@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/screens/Login-Register-Verification/screens/login/bloc/login-bloc.dart';
+import 'package:material_kit_flutter/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/custom-button.dart';
 

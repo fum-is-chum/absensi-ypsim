@@ -33,7 +33,7 @@ class HistoryPresensiItem extends StatelessWidget {
           ),
           color: MaterialColors.bgCard,
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -75,7 +75,7 @@ class HistoryPresensiItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(width: 24),
+                Spacer(),
                 Card(
                   elevation: 1,
                   // shape: RoundedRectangleBorder(
@@ -85,6 +85,16 @@ class HistoryPresensiItem extends StatelessWidget {
                       width: 90,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(4)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: (() {
+                              if(status == "Absen") return MaterialColors.error;
+                              if(status == "Cepat Pulang") return MaterialColors.info;
+                              return MaterialColors.bgSecondary;
+                            }()),
+                            blurRadius: 2.0
+                          )
+                        ],
                         color: (() {
                           if (status == "Telat") {
                             return MaterialColors.bgPrimary;
@@ -116,50 +126,6 @@ class HistoryPresensiItem extends StatelessWidget {
                         ],
                       )),
                 ),
-                // Container(
-                //   width: MediaQuery.of(context).size.width / 4.5,
-                //   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                //   decoration: BoxDecoration(
-                //     boxShadow: [
-                //       BoxShadow(
-                //         offset: Offset(0,1),
-                //         blurRadius: 3,
-                //         color: Color.fromRGBO(0, 0, 0, 0.2),
-                //       ),
-                //       BoxShadow(
-                //         offset: Offset(0,2),
-                //         blurRadius: 1,
-                //         color: Color.fromRGBO(0, 0, 0, 0.12)
-                //       ),
-                //       BoxShadow(
-                //         offset: Offset(0,1),
-                //         blurRadius: 1,
-                //         color: Color.fromRGBO(0, 0, 0, 0.14)
-                //       )
-                //     ],
-                //     color: (() {
-                //       if (status == "Telat") {
-                //         return MaterialColors.bgPrimary;
-                //       } else if (status == "Absen") {
-                //         return MaterialColors.error;
-                //       } else if (status == "Cepat Pulang") {
-                //         return MaterialColors.info;
-                //       } else {
-                //         return MaterialColors.bgSecondary;
-                //       }
-                //     }()),
-                //     borderRadius: BorderRadius.circular(4),
-                //   ),
-                //   child: Text(
-                //     status,
-                //     textAlign: TextAlign.center,
-                //     style: TextStyle(
-                //       fontSize: 10,
-                //       color: status == "Telat" ? Colors.black87 : Colors.white,
-                //       fontWeight: FontWeight.bold,
-                //     ),
-                //   ),
-                // )
               ],
             ),
           ),

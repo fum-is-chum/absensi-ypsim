@@ -3,9 +3,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../constants/Theme.dart';
 
-SpinKitFoldingCube loadingSpinner() {
-  return SpinKitFoldingCube(
-    color: MaterialColors.bgPrimary,
+SpinKitFadingCircle loadingSpinner() {
+  return SpinKitFadingCircle(
+    color: MaterialColors.newPrimary,
     size: 64,
   );
 }

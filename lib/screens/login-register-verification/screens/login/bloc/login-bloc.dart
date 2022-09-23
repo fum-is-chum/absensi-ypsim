@@ -11,7 +11,7 @@ import 'package:material_kit_flutter/dio-interceptor.dart';
 import 'package:material_kit_flutter/main.dart';
 import 'package:material_kit_flutter/misc/credential-getter.dart';
 import 'package:material_kit_flutter/misc/crypto.dart';
-import 'package:material_kit_flutter/screens/Login-Register-Verification/screens/login/models/login.dart';
+import 'package:material_kit_flutter/screens/login-register-verification/screens/login/models/login.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,7 +39,7 @@ class LoginBloc {
 
   Future<void> saveCredentials(LoginResult cred) async {
     SharedPreferences sharedPref = await SharedPreferences.getInstance();
-    inspect(cred.toJson());
+    // inspect(cred.toJson());
     sharedPref.setString('user', encryptAESCryptoJS(jsonEncode(cred.toJson()),'1!1!'));
   }
 
@@ -84,7 +84,7 @@ class LoginBloc {
       sp.hide();
       return true;
     } catch (e) {
-       sp.hide();
+      sp.hide();
       String error = "";
       if(e is DioError) {
         if(e.response != null) {

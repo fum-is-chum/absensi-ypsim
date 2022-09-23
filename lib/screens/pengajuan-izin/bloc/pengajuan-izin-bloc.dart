@@ -1,6 +1,7 @@
 
 
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:art_sweetalert/art_sweetalert.dart';
@@ -71,6 +72,7 @@ class PengajuanIzinBloc {
     int userId = await CredentialGetter().userId;
     // _pengajuanIzinModel.remove('file');
     // var formData = FormData.fromMap(_pengajuanIzinModel);
+    inspect(_pengajuanIzinModel);
     var formData = FormData.fromMap({
       ..._pengajuanIzinModel,
       'file': _pengajuanIzinModel['file'] != null ?
