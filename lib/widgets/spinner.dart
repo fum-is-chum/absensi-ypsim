@@ -3,8 +3,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../constants/Theme.dart';
 
-SpinKitFadingCircle loadingSpinner() {
-  return SpinKitFadingCircle(
+SpinKitCircle loadingSpinner() {
+  return SpinKitCircle(
     color: MaterialColors.newPrimary,
     size: 64,
   );

@@ -1,20 +1,23 @@
+import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:material_kit_flutter/dio-interceptor.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-// import 'package:material_kit_flutter/widgets/spinner.dart';
+class RiwayatIzinDetailBloc {
+  RiwayatIzinDetailBloc._sharedInstance();
+  static final RiwayatIzinDetailBloc _shared = RiwayatIzinDetailBloc._sharedInstance();
+  factory RiwayatIzinDetailBloc() => _shared;
 
-// import '../models/riwayat-izin.dart';
-
-// class HistoryIzinBloc {
-//   late Map<String, dynamic> _historyIzinModel;
-//   Spinner sp = Spinner();
-
-//   HistoryIzinBloc() {
-//     _historyIzinModel = new HistoryIzinModel().toJson();
-//   }
-
-//   void setValue(String key, dynamic value) => _historyIzinModel[key] = value;
-
-//   String getValue(String key) => _historyIzinModel[key];
-
-//   Map<String, dynamic> getRawValue() => _historyIzinModel;
-// }
+  launchURL(String file) async {
+    Uri url = Uri.parse("https://presensi.ypsimlibrary.com$file");
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url,
+        mode: LaunchMode.externalApplication
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+}

@@ -48,7 +48,7 @@ class PengajuanIzin extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Tanggal Awal',
                     style: TextStyle(
                       fontWeight: FontWeight.bold
@@ -57,7 +57,7 @@ class PengajuanIzin extends StatelessWidget {
                   const SizedBox(height: 4,),
                   TanggalField(),
                   const SizedBox(height: 16,),
-                  Text(
+                  const Text(
                     'Tanggal Akhir',
                     style: TextStyle(
                       fontWeight: FontWeight.bold
@@ -66,7 +66,7 @@ class PengajuanIzin extends StatelessWidget {
                   const SizedBox(height: 4,),
                   TanggalField(isAkhir: true,),
                   const SizedBox(height: 16,),
-                  Text(
+                  const Text(
                     'Keterangan',
                     style: TextStyle(
                       fontWeight: FontWeight.bold
@@ -75,7 +75,7 @@ class PengajuanIzin extends StatelessWidget {
                   const SizedBox(height: 4,),
                   KeteranganField(),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     'Lampiran',
                     style: TextStyle(
                       fontWeight: FontWeight.bold
@@ -228,6 +228,7 @@ class LampiranField extends StatefulWidget {
 
 class _LampiranField extends State<LampiranField> {
   File? pickedFile;
+  String? error;
 
   void reset() {
     pickedFile = null;
@@ -238,63 +239,105 @@ class _LampiranField extends State<LampiranField> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 56,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey,
-          width: 1.0,
-          style: BorderStyle.solid
-        ),
-        borderRadius: BorderRadius.circular(4.0)
-      ),
-      padding: EdgeInsets.all(12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.grey[300])
-                  ),
-                  onPressed: () async {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    FilePickerResult? result = await FilePicker.platform.pickFiles();
-                    if(result != null) {
-                      pickedFile = File(result.files.single.path!);
-                      pengajuanIzinBloc.setValue('file', pickedFile);
-                      // pengajuanIzinBloc.setValue('file')
-                      setState(() {
-                        
-                      });
-                    }
-                  }, 
-                  child: Text(
-                    'Browse',
-                    style: TextStyle(
-                      color: Colors.black
-                    )
-                  )
-                ),
-                const SizedBox(width: 5,),
-                Expanded(
-                  child: Text(pickedFile != null? pickedFile!.path.split('/').last : ''),
-                )
-              ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 56,
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.grey,
+              width: 1.0,
+              style: BorderStyle.solid
             ),
+            borderRadius: BorderRadius.circular(4.0)
           ),
-          pickedFile == null ? Container(): 
-            IconButton(
-              padding: EdgeInsets.zero,
-              constraints: BoxConstraints(),
-              onPressed: reset,
-              icon: Icon(CupertinoIcons.xmark, size: 16)
-            ), 
-        ],
-      ),
+          padding: EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.grey[300])
+                      ),
+                      onPressed: () async {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        FilePickerResult? result = await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: [
+                            'JPG',
+                            'jpg',
+                            'jpeg',
+                            'png',
+                            'PNG',
+                            'doc',
+                            'docx',
+                            'PDF',
+                            'pdf'
+                          ]
+                        );
+                        if(result != null) {
+                          if(result.files[0].size > 2048000) {
+                            error = 'Ukuran file maks 2 MB';
+                            setState(() {
+                              
+                            });
+                            return;
+                          }
+                          error = null;
+                          pickedFile = File(result.files.single.path!);
+                          pengajuanIzinBloc.setValue('file', pickedFile);
+                          // pengajuanIzinBloc.setValue('file')
+                          setState(() {
+                            
+                          });
+                        }
+                      }, 
+                      child: const Text(
+                        'Browse',
+                        style: TextStyle(
+                          color: Colors.black
+                        )
+                      )
+                    ),
+                    const SizedBox(width: 5,),
+                    Expanded(
+                      child: Text(pickedFile != null? pickedFile!.path.split('/').last : ''),
+                    )
+                  ],
+                ),
+              ),
+              pickedFile == null ? Container(): 
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  onPressed: reset,
+                  icon: Icon(CupertinoIcons.xmark, size: 16)
+                ), 
+            ],
+          ),
+        ),
+        (() {
+          if(error == null) return Container();
+          return Text(error!,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: MaterialColors.error
+            ),
+          );
+        }()),
+        Text('Ekstensi file: .pdf, .docx, .doc, .png, .jpg, .jpeg\nUkuran maks: 2 MB',
+          style: TextStyle(
+            fontSize: 12,
+            color: MaterialColors.muted
+          ),
+        )
+      ],
     );
   }
 }
