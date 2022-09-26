@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:material_kit_flutter/bloc/camera-bloc.dart';
+import 'package:material_kit_flutter/bloc/time-bloc.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/screens/camera.dart';
 import 'package:material_kit_flutter/widgets/card-small.dart';
@@ -22,9 +26,28 @@ final Map<String, Map<String, String>> homeCards = {
   },
 };
 
+late TimeBloc timeBloc;
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   // final GlobalKey _scaffoldKey = new GlobalKey();
+
+  @override
+  void initState() {
+    timeBloc = new TimeBloc();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timeBloc.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,11 +143,82 @@ class _ImageRow extends State<ImageRow> {
   }
 }
 
-class CheckIn extends StatelessWidget {
+class CheckIn extends StatefulWidget {
   const CheckIn({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  State<CheckIn> createState() => _CheckInState();
+}
+
+class _CheckInState extends State<CheckIn> {
+
+  @override
+  void initState() {
+    getTime(context);
+    super.initState();
+  }
+
+  late Timer _timer;
+  String count = "00:00:00";
+  List<int> counts = [];
+  var time = 0;
+
+  Future<void> getTime(BuildContext context) async {
+    String result = await timeBloc.getTime(context);
+    DateTime dateString = DateTime.parse(result).add(Duration(hours: 7));
+    DateFormat formatter = DateFormat('H:mm:ss');
+    startTimer(formatter.format(dateString));
+  }
+
+  void startTimer(String data) {
+    const oneSec = const Duration(seconds: 1);
+
+    counts = data.split(":").map((e) => int.parse(e)).toList();
+
+    time = counts[2];
+    time += counts[1] * 60;
+    time += (counts[0] * 60) * 60;
+
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        setState(() {
+          
+          if (counts[2] >= 59 && counts[1] > 0) {
+            counts[1] += 1;
+            counts[2] = 0;
+          }
+
+          if (counts[1] >= 59 && counts[0] > 0) {
+            counts[0] += 1;
+            counts[1] = 0;
+          }
+
+          if (counts[0] >= 60) {
+            counts[0] = 0;
+            counts[1] = 0;
+            counts[2] = 0;
+          }
+
+          counts[2]++;
+          time++;
+
+          count = "${counts[0]}:${counts[1]}:${counts[2]}";
+
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {    
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -156,7 +250,7 @@ class CheckIn extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "07:30:00 WIB",
+                    count+" WIB",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 22,
