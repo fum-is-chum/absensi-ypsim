@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/bloc/riwayat-izin-bloc.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/models/riwayat-izin.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/riwayat-izin-detail.dart';
+import 'package:material_kit_flutter/screens/riwayat-izin/riwayat-izin-edit.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/widgets/riwayat-izin-item.dart';
 import 'package:material_kit_flutter/services/shared-service.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
@@ -26,7 +29,7 @@ class _HistoryIzin extends State<RiwayatIzin> {
 
   @override 
   void dispose() {
-    riwayatIzinBloc.dispose();
+    // riwayatIzinBloc.dispose();
     super.dispose();
   }
   // late Future<List<dynamic>> Function() data = 
@@ -97,9 +100,9 @@ class RiwayatIzinList extends StatefulWidget {
 class _ListWidget extends State<RiwayatIzinList> {
   GlobalKey<SliverAnimatedListState> _listKey = GlobalKey<SliverAnimatedListState>();
   List<dynamic> data = [];
-  bool firstLoad = true;
-  
-  Future<bool> getData(BuildContext context) async {
+  String? err;
+
+  _reset() {
     int len = data.length;
     if(len > 0) {
       for(int i = len-1; i >= 0; i--) {
@@ -110,20 +113,23 @@ class _ListWidget extends State<RiwayatIzinList> {
         ), duration: const Duration(seconds: 0));
       }
     }
+  }
 
-    if(firstLoad) {
-      firstLoad = false;
-    } else {
-      // await Future.delayed(const Duration(seconds: 3));
-      List<dynamic> newData = await riwayatIzinBloc.getPermission(context);
-      for(int i = 0; i < newData.length; i++) {
-        data.insert(i, newData[i]);
-        _listKey.currentState?.insertItem(i);
-        await Future<void>.delayed(const Duration(milliseconds: 30));
+  _getData() async {
+    _reset();
+    try{
+      List<dynamic> newData = await riwayatIzinBloc.getPermission();
+      if(newData.length == 0) return;
+      else {
+        for(int i = 0; i < newData.length; i++) {
+          data.insert(i, newData[i]);
+          _listKey.currentState?.insertItem(i);
+          await Future<void>.delayed(const Duration(milliseconds: 30));
+        }
       }
-      if(newData.length == 0) return false;
+    } catch (e) {
+      err = e as String;
     }
-    return true;
   }
 
   Widget _buildItem(BuildContext context, int index, Animation<double> animation) {
@@ -133,8 +139,15 @@ class _ListWidget extends State<RiwayatIzinList> {
         item: RiwayatIzinModel.fromJson(data[index]),
         tap: () {
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => RiwayatIzinDetail(item: RiwayatIzinModel.fromJson(data[index]),)
-          ));
+            builder: (context) {
+              inspect(DateTime.parse(formatDateOnly(DateTime.now())));
+              print(DateTime.parse(formatDateOnly(DateTime.now())).toIso8601String());
+              // if(DateTime.parse(data[index]['startDate']).isBefore())
+              if(data[index]['status'] != 'Menunggu')
+                return RiwayatIzinDetail(item: RiwayatIzinModel.fromJson(data[index]));
+              return RiwayatIzinEdit(item: RiwayatIzinModel.fromJson(data[index]));
+            })
+          );
         },
       ),
     );
@@ -142,54 +155,64 @@ class _ListWidget extends State<RiwayatIzinList> {
 
   @override
   void initState() {
+    riwayatIzinBloc.init();
+
+    // _getData().then((value) => setState((){}));
+    riwayatIzinBloc.reloadStream.listen((event) {
+      _getData().then((value) => setState((){}));
+    });
+
     super.initState();
-    riwayatIzinBloc.triggerReload();
   }
 
   @override
   void dispose() {
     super.dispose();
+    riwayatIzinBloc.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    err = null;
     return Container(
       // padding: EdgeInsets.only(bottom: 24),
       width: double.infinity,
       height: MediaQuery.of(context).size.height - 144 - 56,
-      child: StreamBuilder<bool>(
-        stream: riwayatIzinBloc.reloadStream,
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          return FutureBuilder(
-            future: getData(context),
-            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-              if(!snapshot.hasData)
-                return loadingSpinner();
-
-              if(snapshot.data! == false)
-                return Center(
-                  child: Text('Data tidak ditemukan'),
-                );
-              
-              return RefreshIndicator(
-                onRefresh: () {
-                  return getData(context);
-                  // setState(() {
-                  // });
-                },
-                child: CustomScrollView(
-                  slivers: [
-                    SliverAnimatedList(
-                      key: _listKey,
-                      itemBuilder: _buildItem,
-                      initialItemCount: data.length,
-                    )
-                  ],
-                )
-              );
-            },
-          );
+      child: RefreshIndicator(
+        onRefresh: () {
+          return _getData();
         },
+        child: StreamBuilder<bool>(
+          stream: riwayatIzinBloc.loadingStream,
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if(!snapshot.hasData || (snapshot.hasData && snapshot.data!)) 
+              return loadingSpinner();
+
+            if(err != null)
+              return Center(
+                child: Text(err!,
+                  textAlign: TextAlign.center,
+                ),
+              );
+            
+            if(data.length == 0) 
+              return Center(
+                child: Text('Tidak ada data',
+                  textAlign: TextAlign.center,
+                ),  
+              );
+            
+            return CustomScrollView(
+              slivers: [
+                SliverAnimatedList(
+                  key: _listKey,
+                  itemBuilder: _buildItem,
+                  initialItemCount: data.length,
+                )
+              ],
+            );
+          }
+        )
       )
     );
   }

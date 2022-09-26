@@ -6,7 +6,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
-import 'package:material_kit_flutter/screens/riwayat-izin/bloc/riwayat-izin-bloc.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/models/riwayat-izin.dart';
 import 'package:material_kit_flutter/services/shared-service.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
@@ -15,10 +14,10 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import 'bloc/riwayat-izin-detail.dart';
 
-class RiwayatIzinDetail extends StatelessWidget {
+class RiwayatIzinEdit extends StatelessWidget {
   final RiwayatIzinModel item;
 
-  RiwayatIzinDetail({Key? key, required this.item}): super(key: key);
+  RiwayatIzinEdit({Key? key, required this.item}): super(key: key);
   
   @override
   Widget build(BuildContext context) {

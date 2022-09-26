@@ -3,9 +3,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:material_kit_flutter/dio-interceptor.dart';
 import 'package:material_kit_flutter/misc/credential-getter.dart';
 import 'package:material_kit_flutter/models/api-response.dart';
@@ -16,20 +14,28 @@ import '../models/riwayat-izin.dart';
 class RiwayatIzinBloc {
   RiwayatIzinFilter _filter = RiwayatIzinFilter();
   late BehaviorSubject<bool> reloadSubject$;
+  late BehaviorSubject<bool> loadingSubject$;
 
   RiwayatIzinBloc() {
-    reloadSubject$ = reloadSubject$ = new BehaviorSubject.seeded(true);
+    init();
+  }
+
+  void init() {
+    reloadSubject$ = new BehaviorSubject.seeded(true);
+    loadingSubject$ = new BehaviorSubject.seeded(false);
   }
 
   RiwayatIzinFilter get filter => _filter;
   Stream<bool> get reloadStream => reloadSubject$.asBroadcastStream();
+  Stream<bool> get loadingStream => loadingSubject$.asBroadcastStream();
 
   triggerReload() {
     reloadSubject$.sink.add(!reloadSubject$.value);
   }
 
-  Future<List<dynamic>> getPermission(BuildContext context) async {
+  Future<List<dynamic>> getPermission() async {
     try {
+      this.loadingSubject$.sink.add(true);
       Response resp = await get();
       ApiResponse body = ApiResponse.fromJson(resp.data);
       // inspect(body.Result);
@@ -47,16 +53,18 @@ class RiwayatIzinBloc {
       } else {
         error = e.toString();
       }
-      ArtSweetAlert.show(
-        context: context,
-        artDialogArgs: ArtDialogArgs(
-          type: ArtSweetAlertType.danger,
-          title: "Gagal",
-          text: error
-        )
-      );
+      // ArtSweetAlert.show(
+      //   context: context,
+      //   artDialogArgs: ArtDialogArgs(
+      //     type: ArtSweetAlertType.danger,
+      //     title: "Gagal",
+      //     text: error
+      //   )
+      // );
 
-      return [];
+      throw error;
+    } finally {
+      this.loadingSubject$.sink.add(false);
     }
   }
 
@@ -73,5 +81,6 @@ class RiwayatIzinBloc {
 
   void dispose() {
     reloadSubject$.close();
+    loadingSubject$.close();
   }
 }
