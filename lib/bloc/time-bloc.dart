@@ -44,7 +44,7 @@ class TimeBloc {
       ArtSweetAlert.show(
           context: context,
           artDialogArgs: ArtDialogArgs(
-            type: ArtSweetAlertType.danger, 
+            type: ArtSweetAlertType.danger,
             title: "Gagal", 
             text: error
           )
@@ -55,10 +55,9 @@ class TimeBloc {
   }
 
   Future<Response> get() async {
-    int id = await CredentialGetter().userId;
     return DioClient().dio.get(
-        "/get-time",
-        options: Options(headers: {'RequireToken': ''}));
+      "/get-time",
+      options: Options(headers: {'RequireToken': ''}));
   }
 
   void dispose() {
