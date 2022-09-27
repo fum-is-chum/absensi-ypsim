@@ -1,13 +1,12 @@
-import 'dart:ui';
+import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:material_kit_flutter/screens/preview_page.dart';
-import 'dart:io';
 import 'package:image/image.dart' as img;
-import 'dart:math' as math;
+import 'package:material_kit_flutter/screens/preview_page.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({Key? key, required this.cameras}) : super(key: key);
@@ -24,16 +23,18 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    _cameraController.dispose();
+    // SystemChrome.restoreSystemUIOverlays();
     super.dispose();
+    _cameraController.dispose();
+
+    Future.delayed(Duration(seconds: 1)).then((value) => SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values)); // to re-show bars
   }
 
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    // super.initState();
     initCamera(widget.cameras![1]);
+    super.initState();
   }
 
   Future takePicture() async {
@@ -73,7 +74,7 @@ class _CameraPageState extends State<CameraPage> {
     _cameraController =
         CameraController(
           cameraDescription, 
-          ResolutionPreset.veryHigh,
+          ResolutionPreset.high,
           enableAudio: false
         );
     try {

@@ -15,6 +15,7 @@ import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'misc/credential-getter.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   initializeDateFormatting('id_ID', null).then((_) => runApp(MaterialKitPROFlutter()));
 }
 
@@ -29,18 +30,6 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 class MaterialKitPROFlutter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> data = {
-      "id": 39,
-      "employee_id": 1,
-      "start_date": "2022-09-30",
-      "end_date": "2022-09-30",
-      "file": "/storage/permission/1_23-09-2022-22-41-54.png",
-      "remark": "Urusan pribadi",
-      "status": "Menunggu",
-      "reason": null,
-      "created_at": "2022-09-23T15:41:55.000000Z",
-      "updated_at": "2022-09-23T15:41:55.000000Z"
-    };
     return GestureDetector(
         onTap: () {
           hideKeyboard(context);

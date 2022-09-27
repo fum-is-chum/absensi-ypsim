@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
-import 'dart:convert';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:material_kit_flutter/bloc/camera-bloc.dart';
@@ -38,6 +39,10 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    Future.delayed(Duration(seconds: 1)).then((value) {
+      SystemChrome.restoreSystemUIOverlays();
+    });
     timeBloc = new TimeBloc();
     super.initState();
   }
