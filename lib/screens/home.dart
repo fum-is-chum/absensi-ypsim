@@ -194,7 +194,7 @@ class _CheckInState extends State<CheckIn> {
             counts[1] = 0;
           }
 
-          if (counts[0] >= 60) {
+          if (counts[0] >= 23) {
             counts[0] = 0;
             counts[1] = 0;
             counts[2] = 0;
@@ -203,7 +203,27 @@ class _CheckInState extends State<CheckIn> {
           counts[2]++;
           time++;
 
-          count = "${counts[0]}:${counts[1]}:${counts[2]}";
+          var hours = "";
+          var minutes = "";
+          var seconds = "";
+
+          if (counts[0] < 10){
+            hours = "0";
+          }
+          
+          if (counts[1] < 10) {
+            minutes = "0";
+          }
+          
+          if (counts[2] < 10) {
+            seconds = "0";
+          }
+
+          hours += "${counts[0]}";
+          minutes += "${counts[1]}";
+          seconds += "${counts[2]}";
+
+          count = "${hours}:${minutes}:${seconds}";
 
         });
       },
