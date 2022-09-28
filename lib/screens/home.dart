@@ -159,91 +159,16 @@ class _CheckInState extends State<CheckIn> {
 
   @override
   void initState() {
-    getTime(context);
     super.initState();
-  }
-
-  late Timer _timer;
-  String count = "00:00:00";
-  List<int> counts = [];
-  var time = 0;
-
-  Future<void> getTime(BuildContext context) async {
-    String result = await timeBloc.getTime(context);
-    DateTime dateString = DateTime.parse(result).add(Duration(hours: 7));
-    DateFormat formatter = DateFormat('H:mm:ss');
-    startTimer(formatter.format(dateString));
-  }
-
-  void startTimer(String data) {
-    const oneSec = const Duration(seconds: 1);
-
-    counts = data.split(":").map((e) => int.parse(e)).toList();
-
-    time = counts[2];
-    time += counts[1] * 60;
-    time += (counts[0] * 60) * 60;
-
-    _timer = Timer.periodic(
-      oneSec,
-      (Timer timer) {
-        setState(() {
-          
-          if (counts[2] >= 59 && counts[1] > 0) {
-            counts[1] += 1;
-            counts[2] = 0;
-          }
-
-          if (counts[1] >= 59 && counts[0] > 0) {
-            counts[0] += 1;
-            counts[1] = 0;
-          }
-
-          if (counts[0] >= 23) {
-            counts[0] = 0;
-            counts[1] = 0;
-            counts[2] = 0;
-          }
-
-          counts[2]++;
-          time++;
-
-          var hours = "";
-          var minutes = "";
-          var seconds = "";
-
-          if (counts[0] < 10){
-            hours = "0";
-          }
-          
-          if (counts[1] < 10) {
-            minutes = "0";
-          }
-          
-          if (counts[2] < 10) {
-            seconds = "0";
-          }
-
-          hours += "${counts[0]}";
-          minutes += "${counts[1]}";
-          seconds += "${counts[2]}";
-
-          count = "${hours}:${minutes}:${seconds}";
-
-        });
-      },
-    );
   }
 
   @override
   void dispose() {
-    _timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {    
-
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -274,14 +199,7 @@ class _CheckInState extends State<CheckIn> {
                     ),
                   ),
                   SizedBox(height: 8),
-                  Text(
-                    count+" WIB",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  TimerDisplay()
                 ],
               ),
             ),
@@ -345,6 +263,115 @@ class _CheckInState extends State<CheckIn> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class TimerDisplay extends StatefulWidget {
+  const TimerDisplay({Key? key}): super(key: key);
+
+  @override
+  State<TimerDisplay> createState() => _TimerDisplay();
+}
+
+class _TimerDisplay extends State<TimerDisplay> {
+  late Timer _timer;
+  String count = "00:00:00";
+  List<int> counts = [];
+  var time = 0;
+
+  @override
+  void initState() {
+    getTime(context);
+    super.initState();
+  }
+
+  Future<void> getTime(BuildContext context) async {
+    try {
+      String result = await timeBloc.getTime(context);
+      DateTime dateString = DateTime.parse(result).add(Duration(hours: 7));
+      DateFormat formatter = DateFormat('H:mm:ss');
+      startTimer(formatter.format(dateString));
+    } catch (e) {
+      inspect(e);
+    }
+  }
+
+  void startTimer(String data) {
+    const oneSec = const Duration(seconds: 1);
+
+    counts = data.split(":").map((e) => int.parse(e)).toList();
+
+    time = counts[2];
+    time += counts[1] * 60;
+    time += (counts[0] * 60) * 60;
+
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        setState(() {
+          
+          if (counts[2] >= 59 && counts[1] > 0) {
+            counts[1] += 1;
+            counts[2] = 0;
+          }
+
+          if (counts[1] >= 59 && counts[0] > 0) {
+            counts[0] += 1;
+            counts[1] = 0;
+          }
+
+          if (counts[0] >= 23) {
+            counts[0] = 0;
+            counts[1] = 0;
+            counts[2] = 0;
+          }
+
+          counts[2]++;
+          time++;
+
+          var hours = "";
+          var minutes = "";
+          var seconds = "";
+
+          if (counts[0] < 10){
+            hours = "0";
+          }
+          
+          if (counts[1] < 10) {
+            minutes = "0";
+          }
+          
+          if (counts[2] < 10) {
+            seconds = "0";
+          }
+
+          hours += "${counts[0]}";
+          minutes += "${counts[1]}";
+          seconds += "${counts[2]}";
+
+          count = "$hours:$minutes:$seconds";
+
+        });
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      count+" WIB",
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
       ),
     );
   }
