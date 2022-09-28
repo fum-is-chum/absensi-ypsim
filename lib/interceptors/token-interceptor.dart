@@ -1,8 +1,8 @@
-import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:material_kit_flutter/main.dart';
 import 'package:material_kit_flutter/misc/credential-getter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:material_kit_flutter/main.dart';
+
 import '../misc/credential-getter.dart';
 
 class TokenInterceptor extends Interceptor {

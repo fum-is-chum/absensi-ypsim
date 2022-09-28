@@ -1,13 +1,13 @@
 class ApiResponse {
   int? StatusCode;
   String? Message;
-  dynamic? Result;
+  dynamic Result;
   // lampiran
 
     ApiResponse({
     int? StatusCode,
     String? Message,
-    dynamic? Result
+    dynamic Result
   }) :  this.StatusCode = StatusCode ?? 0,
         this.Message = Message ?? '',
         this.Result = Result ?? {};

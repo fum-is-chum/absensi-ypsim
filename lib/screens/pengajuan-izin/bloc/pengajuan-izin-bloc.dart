@@ -1,7 +1,6 @@
 
 
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:art_sweetalert/art_sweetalert.dart';
@@ -42,7 +41,7 @@ class PengajuanIzinBloc {
   Future<bool> updateIzin(BuildContext context) async {
     try{
       sp.show(context: context);
-      Response resp = await update();
+      await update();
       sp.hide();
       await ArtSweetAlert.show(
         context: context,

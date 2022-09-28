@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:art_sweetalert/art_sweetalert.dart';
@@ -8,8 +7,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/dio-interceptor.dart';
-import 'package:material_kit_flutter/main.dart';
-import 'package:material_kit_flutter/misc/credential-getter.dart';
 import 'package:material_kit_flutter/misc/crypto.dart';
 import 'package:material_kit_flutter/screens/login-register-verification/screens/login/models/login.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
@@ -80,7 +77,7 @@ class LoginBloc {
   Future<bool> logoutUser(BuildContext context) async {
     try {
       sp.show(context: context);
-      Response resp = await logout();
+      await logout();
       sp.hide();
       return true;
     } catch (e) {
