@@ -8,12 +8,12 @@ class DioClient {
   factory DioClient() => _shared;
 
   Dio get dio => createDio();
-  Dio dioWithResponseType(ResponseType r) => createDio(responseType: r);
+  Dio dioWithResponseType(ResponseType r, {String? baseUrl}) => createDio(responseType: r, baseUrl: baseUrl);
 
-  Dio createDio({ResponseType responseType = ResponseType.json}) {
+  Dio createDio({ResponseType responseType = ResponseType.json, String? baseUrl}) {
     Dio dio = Dio(
       BaseOptions(
-        baseUrl: "https://presensi.ypsimlibrary.com/api",
+        baseUrl: baseUrl != null ? baseUrl : "https://presensi.ypsimlibrary.com/api",
         contentType: 'application/json;charset=utf-8',
         responseType: responseType,
         headers: {

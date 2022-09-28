@@ -3,12 +3,12 @@ import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/models/riwayat-izin.dart';
 import 'package:material_kit_flutter/services/shared-service.dart';
 
-class HistoryIzinItem extends StatelessWidget {
+class RiwayatIzinItem extends StatelessWidget {
 
   final RiwayatIzinModel item;
   final Function tap;
   
-  HistoryIzinItem({
+  RiwayatIzinItem({
     required this.item,
     this.tap = defaultFunc
   });

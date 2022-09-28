@@ -1,14 +1,16 @@
-import 'dart:io';
+import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/dio-interceptor.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:material_kit_flutter/models/api-response.dart';
+import 'package:material_kit_flutter/screens/pengajuan-izin/models/pengajuan-izin-model.dart';
+import 'package:material_kit_flutter/services/shared-service.dart';
+import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RiwayatIzinDetailBloc {
-  RiwayatIzinDetailBloc._sharedInstance();
-  static final RiwayatIzinDetailBloc _shared = RiwayatIzinDetailBloc._sharedInstance();
-  factory RiwayatIzinDetailBloc() => _shared;
+  Spinner sp = Spinner();
 
   launchURL(String file) async {
     Uri url = Uri.parse("https://presensi.ypsimlibrary.com$file");
@@ -18,6 +20,36 @@ class RiwayatIzinDetailBloc {
       );
     } else {
       throw 'Could not launch $url';
+    }
+  }
+
+  Future<PengajuanIzinModel?> getDetail(BuildContext? context, int permission_id) async {
+    if(context != null) sp.show(context: context);
+    try {
+      PengajuanIzinModel? data = await detail(permission_id);
+      if(context != null) sp.hide();
+      return data;
+    } catch (e) {
+      if(context != null) sp.hide();
+      handleError(context, e);
+    }
+    return null;
+  }
+
+
+  Future<PengajuanIzinModel?> detail(int permission_id) async {
+    try {
+      Response resp = await DioClient().dio.get(
+        "/permission/detail/$permission_id",
+        options: Options(
+          headers: {
+            'RequireToken': ''
+          }
+        )
+      );
+      return PengajuanIzinModel.fromJson(ApiResponse.fromJson(resp.data).Result);
+    } catch (e) {
+      throw e;
     }
   }
 }

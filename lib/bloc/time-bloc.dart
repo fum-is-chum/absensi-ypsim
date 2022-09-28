@@ -40,7 +40,7 @@ class TimeBloc {
       } else {
         error = e.toString();
       }
-      ArtSweetAlert.show(
+      await ArtSweetAlert.show(
           context: context,
           artDialogArgs: ArtDialogArgs(
             type: ArtSweetAlertType.danger,

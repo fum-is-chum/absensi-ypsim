@@ -6,20 +6,42 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:material_kit_flutter/constants/Theme.dart';
-import 'package:material_kit_flutter/screens/riwayat-izin/bloc/riwayat-izin-bloc.dart';
+import 'package:material_kit_flutter/screens/pengajuan-izin/pengajuan-izin.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/models/riwayat-izin.dart';
 import 'package:material_kit_flutter/services/shared-service.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'bloc/riwayat-izin-detail.dart';
+
+RiwayatIzinDetailBloc _riwayatIzinBloc = RiwayatIzinDetailBloc();
 
 class RiwayatIzinDetail extends StatelessWidget {
   final RiwayatIzinModel item;
 
   RiwayatIzinDetail({Key? key, required this.item}): super(key: key);
   
+  List<Widget> _actionWidget(BuildContext context) {
+    if(item.status == 'Menunggu') 
+      return [
+        IconButton(
+          onPressed: () async {
+            await _riwayatIzinBloc.getDetail(context, item.id).then((value) {
+              if(value != null) {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => 
+                  PengajuanIzin(editData: value,)
+                ));
+              }
+            });
+          },
+          icon: Icon(Icons.edit_note,
+            size: 32.0,
+          )
+        )
+      ];
+    return [];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,6 +55,7 @@ class RiwayatIzinDetail extends StatelessWidget {
           elevation: 2,
           backgroundColor: MaterialColors.bgColorScreen,
           iconTheme: IconThemeData(color: Colors.black),
+          actions: _actionWidget(context),
         ),
         backgroundColor: MaterialColors.bgColorScreen,
         // key: _scaffoldKey,
@@ -93,7 +116,14 @@ class RiwayatIzinDetail extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
-                Text(formatDateOnly(item.start_date, format: "dd MMMM yyyy")),
+                Text(formatDateOnly(item.end_date, format: "dd MMMM yyyy")),
+                SizedBox(height: 16),
+                Text(
+                  "Keterangan",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(item.remark),
                 SizedBox(height: 16),
                 Text(
                   "Lampiran",
@@ -105,7 +135,7 @@ class RiwayatIzinDetail extends StatelessWidget {
                     return Text('Tidak ada Lampiran');
                   return InkWell(
                     onTap: () {
-                      if(item.file != null) RiwayatIzinDetailBloc().launchURL(item.file!);
+                      if(item.file != null) _riwayatIzinBloc.launchURL(item.file!);
                     },
                     child: Text(item.file!.substring(item.file!.lastIndexOf('/') + 1),
                       style: TextStyle(
@@ -139,29 +169,6 @@ class LampiranView extends StatefulWidget {
 }
 
 class _LampiranView extends State<LampiranView> {
-  
-  Future<File> createFileOfPdfUrl() async {
-    Completer<File> completer = Completer();
-    // print("Start download file from internet!");
-    try {
-      final filename = widget.url.substring(widget.url.lastIndexOf("/") + 1);
-      var request = await HttpClient().getUrl(Uri.parse(widget.url));
-      var response = await request.close();
-      var bytes = await consolidateHttpClientResponseBytes(response);
-      var dir = await getApplicationDocumentsDirectory();
-      print("Download files");
-      print("${dir.path}/$filename");
-      File file = File("${dir.path}/$filename");
-
-      await file.writeAsBytes(bytes, flush: true);
-      completer.complete(file);
-      print("Done");
-    } catch (e) {
-      throw Exception('Error parsing asset file!');
-    }
-
-    return completer.future;
-  }
 
   @override 
   Widget build(BuildContext context) {
@@ -217,7 +224,7 @@ class _LampiranView extends State<LampiranView> {
     return Container(
       height: 500,
       child: FutureBuilder(
-        future: createFileOfPdfUrl(),
+        future: createFileOfPdfUrl(context, widget.url),
         builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
           if(!snapshot.hasData)
             return loadingSpinner();
@@ -318,21 +325,6 @@ class _PDFScreenState extends State<PDFScreen> with WidgetsBindingObserver {
                 )
         ],
       ),
-      // floatingActionButton: FutureBuilder<PDFViewController>(
-      //   future: _controller.future,
-      //   builder: (context, AsyncSnapshot<PDFViewController> snapshot) {
-      //     if (snapshot.hasData) {
-      //       return FloatingActionButton.extended(
-      //         label: Text("Go to ${pages! ~/ 2}"),
-      //         onPressed: () async {
-      //           await snapshot.data!.setPage(pages! ~/ 2);
-      //         },
-      //       );
-      //     }
-
-      //     return Container();
-      //   },
-      // ),
     );
   }
 }

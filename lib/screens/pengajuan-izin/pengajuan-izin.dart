@@ -9,16 +9,51 @@ import '../../constants/Theme.dart';
 import '../../services/hide_keyboard.dart';
 import '../../widgets/drawer.dart';
 import 'bloc/pengajuan-izin-bloc.dart';
+import 'models/pengajuan-izin-model.dart';
 
-final pengajuanIzinBloc = new PengajuanIzinBloc();
+final _pengajuanIzinBloc = new PengajuanIzinBloc();
 
-class PengajuanIzin extends StatelessWidget {
-  PengajuanIzin({Key? key}): super(key: key);
+bool get _isEdit {
+  return _pengajuanIzinBloc.model.id > 0;
+}
+
+bool get _hasFile {
+  return _isEdit && _pengajuanIzinBloc.model.file != null;
+}
+
+bool get _fileLoading {
+  return _pengajuanIzinBloc.model.file.runtimeType.toString() == 'String';
+}
+
+class PengajuanIzin extends StatefulWidget {
+  final PengajuanIzinModel? editData;
+  PengajuanIzin({Key? key, this.editData}): super(key: key);
+
+  @override
+  State<PengajuanIzin> createState() => _PengajuanIzin();
+}
+
+class _PengajuanIzin extends State<PengajuanIzin> {
+
   final GlobalKey<FormState> _key = new GlobalKey<FormState>();
   final GlobalKey<_LampiranField> _lampiranKey = new GlobalKey<_LampiranField>();
 
   @override
+  void dispose() {
+    super.dispose();
+    _pengajuanIzinBloc.dispose();
+  }
+
+  Widget? _drawer() {
+    if(widget.editData == null)
+      return MaterialDrawer(currentPage: "Pengajuan Izin");
+    return null;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if(widget.editData != null) _pengajuanIzinBloc.setInitialValue(widget.editData!);
+
     return GestureDetector(
       onTap: () {
         hideKeyboard(context);
@@ -33,10 +68,11 @@ class PengajuanIzin extends StatelessWidget {
           ),
           backgroundColor: Colors.white,
           iconTheme: IconThemeData(color: Colors.black),
+          // automaticallyImplyLeading: editData != null,
         ),
         backgroundColor: MaterialColors.bgColorScreen,
         // key: _scaffoldKey,
-        drawer: MaterialDrawer(currentPage: "Pengajuan Izin"),
+        drawer: _drawer(),
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
@@ -88,14 +124,26 @@ class PengajuanIzin extends StatelessWidget {
                     children: [
                       Expanded(
                         child: ElevatedButton(
-                        onPressed: () async {
-                          if(_key.currentState!.validate()) {
-                            _key.currentState!.save();
-                            if(await pengajuanIzinBloc.createIzin(context))
-                              _key.currentState!.reset();
-                              _lampiranKey.currentState!.reset();
-                          }
-                        },
+                          onPressed: () async {
+                            if(_key.currentState!.validate()) {
+                              _key.currentState!.save();
+                              try {
+                                if(_isEdit) {
+                                  if(_hasFile && _fileLoading) throw 'File Loading';
+                                  if(await _pengajuanIzinBloc.updateIzin(context))
+                                    await Future.delayed(Duration(milliseconds: 500));
+                                    Navigator.popUntil(context, ModalRoute.withName('/riwayat-izin'));
+                                } else if(!_isEdit) {
+                                  if(await _pengajuanIzinBloc.createIzin(context)) {
+                                    _key.currentState!.reset();
+                                    _lampiranKey.currentState!.reset();
+                                  }
+                                }
+                              } catch (e) {
+                                handleError(context, e);
+                              }
+                            }
+                          },
                           child: Text('Submit')
                         ),
                       )
@@ -125,7 +173,7 @@ class _TanggalField extends State<TanggalField> {
   @override 
   void initState() {
     super.initState();
-    _controller.text = pengajuanIzinBloc.getValue('endDate');
+    _controller.text = widget.isAkhir ? _pengajuanIzinBloc.model.end_date : _pengajuanIzinBloc.model.start_date;
   }
 
   @override
@@ -136,7 +184,7 @@ class _TanggalField extends State<TanggalField> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (String? val) {
 
-        if(val != null && widget.isAkhir && DateTime.parse(val).isBefore(DateTime.parse(pengajuanIzinBloc.getValue('startDate')))) {
+        if(val != null && widget.isAkhir && DateTime.parse(val).isBefore(DateTime.parse(_pengajuanIzinBloc.model.start_date))) {
           return '';
         }
         return null;
@@ -149,12 +197,15 @@ class _TanggalField extends State<TanggalField> {
           onPressed: (){
             showDatePicker(
               context: context,
-              initialDate: DateTime.parse(pengajuanIzinBloc.getValue('startDate')),
-              firstDate: widget.isAkhir? DateTime.parse(pengajuanIzinBloc.getValue('startDate')) : DateTime.now(),
+              initialDate: DateTime.parse(_pengajuanIzinBloc.model.start_date),
+              firstDate: widget.isAkhir? DateTime.parse(_pengajuanIzinBloc.model.start_date) : DateTime.now(),
               lastDate: DateTime(DateTime.now().year + 10)
             ).then((DateTime? value) {
               if(value != null){
-                pengajuanIzinBloc.setValue(widget.isAkhir? 'endDate': 'startDate', formatDateOnly(value));
+                if(widget.isAkhir)
+                  _pengajuanIzinBloc.model.end_date = formatDateOnly(value);
+                else
+                  _pengajuanIzinBloc.model.start_date = formatDateOnly(value);
                 _controller.text = formatDateOnly(value);
                 setState(() {
                   
@@ -169,12 +220,15 @@ class _TanggalField extends State<TanggalField> {
       onTap: (){
         showDatePicker(
           context: context,
-          initialDate: DateTime.parse(pengajuanIzinBloc.getValue('startDate')),
-          firstDate: widget.isAkhir? DateTime.parse(pengajuanIzinBloc.getValue('startDate')) : DateTime.fromMillisecondsSinceEpoch(0),
+          initialDate: DateTime.parse(_pengajuanIzinBloc.model.start_date),
+          firstDate: widget.isAkhir? DateTime.parse(_pengajuanIzinBloc.model.start_date) : DateTime.fromMillisecondsSinceEpoch(0),
           lastDate: DateTime(DateTime.now().year + 10)
         ).then((DateTime? value) {
           if(value != null){
-            pengajuanIzinBloc.setValue(widget.isAkhir? 'endDate': 'startDate', formatDateOnly(value).toString());
+            if(widget.isAkhir)
+                _pengajuanIzinBloc.model.end_date = formatDateOnly(value);
+              else
+                _pengajuanIzinBloc.model.start_date = formatDateOnly(value);
             _controller.text = formatDateOnly(value);
             setState(() {
               
@@ -201,6 +255,7 @@ class _KeteranganField extends State<KeteranganField> {
       keyboardType: TextInputType.multiline,
       maxLines: null,
       minLines: 5,
+      initialValue: _pengajuanIzinBloc.model.remark,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (String? val) {
         if(val == null || val.isEmpty) {
@@ -209,7 +264,7 @@ class _KeteranganField extends State<KeteranganField> {
         return null;
       },
       onSaved: (String? value) {
-        pengajuanIzinBloc.setValue('remark', value);
+        _pengajuanIzinBloc.model.remark = value ?? '';
       },
       decoration: InputDecoration(
         hintText: 'Keterangan Izin',
@@ -235,6 +290,25 @@ class _LampiranField extends State<LampiranField> {
     setState(() {
       
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    if(_hasFile) { // if edit mode
+      _pengajuanIzinBloc.fetchFile().then((value) {
+        pickedFile = value;
+        if(pickedFile != null) 
+          setState(() {
+            
+          });
+      });
+    }
+    super.initState();
   }
 
   @override
@@ -264,7 +338,7 @@ class _LampiranField extends State<LampiranField> {
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.resolveWith((states) => Colors.grey[300])
                       ),
-                      onPressed: () async {
+                      onPressed: _fileLoading ? null : () async {
                         FocusManager.instance.primaryFocus?.unfocus();
                         FilePickerResult? result = await FilePicker.platform.pickFiles(
                           type: FileType.custom,
@@ -290,8 +364,8 @@ class _LampiranField extends State<LampiranField> {
                           }
                           error = null;
                           pickedFile = File(result.files.single.path!);
-                          pengajuanIzinBloc.setValue('file', pickedFile);
-                          // pengajuanIzinBloc.setValue('file')
+                          _pengajuanIzinBloc.model.file = pickedFile;
+                          // _pengajuanIzinBloc.setValue('file')
                           setState(() {
                             
                           });
@@ -306,7 +380,7 @@ class _LampiranField extends State<LampiranField> {
                     ),
                     const SizedBox(width: 5,),
                     Expanded(
-                      child: Text(pickedFile != null? pickedFile!.path.split('/').last : ''),
+                      child: Text(pickedFile != null? pickedFile!.path.split('/').last : _hasFile ? 'Loading...' : ''),
                     )
                   ],
                 ),

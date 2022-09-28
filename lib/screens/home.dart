@@ -276,7 +276,7 @@ class TimerDisplay extends StatefulWidget {
 }
 
 class _TimerDisplay extends State<TimerDisplay> {
-  late Timer _timer;
+  Timer _timer = Timer(Duration(seconds: 10), () {});
   String count = "00:00:00";
   List<int> counts = [];
   var time = 0;
@@ -360,8 +360,8 @@ class _TimerDisplay extends State<TimerDisplay> {
 
   @override
   void dispose() {
-    _timer.cancel();
     super.dispose();
+    _timer.cancel();
   }
 
   @override

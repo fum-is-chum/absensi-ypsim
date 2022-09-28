@@ -65,7 +65,7 @@ class LoginBloc {
       } else {
         error = e.toString();
       }
-      ArtSweetAlert.show(
+      await ArtSweetAlert.show(
         context: context,
         artDialogArgs: ArtDialogArgs(
           type: ArtSweetAlertType.danger,
@@ -97,7 +97,7 @@ class LoginBloc {
       } else {
         error = e.toString();
       }
-        ArtSweetAlert.show(
+        await ArtSweetAlert.show(
           context: context,
           artDialogArgs: ArtDialogArgs(
             type: ArtSweetAlertType.danger,

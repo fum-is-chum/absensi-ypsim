@@ -44,7 +44,7 @@ class RegisterBloc {
     try {
       await register();
       sp.hide();
-      ArtSweetAlert.show(
+      await ArtSweetAlert.show(
           context: context,
           artDialogArgs: ArtDialogArgs(
               type: ArtSweetAlertType.success,
@@ -62,7 +62,7 @@ class RegisterBloc {
       } else if(err.error is TimeoutException) {
         error = "${err.requestOptions.baseUrl}${err.requestOptions.path}\nRequest Timeout";
       }
-      ArtSweetAlert.show(
+      await ArtSweetAlert.show(
         context: context,
         artDialogArgs: ArtDialogArgs(
           type: ArtSweetAlertType.danger,

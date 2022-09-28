@@ -5,7 +5,6 @@ import 'package:material_kit_flutter/constants/Theme.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/bloc/riwayat-izin-bloc.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/models/riwayat-izin.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/riwayat-izin-detail.dart';
-import 'package:material_kit_flutter/screens/riwayat-izin/riwayat-izin-edit.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/widgets/riwayat-izin-item.dart';
 import 'package:material_kit_flutter/services/shared-service.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
@@ -119,8 +118,9 @@ class _ListWidget extends State<RiwayatIzinList> {
     _reset();
     try{
       List<dynamic> newData = await riwayatIzinBloc.getPermission();
-      if(newData.length == 0) return;
+      if(newData.length == 0) throw 'Tidak ada data';
       else {
+        err = null;
         for(int i = 0; i < newData.length; i++) {
           data.insert(i, newData[i]);
           _listKey.currentState?.insertItem(i);
@@ -135,19 +135,16 @@ class _ListWidget extends State<RiwayatIzinList> {
   Widget _buildItem(BuildContext context, int index, Animation<double> animation) {
     return FadeTransition(
       opacity: animation,
-      child: HistoryIzinItem(
+      child: RiwayatIzinItem(
         item: RiwayatIzinModel.fromJson(data[index]),
-        tap: () {
-          Navigator.of(context).push(MaterialPageRoute(
+        tap: () async {
+          await Navigator.of(context).push(MaterialPageRoute(
             builder: (context) {
-              inspect(DateTime.parse(formatDateOnly(DateTime.now())));
-              print(DateTime.parse(formatDateOnly(DateTime.now())).toIso8601String());
               // if(DateTime.parse(data[index]['startDate']).isBefore())
-              if(data[index]['status'] != 'Menunggu')
-                return RiwayatIzinDetail(item: RiwayatIzinModel.fromJson(data[index]));
-              return RiwayatIzinEdit(item: RiwayatIzinModel.fromJson(data[index]));
+              return RiwayatIzinDetail(item: RiwayatIzinModel.fromJson(data[index]));
             })
           );
+          _getData();
         },
       ),
     );
@@ -173,7 +170,6 @@ class _ListWidget extends State<RiwayatIzinList> {
 
   @override
   Widget build(BuildContext context) {
-    err = null;
     return Container(
       // padding: EdgeInsets.only(bottom: 24),
       width: double.infinity,
@@ -189,17 +185,16 @@ class _ListWidget extends State<RiwayatIzinList> {
               return loadingSpinner();
 
             if(err != null)
-              return Center(
-                child: Text(err!,
-                  textAlign: TextAlign.center,
-                ),
-              );
-            
-            if(data.length == 0) 
-              return Center(
-                child: Text('Tidak ada data',
-                  textAlign: TextAlign.center,
-                ),  
+              return CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Center(
+                      child: Text(err!,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                ],
               );
             
             return CustomScrollView(

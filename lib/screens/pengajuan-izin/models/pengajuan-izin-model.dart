@@ -1,16 +1,18 @@
-import 'dart:io';
-
 import 'package:material_kit_flutter/services/shared-service.dart';
 
 class PengajuanIzinModel {
-  String? startDate;
-  String? endDate;
-  String? remark;
-  File? file;
+  late int id;
+  late String start_date;
+  late String end_date;
+  late String remark;
+  dynamic file;
 
-  PengajuanIzinModel({String? startDate, String? endDate, String? remark, File? file})
-      : this.startDate = startDate ?? formatDateOnly(DateTime.now()),
-        this.endDate = endDate ?? formatDateOnly(DateTime.now()),
+  // String? _filePath;
+
+  PengajuanIzinModel({int? id, String? start_date, String? end_date, String? remark, dynamic file})
+      : this.id = id ?? 0,
+        this.start_date = start_date ?? formatDateOnly(DateTime.now()),
+        this.end_date = end_date ?? formatDateOnly(DateTime.now()),
         this.remark = remark ?? '',
         this.file = file ?? null;
 
@@ -20,12 +22,13 @@ class PengajuanIzinModel {
     - $1 = json['$1'];
   */
   PengajuanIzinModel.fromJson(Map<String, dynamic> json) {
-    startDate = json['startDate'];
-    endDate = json['endDate'];
+    id = json['id'];  
+    start_date = json['start_date'];
+    end_date = json['end_date'];
     remark = json['remark'];
-    // file = json['file'];
+    file = json['file'];
   }
-
+  
 /*
     VSCode Regex:
     - this\.(.*),
@@ -33,8 +36,9 @@ class PengajuanIzinModel {
   */
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['startDate'] = this.startDate;
-    data['endDate'] = this.endDate;
+    data['id'] = this.id;
+    data['start_date'] = this.start_date;
+    data['end_date'] = this.end_date;
     data['remark'] = this.remark;
     data['file'] = this.file;
     return data;
