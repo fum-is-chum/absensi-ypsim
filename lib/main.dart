@@ -4,7 +4,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:material_kit_flutter/screens/home.dart';
 import 'package:material_kit_flutter/screens/login-register-verification/screen.dart';
 import 'package:material_kit_flutter/screens/pengajuan-izin/pengajuan-izin.dart';
-import 'package:material_kit_flutter/screens/profile.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/riwayat-izin.dart';
 import 'package:material_kit_flutter/screens/riwayat-presensi/riwayat-presensi-detail.dart';
 import 'package:material_kit_flutter/screens/riwayat-presensi/riwayat-presensi.dart';
@@ -45,8 +44,7 @@ class MaterialKitPROFlutter extends StatelessWidget {
               "/riwayat-presensi": (BuildContext context) => RiwayatPresensi(),
               "/riwayat-presensi-detail": (BuildContext context) => RiwayatPresensiDetail(),
               "/riwayat-izin": (BuildContext context) => RiwayatIzin(),
-              "/pengajuan-izin": (BuildContext context) => PengajuanIzin(),
-              "/profile": (BuildContext context) => Profile(),
+              "/pengajuan-izin": (BuildContext context) => PengajuanIzin()
             },
             home: FutureBuilder<String>(
               future: initialize(),
