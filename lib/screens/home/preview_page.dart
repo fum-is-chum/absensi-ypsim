@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:absensi_ypsim/screens/home/bloc/camera-bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:absensi_ypsim/bloc/camera-bloc.dart';
 
 class PreviewPage extends StatelessWidget {
   const PreviewPage({Key? key, required this.picture}) : super(key: key);

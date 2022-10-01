@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:absensi_ypsim/dio-interceptor.dart';
+import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
 import 'package:absensi_ypsim/models/api-response.dart';
 import 'package:rxdart/rxdart.dart';
 

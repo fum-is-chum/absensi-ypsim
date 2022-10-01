@@ -1,11 +1,10 @@
+import 'package:absensi_ypsim/screens/riwayat-presensi/bloc/history-bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:absensi_ypsim/bloc/history-bloc.dart';
-import 'package:absensi_ypsim/constants/Theme.dart';
+import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/screens/history-dummy.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/widgets/history-presensi-item.dart';
-import 'package:absensi_ypsim/services/shared-service.dart';
+import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:absensi_ypsim/widgets/drawer.dart';
-
 
 final historyPresensiBloc = new HistoryBloc();
 

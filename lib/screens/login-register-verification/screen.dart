@@ -1,9 +1,8 @@
+import 'package:absensi_ypsim/screens/home/home.dart';
+import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi_ypsim/screens/login-register-verification/screens/login/login.dart';
 import 'package:absensi_ypsim/screens/login-register-verification/screens/register/register.dart';
-import 'package:absensi_ypsim/screens/home.dart';
-
-import '../../constants/Theme.dart';
 
 class LoginAnimation extends StatefulWidget{
   const LoginAnimation({Key? key}): super(key: key);

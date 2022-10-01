@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:absensi_ypsim/misc/credential-getter.dart';
+import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
 import 'package:absensi_ypsim/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
 import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login-result.dart';
 // import 'package:url_launcher/url_launcher.dart';

@@ -1,4 +1,4 @@
-import 'package:material_kit_flutter/screens/home/models/check-in.dart';
+import 'package:absensi_ypsim/screens/home/models/check-in.dart';
 
 class HomeBloc {
   CheckInModel checkInModel = CheckInModel();

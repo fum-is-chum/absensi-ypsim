@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:absensi_ypsim/constants/Theme.dart';
+import 'package:absensi_ypsim/utils/constants/Theme.dart';
 
 class PhotoAlbum extends StatelessWidget {
   final List<String> imgArray;

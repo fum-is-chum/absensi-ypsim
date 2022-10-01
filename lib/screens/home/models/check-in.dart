@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:material_kit_flutter/utils/services/shared-service.dart';
+import 'package:absensi_ypsim/utils/services/shared-service.dart';
 
 class CheckInModel {
   int? employeeId;

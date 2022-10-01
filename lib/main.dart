@@ -1,17 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 // screens
-import 'package:absensi_ypsim/screens/home.dart';
+import 'package:absensi_ypsim/screens/home/home.dart';
 import 'package:absensi_ypsim/screens/login-register-verification/screen.dart';
 import 'package:absensi_ypsim/screens/pengajuan-izin/pengajuan-izin.dart';
 import 'package:absensi_ypsim/screens/riwayat-izin/riwayat-izin.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/riwayat-presensi-detail.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/riwayat-presensi.dart';
 import 'package:absensi_ypsim/screens/verification.dart';
-import 'package:absensi_ypsim/services/hide_keyboard.dart';
+import 'package:absensi_ypsim/utils/services/hide_keyboard.dart';
 import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-import 'misc/credential-getter.dart';
+import '/utils/misc/credential-getter.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

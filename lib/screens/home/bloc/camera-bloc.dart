@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:material_kit_flutter/utils/services/shared-service.dart';
+import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CameraBloc {

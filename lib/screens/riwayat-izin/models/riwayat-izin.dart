@@ -1,4 +1,4 @@
-import 'package:absensi_ypsim/services/shared-service.dart';
+import 'package:absensi_ypsim/utils/services/shared-service.dart';
 
 class RiwayatIzinModel {
   int id = 0;

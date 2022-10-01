@@ -1,9 +1,7 @@
-import 'package:dio/dio.dart';
 import 'package:absensi_ypsim/main.dart';
-import 'package:absensi_ypsim/misc/credential-getter.dart';
+import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../misc/credential-getter.dart';
 
 class TokenInterceptor extends Interceptor {
   @override
