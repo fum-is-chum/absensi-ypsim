@@ -1,19 +1,20 @@
-const x2 = 3.5946501693153463;
-const y2 = 98.67448949355177;
+const x2 = 3.590723972268678;
+const y2 = 98.68159334599628;
 const zoom = 15;
 
 String redrawMaps(double lat, double long) {
   return """
-    let iframe = document.getElementById('embed-maps');
-    iframe.setAttribute('src', `https://maps.google.com/maps?q=$lat,$long&z=15&output=embed`);
+    iframe.setAttribute('src', `https://maps.google.com/maps?q=$lat,$long&z=$zoom&output=embed`);
+    document.querySelectorAll('canvas').forEach((node) => node.remove());
+    x1 = $lat;
+    y1 = $long;
+    newPoint(x1, y1, 1000);
   """;
 }
 
 
 String drawCircleScripts() {
   return """
-    document.querySelector('canvas').forEach((node) => node.remove());
-    document.querySelector('canvas').forEach((node) => node.remove());
     x1 = 3.5941018719816338;
     y1 = 98.66775177746435;
 
@@ -64,14 +65,14 @@ String drawCircleScripts() {
       
       console.log(jarak, dx, dy);
 
-      canvas.style.left = 'calc(50%' + dx + 'px' - R + 'px')`;
-      canvas.style.top = 'calc(50%' + dy + 'px' - R + 'px')`;
+      canvas.style.left = 'calc(50%' + dx + 'px' - R + 'px)';
+      canvas.style.top = 'calc(50%' + dy + 'px' - R + 'px)';
 
       if (canvas.getContext) {
         var ctx = canvas.getContext('2d'); 
         var X = canvas.width / 2;
         var Y = canvas.height / 2;
-    
+        alert("YES");
         ctx.beginPath();
         ctx.arc(X, Y, R, 0, 2 * Math.PI, false);
         ctx.lineWidth = 1.5;
@@ -81,6 +82,5 @@ String drawCircleScripts() {
         ctx.fill();
       }
     }
-    newPoint($x2, $y2, 100);
     """;
 }

@@ -152,48 +152,122 @@ class _MyMapView extends State<MyMapView> {
             if(!snapshot.hasData || snapshot.data?.latitude == null) {
               return Center(child: CircularProgressIndicator());
             }
+            const x2 = 3.590723972268678;
+            const y2 = 98.68159334599628;
+            const zoom = 15;
             return Stack(
               children: [
                 // https://maps.google.com/maps?q=${currentLocation!!.latitude},${currentLocation!!.longitude}&z=15&output=embed
-                WebView(
-                  gestureRecognizers: [
-                    Factory<OneSequenceGestureRecognizer>(
-                      () => EagerGestureRecognizer(),
-                    ),
-                  ].toSet(),
-                  onWebViewCreated: (WebViewController wv) {
-                    webView = wv;
-                  },
-                  initialUrl: Uri.dataFromString("""
-                   <!DOCTYPE html>
-                    <html lang="en">
-                      <head>
-                        <meta charset="UTF-8">
-                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <style>
-                          *{
-                            box-sizing: border-box;
+                AbsorbPointer(
+                  child: WebView(
+                    gestureRecognizers: [
+                      Factory<OneSequenceGestureRecognizer>(
+                        () => EagerGestureRecognizer(),
+                      ),
+                    ].toSet(),
+                    onWebViewCreated: (WebViewController wv) {
+                      webView = wv;
+                    },
+                    initialUrl: Uri.dataFromString("""
+                    <!DOCTYPE html>
+                      <html lang="en">
+                        <head>
+                          <meta charset="UTF-8">
+                          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                          <style>
+                            *{
+                              box-sizing: border-box;
+                            }
+                            html,body{
+                              margin: 0px;
+                              height: 100%;
+                              width: 100%;
+                              overflow: hidden;
+                            }
+                            iframe{
+                              height: 100%;
+                              width: 100%;
+                            }
+                          </style>
+                        </head>
+                        <body>
+                          <iframe id="embed-maps" height="auto" frameBorder="0" src="https://maps.google.com/maps?q=${snapshot.data!.latitude},${snapshot.data!.longitude}&z=15&output=embed"></iframe>
+                        </body>
+                        <script>
+
+                          let iframe = document.getElementById('embed-maps');
+                          x1 = ${snapshot.data!.latitude};
+                          y1 = ${snapshot.data!.longitude};
+
+                          x2 = $x2;
+                          y2 = $y2;
+
+                          zoom = $zoom;
+                          const meterPerPx = (lat, zoom) => {
+                            return 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom)
                           }
-                          body{
-                            margin: 0px;
+                          
+                          // return [x diff, y diff]
+                          const distanceMeter = (x1, y1, x2, y2) => {
+                            function toRadians(value) {
+                              return value * Math.PI / 180
+                            }
+                          
+                            var R = 6371.0710
+                            var rlat1 = toRadians(x1) // Convert degrees to radians
+                            var rlat2 = toRadians(x2) // Convert degrees to radians
+                            var difflat = rlat2 - rlat1 // Radian difference (latitudes)
+                            var difflon = toRadians(y2 - y1) // Radian difference (longitudes)
+                            return 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2))) * 1000
+                          }; 
+
+                          const newCanvas = () => {
+                            let canvas = document.createElement('canvas');
+                            canvas.style.position = 'absolute';
+                            const body = document.body;
+                            body.insertAdjacentElement('afterbegin', canvas);
+                            return canvas;
                           }
-                          iframe{
-                            height: 100vh;
-                            width: 100vw;
+
+                          // diameter in meter
+                          const newPoint = (x2, y2, diameter) => {
+                            let canvas = newCanvas();
+                          
+                            const mPerPx = meterPerPx(x1, zoom);
+                            const jarak = distanceMeter(x1,y1,x2,y2)
+                            const R = Math.ceil((diameter / 2) / mPerPx); 
+                            const S  = (R * 2) + 5;
+
+                            canvas.setAttribute('width', S);
+                            canvas.setAttribute('height', S);
+
+                            const dy = ((x1 - x2) * 110132) / mPerPx;
+                            const dx = (Math.sqrt(Math.pow(jarak, 2) - Math.pow(dy, 2))) / mPerPx;
+
+                            canvas.style.left = 'calc(50% + ' + dx + 'px - ' + R + 'px)';
+                            canvas.style.top = 'calc(50% + ' + dy + 'px - ' + R + 'px)';
+
+                            if (canvas.getContext) {
+                              var ctx = canvas.getContext('2d'); 
+                              var X = canvas.width / 2;
+                              var Y = canvas.height / 2;
+                              ctx.beginPath();
+                              ctx.arc(X, Y, R, 0, 2 * Math.PI, false);
+                              ctx.lineWidth = 1.5;
+                              ctx.strokeStyle = '#FF0000';
+                              ctx.fillStyle = '#00000022'
+                              ctx.stroke();
+                              ctx.fill();
+                            }
                           }
-                        </style>
-                      </head>
-                      <body>
-                        <iframe id="embed-maps" height="auto" frameBorder="0" src="https://maps.google.com/maps?q=${snapshot.data!.latitude},${snapshot.data!.longitude}&z=15&output=embed"></iframe>
-                      </body>
-                      <script>
-                        ${drawCircleScripts()};
-                      </script>
-                    </html>""", 
-                    mimeType: 'text/html'
-                  ).toString(),
-                  javascriptMode: JavascriptMode.unrestricted,
+                          newPoint(x1, y1, 1000);
+                        </script>
+                      </html>""", 
+                      mimeType: 'text/html'
+                    ).toString(),
+                    javascriptMode: JavascriptMode.unrestricted,
+                  ),
                 ),
                 StreamBuilder(
                   stream: locationBloc.locationLoading$,

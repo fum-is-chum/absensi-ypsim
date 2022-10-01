@@ -15,7 +15,7 @@ import 'package:material_kit_flutter/utils/constants/Theme.dart';
 import 'camera.dart';
 import 'package:material_kit_flutter/widgets/card-small.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
-
+import 'package:flutter/foundation.dart';
 
 final Map<String, Map<String, String>> homeCards = {
   "Makeup": {
@@ -395,7 +395,7 @@ class CheckInButtonContainer extends StatelessWidget {
         if(!snapshot.hasData) {
           return CheckInButton(disabled: true);
         }
-        return StreamBuilder<ServiceStatus>(
+        return !kIsWeb ? StreamBuilder<ServiceStatus>(
           stream: locationBloc.serviceStatusStream$,
           initialData: snapshot.data! ? ServiceStatus.enabled : ServiceStatus.disabled,
           builder: (BuildContext context, AsyncSnapshot<ServiceStatus> snapshot) {
@@ -411,7 +411,7 @@ class CheckInButtonContainer extends StatelessWidget {
               }
             );
           },
-        );
+        ) : Container();
       },
     );
   }
