@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/constants/Theme.dart';
+import 'package:material_kit_flutter/utils/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/custom-button.dart';
 
 class Verification extends StatelessWidget {

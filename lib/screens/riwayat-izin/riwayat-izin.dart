@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/constants/Theme.dart';
+import 'package:material_kit_flutter/utils/constants/Theme.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/bloc/riwayat-izin-bloc.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/models/riwayat-izin.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/riwayat-izin-detail.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/widgets/riwayat-izin-item.dart';
-import 'package:material_kit_flutter/services/shared-service.dart';
+import 'package:material_kit_flutter/utils/services/shared-service.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
 

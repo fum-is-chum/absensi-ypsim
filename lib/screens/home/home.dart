@@ -1,22 +1,21 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:material_kit_flutter/bloc/camera-bloc.dart';
-import 'package:material_kit_flutter/bloc/time-bloc.dart';
-import 'package:material_kit_flutter/constants/Theme.dart';
-import 'package:material_kit_flutter/screens/camera.dart';
+import 'package:material_kit_flutter/screens/home/location-view.dart';
+import 'bloc/camera-bloc.dart';
+import 'bloc/home-bloc.dart';
+import 'bloc/location-bloc.dart';
+import 'bloc/time-bloc.dart';
+import 'package:material_kit_flutter/utils/constants/Theme.dart';
+import 'camera.dart';
 import 'package:material_kit_flutter/widgets/card-small.dart';
 import 'package:material_kit_flutter/widgets/drawer.dart';
 
-import '../bloc/home-bloc.dart';
-import '../bloc/location-bloc.dart';
-import '../widgets/location-view.dart';
 
 final Map<String, Map<String, String>> homeCards = {
   "Makeup": {
@@ -28,6 +27,8 @@ final Map<String, Map<String, String>> homeCards = {
 };
 
 late TimeBloc timeBloc;
+late HomeBloc homeBloc;
+late CameraBloc cameraBloc;
 
 class Home extends StatefulWidget {
   @override
@@ -43,7 +44,10 @@ class _HomeState extends State<Home> {
     Future.delayed(Duration(seconds: 1)).then((value) {
       SystemChrome.restoreSystemUIOverlays();
     });
-    timeBloc = new TimeBloc();
+
+    homeBloc = HomeBloc();
+    timeBloc = TimeBloc();
+    cameraBloc = CameraBloc();
     super.initState();
   }
 
@@ -108,8 +112,7 @@ class ImageRow extends StatefulWidget {
 }
 
 class _ImageRow extends State<ImageRow> {
-  final CameraBloc cameraBloc = new CameraBloc();
-  final HomeBloc homeBloc = new HomeBloc();
+
   @override
   void dispose() {
     // cameraBloc.dispose();
@@ -125,18 +128,22 @@ class _ImageRow extends State<ImageRow> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CardSmall(
-              cta: cameraBloc.snapTime != '' && !homeBloc.statusAbsensi() ? cameraBloc.snapTime : "07:01:12 WIB",
+              // cta: cameraBloc.snapTime != '' && !homeBloc.statusAbsensi() ? cameraBloc.snapTime : "07:01:12 WIB",
+              cta: '00:00:00 WIB',
               title: "IN",
-              img: snapshot.hasData && snapshot.data != null && !homeBloc.statusAbsensi() ? snapshot.data :homeCards["Makeup"]!['image'],
+              // img: snapshot.hasData && snapshot.data != null && !homeBloc.statusAbsensi() ? snapshot.data :homeCards["Makeup"]!['image'],
+              img: homeCards["Makeup"]!['image'],
               tap: () {
                 // Navigator.pushReplacementNamed(context, '/pro');
               }
             ),
             SizedBox(width: 8),
             CardSmall(
-              cta: cameraBloc.snapTime != '' && homeBloc.statusAbsensi() ? cameraBloc.snapTime : "16:01:12 WIB",
+              // cta: cameraBloc.snapTime != '' && homeBloc.statusAbsensi() ? cameraBloc.snapTime : "16:01:12 WIB",
+              cta: '00:00:00 WIB',
               title: "OUT",
-              img: snapshot.hasData && snapshot.data != null && homeBloc.statusAbsensi() ? snapshot.data : homeCards["Makeup"]!['image'],
+              // img: snapshot.hasData && snapshot.data != null && homeBloc.statusAbsensi() ? snapshot.data : homeCards["Makeup"]!['image'],
+              img: homeCards["Makeup"]!['image'],
               tap: () {
                 // Navigator.pushReplacementNamed(context, '/pro');
               }
@@ -277,7 +284,6 @@ class TimerDisplay extends StatefulWidget {
 
 class _TimerDisplay extends State<TimerDisplay> {
   Timer _timer = Timer(Duration(seconds: 10), () {});
-  String count = "00:00:00";
   List<int> counts = [];
   var time = 0;
 
@@ -351,7 +357,7 @@ class _TimerDisplay extends State<TimerDisplay> {
           minutes += "${counts[1]}";
           seconds += "${counts[2]}";
 
-          count = "$hours:$minutes:$seconds";
+          timeBloc.count = "$hours:$minutes:$seconds";
 
         });
       },
@@ -367,7 +373,7 @@ class _TimerDisplay extends State<TimerDisplay> {
   @override
   Widget build(BuildContext context) {
     return Text(
-      count+" WIB",
+      timeBloc.count+" WIB",
       style: TextStyle(
         color: Colors.white,
         fontSize: 22,
@@ -401,11 +407,7 @@ class CheckInButtonContainer extends StatelessWidget {
             return FutureBuilder(
               future: locationBloc.getPosition,
               builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
-                if(snapshot.hasData) {
-                  // setelah dapat data lokasi, hitung jarak koordinat ke lokasi, kirim ke api
-                  return CheckInButton(disabled: false);
-                }
-                return CheckInButton(disabled: true);
+                return CheckInButton(disabled: !snapshot.hasData);
               }
             );
           },
@@ -443,32 +445,11 @@ class _CheckInButton extends State<CheckInButton> {
         style: TextStyle(fontSize: 20, color: Colors.white),
       ),
       onPressed: () async {
-        // if(!widget.disabled) cameraBloc.openCamera();
+        
         if(!widget.disabled) await availableCameras().then((value) => 
           Navigator.push(context, MaterialPageRoute(builder: (_) => CameraPage(cameras: value)))
         );
       },
     );
-      // Material(
-      //   color: Colors.transparent,
-      //   child: MaterialButton(
-      //     onPressed: () async {
-              
-      //     },
-      //     child: Container(
-      //       padding: EdgeInsets.all(80),
-      //       decoration: BoxDecoration(
-      //         color: (widget.disabled) ? Colors.grey : Colors.green,
-      //         shape: BoxShape.circle
-      //       ),
-      //       child: Text(
-      //         "Check In",
-      //         style: TextStyle(fontSize: 20, color: Colors.white),
-      //       ),
-      //     ),
-      //     color: (widget.disabled) ? Colors.grey : Colors.green,
-      //     shape: CircleBorder(),
-      //   ),
-      // );
   }
 }

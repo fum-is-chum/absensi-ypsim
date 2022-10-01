@@ -3,10 +3,10 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:material_kit_flutter/dio-interceptor.dart';
-import 'package:material_kit_flutter/misc/credential-getter.dart';
+import 'package:material_kit_flutter/utils/services/dio-interceptor.dart';
+import 'package:material_kit_flutter/utils/misc/credential-getter.dart';
 import 'package:material_kit_flutter/models/api-response.dart';
-import 'package:material_kit_flutter/services/shared-service.dart';
+import 'package:material_kit_flutter/utils/services/shared-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../models/riwayat-izin.dart';
@@ -41,7 +41,7 @@ class RiwayatIzinBloc {
       // inspect(body.Result);
       return body.Result;
     } catch (e) {
-      throw handleError(null, e);
+      throw await handleError(null, e);
     } finally {
       this.loadingSubject$.sink.add(false);
     }

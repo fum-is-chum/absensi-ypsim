@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:material_kit_flutter/interceptors/logging-interceptor.dart';
-import 'package:material_kit_flutter/interceptors/token-interceptor.dart';
+
+import 'logging-interceptor.dart';
+import 'token-interceptor.dart';
 
 class DioClient {
   DioClient._sharedInstance();

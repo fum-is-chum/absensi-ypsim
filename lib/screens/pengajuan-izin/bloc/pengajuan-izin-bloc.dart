@@ -6,9 +6,9 @@ import 'dart:io';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/dio-interceptor.dart';
-import 'package:material_kit_flutter/misc/credential-getter.dart';
-import 'package:material_kit_flutter/services/shared-service.dart';
+import 'package:material_kit_flutter/utils/services/dio-interceptor.dart';
+import 'package:material_kit_flutter/utils/misc/credential-getter.dart';
+import 'package:material_kit_flutter/utils/services/shared-service.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:path/path.dart';
 
@@ -54,7 +54,7 @@ class PengajuanIzinBloc {
       return true;
     } catch (e) {
       sp.hide();
-      handleError(context, e);
+      await handleError(context, e);
       return false;
     }
   }
@@ -75,7 +75,7 @@ class PengajuanIzinBloc {
       return true;
     } catch (e) {
       sp.hide();
-      handleError(context, e);
+      await handleError(context, e);
       return false;
     }
   }

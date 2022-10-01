@@ -1,22 +1,28 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:material_kit_flutter/dio-interceptor.dart';
+import 'package:material_kit_flutter/utils/services/dio-interceptor.dart';
+import 'package:material_kit_flutter/models/api-response.dart';
 import 'package:path_provider/path_provider.dart';
 
 String formatDateOnly(dynamic date, {String format = 'yyyy-MM-dd'}) {
   return DateFormat(format, "id_ID").format(date is String ? DateTime.parse(date): date);
 }
 
+String formatTimeOnly(dynamic date) {
+  return DateFormat("HH:mm:ss", "id_ID").format(date is String ? DateTime.parse(date): date);
+}
+
 Future<String> handleError(BuildContext? context, dynamic e) async {
   String error = "";
   if(e is DioError) {
-    if(e.response != null) {
-      error = "${e.message}\n${e.response.toString()}";
+    if(e.response != null && e.response!.data != null) {
+      error = "${ApiResponse.fromJson(jsonDecode(e.response!.data)).Message}";
     } else if(e.error is SocketException) {
       error = "Tidak ada koneksi";
     } else if(e.error is TimeoutException) {
@@ -52,7 +58,7 @@ Future<File> createFileOfPdfUrl(BuildContext? context, String url) async {
     completer.complete(file);
     // print("Done");
   } catch (e) {
-    handleError(context, e);
+    await handleError(context, e);
   }
 
   return completer.future;

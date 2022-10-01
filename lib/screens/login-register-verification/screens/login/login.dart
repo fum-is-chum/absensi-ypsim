@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
-import 'package:material_kit_flutter/constants/Theme.dart';
+import 'package:material_kit_flutter/utils/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/custom-button.dart';
 
-final LoginBloc _bloc = LoginBloc();
-
+late LoginBloc _bloc;
 void onSaved(String? val, String field) {
   _bloc.model[field] = val;
 }
@@ -21,6 +20,18 @@ class LoginView extends StatefulWidget {
 class _LoginView extends State<LoginView> {
   final _formKey = GlobalKey<FormState>();
 
+  @override
+  void initState() {
+    _bloc = LoginBloc();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _bloc.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     final _introductionanimation =
@@ -141,11 +152,6 @@ class PasswordField extends StatefulWidget {
 }
 
 class _PasswordField extends State<PasswordField> {
-  @override
-  void dispose() {
-    _bloc.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/misc/credential-getter.dart';
+import 'package:material_kit_flutter/utils/misc/credential-getter.dart';
 import 'package:material_kit_flutter/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
 import 'package:material_kit_flutter/screens/login-register-verification/screens/login/models/login-result.dart';
 // import 'package:url_launcher/url_launcher.dart';

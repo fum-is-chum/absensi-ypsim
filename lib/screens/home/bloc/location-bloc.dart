@@ -3,20 +3,18 @@ import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
 
 class LocationBloc {
-  LocationBloc._();
-  static final _instance = LocationBloc._();
-  bool? serviceEnabled;
-  LocationPermission? permission;
   late LocationSettings _locationSettings;
   late Position currentPos;
+  bool? serviceEnabled;
+  LocationPermission? permission;
   BehaviorSubject<bool> _locationLoading = new BehaviorSubject.seeded(false);
+
+  LocationBloc._();
+  static final _instance = LocationBloc._();
   factory LocationBloc() {
     return _instance; // singleton service
   }
 
-  void dispose() {
-    _locationLoading.close();
-  }
 
   Position get curPos => currentPos;
   Stream<bool> get locationLoading$ => _locationLoading.stream.asBroadcastStream();
@@ -25,6 +23,10 @@ class LocationBloc {
   Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: _locationSettings);
   Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream();
 
+  void dispose() {
+    _locationLoading.close();
+  }
+  
   /// start - Location Service
   void initLocation() async {
     if (defaultTargetPlatform == TargetPlatform.android) {

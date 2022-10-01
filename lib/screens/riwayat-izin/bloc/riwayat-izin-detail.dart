@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/dio-interceptor.dart';
+import 'package:material_kit_flutter/utils/services/dio-interceptor.dart';
 import 'package:material_kit_flutter/models/api-response.dart';
 import 'package:material_kit_flutter/screens/pengajuan-izin/models/pengajuan-izin-model.dart';
-import 'package:material_kit_flutter/services/shared-service.dart';
+import 'package:material_kit_flutter/utils/services/shared-service.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -31,7 +31,7 @@ class RiwayatIzinDetailBloc {
       return data;
     } catch (e) {
       if(context != null) sp.hide();
-      handleError(context, e);
+      await handleError(context, e);
     }
     return null;
   }

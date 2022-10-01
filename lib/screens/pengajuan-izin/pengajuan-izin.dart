@@ -3,10 +3,9 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/services/shared-service.dart';
-
-import '../../constants/Theme.dart';
-import '../../services/hide_keyboard.dart';
+import 'package:material_kit_flutter/utils/constants/Theme.dart';
+import 'package:material_kit_flutter/utils/services/hide_keyboard.dart';
+import 'package:material_kit_flutter/utils/services/shared-service.dart';
 import '../../widgets/drawer.dart';
 import 'bloc/pengajuan-izin-bloc.dart';
 import 'models/pengajuan-izin-model.dart';
@@ -130,9 +129,10 @@ class _PengajuanIzin extends State<PengajuanIzin> {
                               try {
                                 if(_isEdit) {
                                   if(_hasFile && _fileLoading) throw 'File Loading';
-                                  if(await _pengajuanIzinBloc.updateIzin(context))
+                                  if(await _pengajuanIzinBloc.updateIzin(context)) {
                                     await Future.delayed(Duration(milliseconds: 500));
                                     Navigator.popUntil(context, ModalRoute.withName('/riwayat-izin'));
+                                  }
                                 } else if(!_isEdit) {
                                   if(await _pengajuanIzinBloc.createIzin(context)) {
                                     _key.currentState!.reset();
@@ -140,7 +140,7 @@ class _PengajuanIzin extends State<PengajuanIzin> {
                                   }
                                 }
                               } catch (e) {
-                                handleError(context, e);
+                                await handleError(context, e);
                               }
                             }
                           },

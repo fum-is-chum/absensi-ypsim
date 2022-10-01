@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:material_kit_flutter/iframe/iframe.dart';
+import 'package:material_kit_flutter/utils//iframe/iframe.dart';
+import 'package:material_kit_flutter/screens/home/bloc/location-bloc.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../bloc/location-bloc.dart';
-import '../constants/Theme.dart';
+import 'package:material_kit_flutter/utils/constants/Theme.dart';
 
 class LocationView extends StatefulWidget {
   LocationView({Key? key}) : super(key: key);
@@ -187,6 +187,9 @@ class _MyMapView extends State<MyMapView> {
                       <body>
                         <iframe id="embed-maps" height="auto" frameBorder="0" src="https://maps.google.com/maps?q=${snapshot.data!.latitude},${snapshot.data!.longitude}&z=15&output=embed"></iframe>
                       </body>
+                      <script>
+                        ${drawCircleScripts()};
+                      </script>
                     </html>""", 
                     mimeType: 'text/html'
                   ).toString(),

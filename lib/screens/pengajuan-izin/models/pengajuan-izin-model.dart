@@ -1,4 +1,4 @@
-import 'package:material_kit_flutter/services/shared-service.dart';
+import 'package:material_kit_flutter/utils/services/shared-service.dart';
 
 class PengajuanIzinModel {
   late int id;
@@ -16,11 +16,6 @@ class PengajuanIzinModel {
         this.remark = remark ?? '',
         this.file = file ?? null;
 
-  /*
-    VSCode Regex:
-    - this\.(.*),
-    - $1 = json['$1'];
-  */
   PengajuanIzinModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];  
     start_date = json['start_date'];
@@ -29,11 +24,6 @@ class PengajuanIzinModel {
     file = json['file'];
   }
   
-/*
-    VSCode Regex:
-    - this\.(.*),
-    - data['$1'] = this.$1;
-  */
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;

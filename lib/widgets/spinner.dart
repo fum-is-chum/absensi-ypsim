@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
-import '../constants/Theme.dart';
+import 'package:material_kit_flutter/utils/constants/Theme.dart';
 
 SpinKitCircle loadingSpinner() {
   return SpinKitCircle(

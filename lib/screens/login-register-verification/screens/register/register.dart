@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_kit_flutter/screens/login-register-verification/screens/register/bloc/register-bloc.dart';
-import 'package:material_kit_flutter/constants/Theme.dart';
+import 'package:material_kit_flutter/utils/constants/Theme.dart';
 import 'package:material_kit_flutter/widgets/custom-button.dart';
 
 late RegisterBloc _bloc;

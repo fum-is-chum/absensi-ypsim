@@ -1,4 +1,4 @@
-import 'package:material_kit_flutter/services/shared-service.dart';
+import 'package:material_kit_flutter/utils/services/shared-service.dart';
 
 class RiwayatIzinModel {
   int id = 0;
@@ -12,11 +12,6 @@ class RiwayatIzinModel {
   String created_at = '';
   String updated_at = '';
 
-  /*
-    VSCode Regex:
-    - this\.(.*),
-    - $1 = json['$1'];
-  */
   RiwayatIzinModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     employee_id = json['employee_id'];

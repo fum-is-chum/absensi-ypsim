@@ -5,10 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:material_kit_flutter/constants/Theme.dart';
+import 'package:material_kit_flutter/utils/constants/Theme.dart';
 import 'package:material_kit_flutter/screens/pengajuan-izin/pengajuan-izin.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/models/riwayat-izin.dart';
-import 'package:material_kit_flutter/services/shared-service.dart';
+import 'package:material_kit_flutter/utils/services/shared-service.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 

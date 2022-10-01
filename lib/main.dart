@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 // screens
-import 'package:material_kit_flutter/screens/home.dart';
+import 'package:material_kit_flutter/screens/home/home.dart';
 import 'package:material_kit_flutter/screens/login-register-verification/screen.dart';
 import 'package:material_kit_flutter/screens/pengajuan-izin/pengajuan-izin.dart';
 import 'package:material_kit_flutter/screens/riwayat-izin/riwayat-izin.dart';
 import 'package:material_kit_flutter/screens/riwayat-presensi/riwayat-presensi-detail.dart';
 import 'package:material_kit_flutter/screens/riwayat-presensi/riwayat-presensi.dart';
 import 'package:material_kit_flutter/screens/verification.dart';
-import 'package:material_kit_flutter/services/hide_keyboard.dart';
+import 'package:material_kit_flutter/utils/services/hide_keyboard.dart';
 import 'package:material_kit_flutter/widgets/spinner.dart';
-
-import 'misc/credential-getter.dart';
+import 'utils/misc/credential-getter.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

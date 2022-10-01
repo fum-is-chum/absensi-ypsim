@@ -5,22 +5,12 @@ class LoginResult {
   String? TokenType;
   LoginData? Data;
 
-  /*
-    VSCode Regex:
-    - this\.(.*),
-    - $1 = json['$1'];
-  */
   LoginResult.fromJson(Map<String, dynamic> json) {
     AccessToken = json['AccessToken'];
     TokenType = json['TokenType'];
     Data = json['Data'].runtimeType == String ? LoginData.fromJson(jsonDecode(json['Data'])) : LoginData.fromJson(json['Data']);
   }
 
-  /*
-    VSCode Regex:
-    - this\.(.*),
-    - data['$1'] = this.$1;
-  */
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['AccessToken'] = this.AccessToken;

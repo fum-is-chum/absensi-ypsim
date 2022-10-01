@@ -4,13 +4,14 @@ import 'dart:io';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:material_kit_flutter/dio-interceptor.dart';
+import 'package:material_kit_flutter/utils/services/dio-interceptor.dart';
 import 'package:material_kit_flutter/models/api-response.dart';
 import 'package:rxdart/rxdart.dart';
 
 class TimeBloc {
   late BehaviorSubject<bool> reloadSubject$;
-
+  String count = "00:00:00";
+  
   TimeBloc() {
     reloadSubject$ = reloadSubject$ = new BehaviorSubject.seeded(true);
   }
