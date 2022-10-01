@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/screens/login-register-verification/screens/login/login.dart';
-import 'package:material_kit_flutter/screens/login-register-verification/screens/register/register.dart';
-import 'package:material_kit_flutter/screens/home.dart';
+import 'package:absensi_ypsim/screens/login-register-verification/screens/login/login.dart';
+import 'package:absensi_ypsim/screens/login-register-verification/screens/register/register.dart';
+import 'package:absensi_ypsim/screens/home.dart';
 
 import '../../constants/Theme.dart';
 

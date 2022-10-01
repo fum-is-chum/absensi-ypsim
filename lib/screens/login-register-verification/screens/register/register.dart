@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/screens/login-register-verification/screens/register/bloc/register-bloc.dart';
-import 'package:material_kit_flutter/constants/Theme.dart';
-import 'package:material_kit_flutter/widgets/custom-button.dart';
+import 'package:absensi_ypsim/screens/login-register-verification/screens/register/bloc/register-bloc.dart';
+import 'package:absensi_ypsim/constants/Theme.dart';
+import 'package:absensi_ypsim/widgets/custom-button.dart';
 
 late RegisterBloc _bloc;
 
