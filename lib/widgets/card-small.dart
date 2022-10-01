@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
+import 'package:flutter/material.dart';
 
 class CardSmall extends StatelessWidget {
   CardSmall(
@@ -21,7 +21,7 @@ class CardSmall extends StatelessWidget {
   Widget build(BuildContext context) {
     return Flexible(
       child: Container(
-        height: 180,
+        height: MediaQuery.of(context).size.height * 0.255,
         margin: EdgeInsets.only(top: 10),
         child: GestureDetector(
           onTap: tap as void Function()?,
@@ -40,6 +40,7 @@ class CardSmall extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        SizedBox(height: 8),
                         Text(
                           title!,
                           style: TextStyle(
@@ -63,11 +64,11 @@ class CardSmall extends StatelessWidget {
               ),
             ),
             FractionalTranslation(
-              translation: Offset(0, -0.12),
+              translation: Offset(0, -0.15),
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Container(
-                  height: MediaQuery.of(context).size.height * 0.185,
+                  height: MediaQuery.of(context).size.height * 0.19,
                   width: MediaQuery.of(context).size.width / 2.5,
                   padding: EdgeInsets.all(16.0),
                   decoration: BoxDecoration(

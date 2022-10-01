@@ -27,9 +27,9 @@ final Map<String, Map<String, String>> homeCards = {
   },
 };
 
-late TimeBloc timeBloc;
-late HomeBloc homeBloc;
-late CameraBloc cameraBloc;
+TimeBloc timeBloc = TimeBloc();
+HomeBloc homeBloc = HomeBloc();
+CameraBloc cameraBloc = CameraBloc();
 
 class Home extends StatefulWidget {
   @override
@@ -45,10 +45,6 @@ class _HomeState extends State<Home> {
     Future.delayed(Duration(seconds: 1)).then((value) {
       SystemChrome.restoreSystemUIOverlays();
     });
-
-    homeBloc = HomeBloc();
-    timeBloc = TimeBloc();
-    cameraBloc = CameraBloc();
     super.initState();
   }
 
@@ -299,67 +295,22 @@ class _TimerDisplay extends State<TimerDisplay> {
       String result = await timeBloc.getTime(context);
       DateTime dateString = DateTime.parse(result).add(Duration(hours: 7));
       DateFormat formatter = DateFormat('H:mm:ss');
-      startTimer(formatter.format(dateString));
+      startTimer(dateString);
     } catch (e) {
       inspect(e);
     }
   }
 
-  void startTimer(String data) {
+  void startTimer(DateTime data) {
     const oneSec = const Duration(seconds: 1);
-
-    counts = data.split(":").map((e) => int.parse(e)).toList();
-
-    time = counts[2];
-    time += counts[1] * 60;
-    time += (counts[0] * 60) * 60;
+    DateFormat formatter = DateFormat('H:mm:ss');
 
     _timer = Timer.periodic(
       oneSec,
       (Timer timer) {
         setState(() {
-          
-          if (counts[2] >= 59 && counts[1] > 0) {
-            counts[1] += 1;
-            counts[2] = 0;
-          }
-
-          if (counts[1] >= 59 && counts[0] > 0) {
-            counts[0] += 1;
-            counts[1] = 0;
-          }
-
-          if (counts[0] >= 23) {
-            counts[0] = 0;
-            counts[1] = 0;
-            counts[2] = 0;
-          }
-
-          counts[2]++;
-          time++;
-
-          var hours = "";
-          var minutes = "";
-          var seconds = "";
-
-          if (counts[0] < 10){
-            hours = "0";
-          }
-          
-          if (counts[1] < 10) {
-            minutes = "0";
-          }
-          
-          if (counts[2] < 10) {
-            seconds = "0";
-          }
-
-          hours += "${counts[0]}";
-          minutes += "${counts[1]}";
-          seconds += "${counts[2]}";
-
-          timeBloc.count = "$hours:$minutes:$seconds";
-
+          data = data.add(oneSec);
+          timeBloc.count = formatter.format(data);
         });
       },
     );
