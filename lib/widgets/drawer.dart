@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/misc/credential-getter.dart';
-import 'package:material_kit_flutter/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
-import 'package:material_kit_flutter/screens/login-register-verification/screens/login/models/login-result.dart';
+import 'package:absensi_ypsim/misc/credential-getter.dart';
+import 'package:absensi_ypsim/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
+import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login-result.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
-import 'package:material_kit_flutter/widgets/drawer-tile.dart';
+import 'package:absensi_ypsim/widgets/drawer-tile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MaterialDrawer extends StatelessWidget {

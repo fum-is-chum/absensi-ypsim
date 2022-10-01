@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/constants/Theme.dart';
-import 'package:material_kit_flutter/widgets/custom-button.dart';
+import 'package:absensi_ypsim/constants/Theme.dart';
+import 'package:absensi_ypsim/widgets/custom-button.dart';
 
 class Verification extends StatelessWidget {
   const Verification({Key? key}) : super(key: key);

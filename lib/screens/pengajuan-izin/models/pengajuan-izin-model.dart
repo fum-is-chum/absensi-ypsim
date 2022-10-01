@@ -1,4 +1,4 @@
-import 'package:material_kit_flutter/services/shared-service.dart';
+import 'package:absensi_ypsim/services/shared-service.dart';
 
 class PengajuanIzinModel {
   late int id;

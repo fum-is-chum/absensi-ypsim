@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:material_kit_flutter/screens/login-register-verification/screens/login/models/login-result.dart';
+import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login-result.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'crypto.dart';
