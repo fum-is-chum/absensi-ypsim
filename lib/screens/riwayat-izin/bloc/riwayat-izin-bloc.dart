@@ -3,10 +3,10 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:material_kit_flutter/utils/services/dio-interceptor.dart';
-import 'package:material_kit_flutter/utils/misc/credential-getter.dart';
-import 'package:material_kit_flutter/models/api-response.dart';
-import 'package:material_kit_flutter/utils/services/shared-service.dart';
+import 'package:absensi_ypsim/dio-interceptor.dart';
+import 'package:absensi_ypsim/misc/credential-getter.dart';
+import 'package:absensi_ypsim/models/api-response.dart';
+import 'package:absensi_ypsim/services/shared-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../models/riwayat-izin.dart';

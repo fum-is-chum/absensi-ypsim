@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/utils/services/dio-interceptor.dart';
-import 'package:material_kit_flutter/models/api-response.dart';
-import 'package:material_kit_flutter/screens/pengajuan-izin/models/pengajuan-izin-model.dart';
-import 'package:material_kit_flutter/utils/services/shared-service.dart';
-import 'package:material_kit_flutter/widgets/spinner.dart';
+import 'package:absensi_ypsim/dio-interceptor.dart';
+import 'package:absensi_ypsim/models/api-response.dart';
+import 'package:absensi_ypsim/screens/pengajuan-izin/models/pengajuan-izin-model.dart';
+import 'package:absensi_ypsim/services/shared-service.dart';
+import 'package:absensi_ypsim/widgets/spinner.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RiwayatIzinDetailBloc {

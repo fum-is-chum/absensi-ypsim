@@ -6,10 +6,10 @@ import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/utils/services/dio-interceptor.dart';
-import 'package:material_kit_flutter/screens/login-register-verification/screens/login/models/login.dart';
-import 'package:material_kit_flutter/utils/misc/crypto.dart';
-import 'package:material_kit_flutter/widgets/spinner.dart';
+import 'package:absensi_ypsim/dio-interceptor.dart';
+import 'package:absensi_ypsim/misc/crypto.dart';
+import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login.dart';
+import 'package:absensi_ypsim/widgets/spinner.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

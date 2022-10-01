@@ -5,9 +5,9 @@ import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/utils/services/dio-interceptor.dart';
-import 'package:material_kit_flutter/screens/login-register-verification/screens/register/models/register.dart';
-import 'package:material_kit_flutter/widgets/spinner.dart';
+import 'package:absensi_ypsim/dio-interceptor.dart';
+import 'package:absensi_ypsim/screens/login-register-verification/screens/register/models/register.dart';
+import 'package:absensi_ypsim/widgets/spinner.dart';
 import 'package:rxdart/rxdart.dart';
 
 class RegisterBloc {

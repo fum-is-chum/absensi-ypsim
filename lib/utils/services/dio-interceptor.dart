@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
-
-import 'logging-interceptor.dart';
-import 'token-interceptor.dart';
+import 'package:absensi_ypsim/interceptors/logging-interceptor.dart';
+import 'package:absensi_ypsim/interceptors/token-interceptor.dart';
 
 class DioClient {
   DioClient._sharedInstance();

@@ -6,16 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:material_kit_flutter/screens/home/location-view.dart';
-import 'bloc/camera-bloc.dart';
-import 'bloc/home-bloc.dart';
-import 'bloc/location-bloc.dart';
-import 'bloc/time-bloc.dart';
-import 'package:material_kit_flutter/utils/constants/Theme.dart';
-import 'camera.dart';
-import 'package:material_kit_flutter/widgets/card-small.dart';
-import 'package:material_kit_flutter/widgets/drawer.dart';
-import 'package:flutter/foundation.dart';
+import 'package:absensi_ypsim/bloc/camera-bloc.dart';
+import 'package:absensi_ypsim/bloc/time-bloc.dart';
+import 'package:absensi_ypsim/constants/Theme.dart';
+import 'package:absensi_ypsim/screens/camera.dart';
+import 'package:absensi_ypsim/widgets/card-small.dart';
+import 'package:absensi_ypsim/widgets/drawer.dart';
+
+import '../bloc/home-bloc.dart';
+import '../bloc/location-bloc.dart';
+import '../widgets/location-view.dart';
 
 final Map<String, Map<String, String>> homeCards = {
   "Makeup": {

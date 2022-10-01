@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/utils/constants/Theme.dart';
-import 'package:material_kit_flutter/screens/riwayat-izin/models/riwayat-izin.dart';
-import 'package:material_kit_flutter/utils/services/shared-service.dart';
+import 'package:absensi_ypsim/constants/Theme.dart';
+import 'package:absensi_ypsim/screens/riwayat-izin/models/riwayat-izin.dart';
+import 'package:absensi_ypsim/services/shared-service.dart';
 
 class RiwayatIzinItem extends StatelessWidget {
 

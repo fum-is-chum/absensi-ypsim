@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:material_kit_flutter/utils/constants/Theme.dart';
-import 'package:material_kit_flutter/widgets/drawer.dart';
+import 'package:absensi_ypsim/constants/Theme.dart';
+import 'package:absensi_ypsim/widgets/drawer.dart';
 
 class RiwayatPresensiDetail extends StatelessWidget {
   // final GlobalKey _scaffoldKey = new GlobalKey();
