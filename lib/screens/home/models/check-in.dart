@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 
-class CheckInModel {
-  int? employeeId;
+class CheckInOutModel {
+  int? employee_id;
   String? date;
   double? latitude;
   double? longitude;
@@ -10,22 +10,22 @@ class CheckInModel {
   String? time;
   // lampiran
 
-    CheckInModel({
-    int? employeeId,
+  CheckInOutModel({
+    int? employee_id,
     String? date,
     double? latitude,
     double? longitude,
     File? photo,
     String? time
-  }) :  this.employeeId = employeeId ?? 0,
+  }) :  this.employee_id = employee_id ?? 0,
         this.date = date ?? formatDateOnly(DateTime.now()),
         this.latitude = latitude ?? null,
         this.longitude = longitude ?? null,
         this.photo = photo ?? null,
         this.time = time ?? formatDateOnly(DateTime.now());
 
-  CheckInModel.fromJson(Map<String, dynamic> json) {
-    employeeId = json['employeeId'];
+  CheckInOutModel.fromJson(Map<String, dynamic> json) {
+    employee_id = json['employee_id'];
     date = json['date'];
     latitude = json['latitude'];
     longitude = json['longitude'];
@@ -35,7 +35,7 @@ class CheckInModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['employeeId'] = this.employeeId;
+    data['employee_id'] = this.employee_id;
     data['date'] = this.date;
     data['latitude'] = this.latitude;
     data['longitude'] = this.longitude;

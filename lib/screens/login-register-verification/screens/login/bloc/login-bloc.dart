@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login.dart';
 import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
 import 'package:absensi_ypsim/utils/misc/crypto.dart';
+import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:absensi_ypsim/widgets/spinner.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
@@ -50,26 +51,7 @@ class LoginBloc {
       return true;
     } catch (e) {
       sp.hide();
-      String error = "";
-      if(e is DioError) {
-        if(e.response != null) {
-          error = "${e.message}\n${e.response.toString()}";
-        } else if(e.error is SocketException) {
-          error = "Tidak ada koneksi";
-        } else if(e.error is TimeoutException) {
-          error = "${e.requestOptions.baseUrl}${e.requestOptions.path}\nRequest Timeout";
-        }
-      } else {
-        error = e.toString();
-      }
-      await ArtSweetAlert.show(
-        context: context,
-        artDialogArgs: ArtDialogArgs(
-          type: ArtSweetAlertType.danger,
-          title: "Gagal",
-          text: error
-        )
-      );
+      await handleError(context, e);
       return false;
     }
   }

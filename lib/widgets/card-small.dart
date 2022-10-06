@@ -81,7 +81,7 @@ class CardSmall extends StatelessWidget {
                     ],
                     borderRadius: BorderRadius.all(Radius.circular(4.0)),
                     image: DecorationImage(
-                      image: img!.runtimeType.toString() == 'String'? NetworkImage(img!): FileImage(img!) as ImageProvider,
+                      image: (img! as String).substring(0,4) == 'http' ? NetworkImage(img!) : Image.asset(img!).image,
                       fit: BoxFit.cover,
                     ),
                   ),

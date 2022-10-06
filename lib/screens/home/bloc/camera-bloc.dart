@@ -6,14 +6,20 @@ import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CameraBloc {
+  CameraBloc._sharedInstance();
+  static final CameraBloc _shared = CameraBloc._sharedInstance();
+  factory CameraBloc() => _shared;
+
   String snapTime = '';
   late BehaviorSubject<File?> _imageFile = BehaviorSubject<File?>.seeded(null);
- 
-  CameraBloc();
+
   
-  Stream<File?> get imageStream {
-    return _imageFile.stream;
+  Stream<File?> get imageStream => _imageFile.stream;
+  void reset() {
+    _imageFile.sink.add(null);
   }
+  
+  File? get imageFile => _imageFile.value;
 
   // Future openCamera() async {
   //   try {

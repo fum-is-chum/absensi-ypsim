@@ -97,13 +97,14 @@ class MyMapView extends StatefulWidget {
 
 class _MyMapView extends State<MyMapView> {
   WebViewController? webView;
-  LocationBloc locationBloc = new LocationBloc(); 
+  LocationBloc locationBloc = LocationBloc(); 
   late StreamSubscription<ServiceStatus> serviceStatus;
   late StreamSubscription<Position> positionStatus;
   bool findLocationClicked = false;
 
-  Future<void> loadMaps(Position event) async {
-    await webView?.runJavascript(redrawMaps(event.latitude, event.longitude));
+  Future<void> loadMaps(Position pos) async {
+    locationBloc.updatePosition(pos);
+    await webView?.runJavascript(redrawMaps(pos.latitude, pos.longitude));
     locationBloc.updateLoadingStatus(false);
     // setState(() {
       

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:absensi_ypsim/screens/home/bloc/camera-bloc.dart';
 import 'package:absensi_ypsim/screens/home/bloc/home-bloc.dart';
@@ -8,6 +7,7 @@ import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
 import 'package:absensi_ypsim/screens/home/bloc/time-bloc.dart';
 import 'package:absensi_ypsim/screens/home/camera.dart';
 import 'package:absensi_ypsim/screens/home/location-view.dart';
+import 'package:absensi_ypsim/screens/home/models/attendance-status.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/widgets/card-small.dart';
 import 'package:absensi_ypsim/widgets/drawer.dart';
@@ -17,15 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-
-final Map<String, Map<String, String>> homeCards = {
-  "Makeup": {
-    "title": "Find the cheapest deals on our range...",
-    "image":
-        "https://images.unsplash.com/photo-1515709980177-7a7d628c09ba?crop=entropy&w=840&h=840&fit=crop",
-    "price": "220"
-  },
-};
+import 'package:rxdart/rxdart.dart';
 
 TimeBloc timeBloc = TimeBloc();
 HomeBloc homeBloc = HomeBloc();
@@ -51,6 +43,7 @@ class _HomeState extends State<Home> {
   @override
   void dispose() {
     timeBloc.dispose();
+    homeBloc.dispose();
     super.dispose();
   }
 
@@ -111,6 +104,17 @@ class ImageRow extends StatefulWidget {
 class _ImageRow extends State<ImageRow> {
 
   @override
+  void initState() {
+    Rx.merge([
+      timeBloc.dateStream$,
+      homeBloc.reloadAttendance$
+    ]).listen((event) {
+      if(timeBloc.currentDate != "") homeBloc.getAttendanceStatus(context: context, date: timeBloc.currentDate);
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     // cameraBloc.dispose();
     super.dispose();
@@ -119,28 +123,28 @@ class _ImageRow extends State<ImageRow> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: cameraBloc.imageStream,
-      builder: (BuildContext context, AsyncSnapshot<File?> snapshot) {
+      stream: homeBloc.attendanceStatus$,
+      builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CardSmall(
-              // cta: cameraBloc.snapTime != '' && !homeBloc.statusAbsensi() ? cameraBloc.snapTime : "07:01:12 WIB",
-              cta: '00:00:00 WIB',
+              cta: snapshot.hasData && snapshot.data != null && snapshot.data!['check_in'] != null ? "${snapshot.data!['check_in']} WIB" : '00:00:00 WIB',
               title: "IN",
-              // img: snapshot.hasData && snapshot.data != null && !homeBloc.statusAbsensi() ? snapshot.data :homeCards["Makeup"]!['image'],
-              img: homeCards["Makeup"]!['image'],
+              img: snapshot.hasData && snapshot.data != null && snapshot.data!['photo_check_in'] != null ? 
+                    "https://presensi.ypsimlibrary.com${snapshot.data!['photo_check_in']}" : 'assets/img/no-image.jpg',
+              // img: 'assets/img/no-image.jpg',
               tap: () {
                 // Navigator.pushReplacementNamed(context, '/pro');
               }
             ),
             SizedBox(width: 8),
             CardSmall(
-              // cta: cameraBloc.snapTime != '' && homeBloc.statusAbsensi() ? cameraBloc.snapTime : "16:01:12 WIB",
-              cta: '00:00:00 WIB',
+              cta: snapshot.hasData && snapshot.data != null && snapshot.data!['check_out'] != null ? "${snapshot.data!['check_out']} WIB" : '00:00:00 WIB',
               title: "OUT",
-              // img: snapshot.hasData && snapshot.data != null && homeBloc.statusAbsensi() ? snapshot.data : homeCards["Makeup"]!['image'],
-              img: homeCards["Makeup"]!['image'],
+              img: snapshot.hasData && snapshot.data != null && snapshot.data!['photo_check_out'] != null ? 
+                  "https://presensi.ypsimlibrary.com${snapshot.data!['photo_check_out']}" : 'assets/img/no-image.jpg',
+              // img: 'assets/img/no-image.jpg',
               tap: () {
                 // Navigator.pushReplacementNamed(context, '/pro');
               }
@@ -152,25 +156,8 @@ class _ImageRow extends State<ImageRow> {
   }
 }
 
-class CheckIn extends StatefulWidget {
+class CheckIn extends StatelessWidget {
   const CheckIn({Key? key}) : super(key: key);
-
-  @override
-  State<CheckIn> createState() => _CheckInState();
-}
-
-class _CheckInState extends State<CheckIn> {
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {    
     return Card(
@@ -184,7 +171,7 @@ class _CheckInState extends State<CheckIn> {
           Container(
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
-              color: MaterialColors.newPrimary,
+              color:MaterialColors.newPrimary,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(8.0),
                 topRight: Radius.circular(8.0),
@@ -282,7 +269,7 @@ class TimerDisplay extends StatefulWidget {
 class _TimerDisplay extends State<TimerDisplay> {
   Timer _timer = Timer(Duration(seconds: 10), () {});
   List<int> counts = [];
-  var time = 0;
+  // var time = 0;
 
   @override
   void initState() {
@@ -295,22 +282,37 @@ class _TimerDisplay extends State<TimerDisplay> {
       String result = await timeBloc.getTime(context);
       DateTime dateString = DateTime.parse(result).add(Duration(hours: 7));
       DateFormat formatter = DateFormat('H:mm:ss');
-      startTimer(dateString);
+      timeBloc.updateDate(DateFormat("yyyy-MM-dd").format(dateString));
+      startTimer(formatter.format(dateString));
     } catch (e) {
       inspect(e);
     }
   }
 
-  void startTimer(DateTime data) {
-    const oneSec = const Duration(seconds: 1);
-    DateFormat formatter = DateFormat('H:mm:ss');
+  void startTimer(String data) {
+    counts = data.split(":").map((e) => int.parse(e)).toList();
 
     _timer = Timer.periodic(
-      oneSec,
+      const Duration(seconds: 1),
       (Timer timer) {
         setState(() {
-          data = data.add(oneSec);
-          timeBloc.count = formatter.format(data);
+          counts[2]++;
+
+          if(counts[2] > 59) {
+            counts[2] = 0;
+            counts[1]++;
+          }
+
+          if(counts[1] > 59) {
+            counts[1] = 0;
+            counts[0]++;
+          }
+
+          if(counts[0] > 23) {
+            counts[0] = 0;
+          }
+
+          timeBloc.count = "${counts[0] < 10 ? "0" : ""}${counts[0]}:${counts[1] < 10 ? "0" : ""}${counts[1]}:${counts[2] < 10 ? "0" : ""}${counts[2]}";
         });
       },
     );
@@ -343,23 +345,36 @@ class CheckInButtonContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: locationBloc.isLocationOn,
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if(!snapshot.hasData) {
-          return CheckInButton(disabled: true);
+      builder: (BuildContext context, AsyncSnapshot<bool> location) {
+        if(!location.hasData) {
+          return CheckInButton(disabled: true, isCheckout: false,);
         }
         return !kIsWeb ? StreamBuilder<ServiceStatus>(
           stream: locationBloc.serviceStatusStream$,
-          initialData: snapshot.data! ? ServiceStatus.enabled : ServiceStatus.disabled,
-          builder: (BuildContext context, AsyncSnapshot<ServiceStatus> snapshot) {
+          initialData: location.data! ? ServiceStatus.enabled : ServiceStatus.disabled,
+          builder: (BuildContext context, AsyncSnapshot<ServiceStatus> service) {
             /// index === 0 => disabled
             // return CheckInButton(disabled: false);
-            if((!snapshot.hasData || snapshot.data?.index == 0 || snapshot.data == null)) {
-             return CheckInButton(disabled: true);
+            if((!service.hasData || service.data?.index == 0 || service.data == null)) {
+             return CheckInButton(disabled: true, isCheckout: false,);
             }
+            
             return FutureBuilder(
               future: locationBloc.getPosition,
-              builder: (BuildContext context, AsyncSnapshot<Position> snapshot) {
-                return CheckInButton(disabled: !snapshot.hasData);
+              builder: (BuildContext context, AsyncSnapshot<Position> position) {
+                return StreamBuilder(
+                  stream: homeBloc.attendanceStatus$,
+                  builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> attendance) {
+                    if(!attendance.hasData) {
+                      return CheckInButton(disabled: true, isCheckout: false);
+                    }
+
+                    return CheckInButton(
+                      disabled: !position.hasData || (attendance.data!['check_in'] != null && attendance.data!['check_out'] != null),
+                      isCheckout: attendance.hasData && attendance.data!['check_in'] != null && attendance.data!['check_out'] == null
+                    );
+                  }
+                );
               }
             );
           },
@@ -371,36 +386,55 @@ class CheckInButtonContainer extends StatelessWidget {
 
 class CheckInButton extends StatefulWidget {
   final bool disabled;
-  const CheckInButton({Key? key, required this.disabled}): super(key: key);
+  final bool isCheckout;
+  const CheckInButton({Key? key, required this.disabled, required this.isCheckout}): super(key: key);
 
   @override
   _CheckInButton createState() => _CheckInButton();
 }
 
 class _CheckInButton extends State<CheckInButton> {
-  final CameraBloc cameraBloc = new CameraBloc();
 
   @override 
   void dispose() {
     super.dispose();
   }
+
   @override 
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: (widget.disabled) ? Colors.grey : Colors.green,
+        primary: (widget.disabled) ? Colors.grey : widget.isCheckout ? MaterialColors.bgPrimary : Colors.green,
         shape: const CircleBorder(), 
         padding: const EdgeInsets.all(80)
       ),
       child: Text(
-        "Check In",
-        style: TextStyle(fontSize: 20, color: Colors.white),
+        widget.isCheckout ? "Check Out" : "Check In",
+        style: TextStyle(fontSize: 20, color: widget.isCheckout ? Colors.black : Colors.white),
       ),
       onPressed: () async {
-        
-        if(!widget.disabled) await availableCameras().then((value) => 
-          Navigator.push(context, MaterialPageRoute(builder: (_) => CameraPage(cameras: value)))
-        );
+        if(!widget.disabled) await availableCameras().then((value) async  {
+          await Navigator.push(
+            context, MaterialPageRoute(builder: (_) => CameraPage(cameras: value)
+          ));
+          if(cameraBloc.imageFile != null) {
+            widget.isCheckout ? 
+              await homeBloc.checkOut(
+                context: context, 
+                pos: LocationBloc().getCurrentPosition,
+                dateTime: "${timeBloc.currentDate} ${timeBloc.count}",
+                photo: cameraBloc.imageFile!
+              ) : 
+              await homeBloc.checkIn(
+                context: context, 
+                pos: LocationBloc().getCurrentPosition,
+                dateTime: "${timeBloc.currentDate} ${timeBloc.count}",
+                photo: cameraBloc.imageFile!
+              );
+            cameraBloc.reset();
+            homeBloc.triggerReload();
+          }
+        });
       },
     );
   }

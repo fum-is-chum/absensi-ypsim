@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 
 class LocationBloc {
   late LocationSettings _locationSettings;
-  late Position currentPos;
+  late Position _currentPos;
   bool? serviceEnabled;
   LocationPermission? permission;
   BehaviorSubject<bool> _locationLoading = new BehaviorSubject.seeded(false);
@@ -16,7 +16,11 @@ class LocationBloc {
   }
 
 
-  Position get curPos => currentPos;
+  Position get getCurrentPosition => _currentPos;
+  void updatePosition(Position pos) {
+    _currentPos = pos;
+  }
+  
   Stream<bool> get locationLoading$ => _locationLoading.stream.asBroadcastStream();
   bool get isLoading => _locationLoading.value;
   Future<bool> get isLocationOn => Geolocator.isLocationServiceEnabled();
@@ -122,11 +126,11 @@ class LocationBloc {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     try{
-      currentPos = await Geolocator.getCurrentPosition();
+      _currentPos = await Geolocator.getCurrentPosition();
     } catch(e) {
 
     }
-    return currentPos;
+    return _currentPos;
   }
   // end - Location Service
 

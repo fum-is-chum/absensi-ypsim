@@ -68,7 +68,7 @@ class PreviewPage extends StatelessWidget {
                         ),
                         onPressed: () {
                           CameraBloc().pickImage(picture);
-                          Navigator.pushNamedAndRemoveUntil(context, "/home" , (Route route) => false);
+                          Navigator.popUntil(context, ModalRoute.withName("/home"));
                         },
                       ),
                     ),

@@ -22,7 +22,11 @@ Future<String> handleError(BuildContext? context, dynamic e) async {
   String error = "";
   if(e is DioError) {
     if(e.response != null && e.response!.data != null) {
-      error = "${ApiResponse.fromJson(jsonDecode(e.response!.data)).Message}";
+      try {
+        error = "${ApiResponse.fromJson(e.response!.data is String ? jsonDecode(e.response!.data) : e.response!.data).Message}";
+      } catch (err) {
+        error = e.response!.toString();
+      }
     } else if(e.error is SocketException) {
       error = "Tidak ada koneksi";
     } else if(e.error is TimeoutException) {

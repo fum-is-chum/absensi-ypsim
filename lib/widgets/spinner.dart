@@ -74,7 +74,7 @@ class Spinner {
   }
 
   hide() {
-    while(dialogContext == null) {}
+    if(dialogContext == null) return;
     Navigator.pop(dialogContext!);
   }
 }

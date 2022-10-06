@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 
 class LoggingInterceptors extends Interceptor {
@@ -12,10 +14,12 @@ class LoggingInterceptors extends Interceptor {
       options.queryParameters.forEach((k, v) => print('$k: $v'));
     }
     if (options.data != null) {
-      print("Body: ${options.data}");
-      // if(options.data is FormData) {
-      //   inspect(options.data);
-      // }
+      if(options.data is FormData) {
+        inspect((options.data as FormData).fields);
+        print("Body: ${(options.data as FormData).fields}");
+      } else {
+        print("Body: ${options.data}");
+      }
     }
     print(
         "--> END ${options.method.toUpperCase()}");
