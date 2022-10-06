@@ -18,6 +18,11 @@ class TimeBloc {
     _date = BehaviorSubject.seeded("");
   }
 
+  void init() {
+    reloadSubject$ = new BehaviorSubject.seeded(true);
+    _date = BehaviorSubject.seeded("");
+  }
+  
   Stream<bool> get reloadStream => reloadSubject$.asBroadcastStream();
 
   Stream<String> get dateStream$ => _date.asBroadcastStream();

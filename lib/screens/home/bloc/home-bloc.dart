@@ -23,6 +23,11 @@ class HomeBloc {
     _reloadAttendanceStatus = BehaviorSubject.seeded(null);
   }
 
+  void init() {
+    _attendanceStatus = BehaviorSubject.seeded({});
+    _reloadAttendanceStatus = BehaviorSubject.seeded(null);
+  }
+
   void dispose() {
     _attendanceStatus.close();
     _reloadAttendanceStatus.close();

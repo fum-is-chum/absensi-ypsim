@@ -37,6 +37,8 @@ class _HomeState extends State<Home> {
     Future.delayed(Duration(seconds: 1)).then((value) {
       SystemChrome.restoreSystemUIOverlays();
     });
+    homeBloc.init();
+    timeBloc.init();
     super.initState();
   }
 
@@ -370,7 +372,7 @@ class CheckInButtonContainer extends StatelessWidget {
                     }
 
                     return CheckInButton(
-                      disabled: !position.hasData || (attendance.data!['check_in'] != null && attendance.data!['check_out'] != null),
+                      disabled: !position.hasData || !attendance.hasData || (attendance.data!['check_in'] != null && attendance.data!['check_out'] != null),
                       isCheckout: attendance.hasData && attendance.data!['check_in'] != null && attendance.data!['check_out'] == null
                     );
                   }
