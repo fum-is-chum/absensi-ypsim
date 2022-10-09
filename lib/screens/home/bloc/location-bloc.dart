@@ -54,22 +54,21 @@ class LocationBloc {
   void initLocation() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       _locationSettings = AndroidSettings(
-        accuracy: LocationAccuracy.high,
+        accuracy: LocationAccuracy.best,
         distanceFilter: 10,
         // forceLocationManager: true,
-        intervalDuration: const Duration(seconds: 8),
+        intervalDuration: const Duration(seconds: 10),
         //(Optional) Set foreground notification config to keep the app alive 
         //when going to the background
-        // foregroundNotificationConfig: const ForegroundNotificationConfig(
-        //     notificationText:
-        //     "Absensi YPSIM is running in background",
-        //     notificationTitle: "Running in Background",
-        //     enableWakeLock: true,
-        // )
+        foregroundNotificationConfig: const ForegroundNotificationConfig(
+            notificationText: "SimLog is running in background",
+            notificationTitle: "SimLog",
+            enableWakeLock: true,
+        )
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
       _locationSettings = AppleSettings(
-        accuracy: LocationAccuracy.high,
+        accuracy: LocationAccuracy.bestForNavigation,
         activityType: ActivityType.fitness,
         distanceFilter: 50,
         pauseLocationUpdatesAutomatically: true,
@@ -153,8 +152,24 @@ class LocationBloc {
   }
   // end - Location Service
 
-  bool isInValidLocation(double x1, double y1, double x2, double y2, double radius) { // 
-    return Geolocator.distanceBetween(x1, y1, x2, y2) <= radius; // return distance in meter
+  int get getDistance {
+    double x1 = _currentPos.latitude;
+    double y1 = _currentPos.longitude;
+    double x2 = getTargetLocation['latitude'] ?? 0;
+    double y2 = getTargetLocation['longitude'] ?? 0;
+    int radius = getTargetLocation['radius'] ?? 0;
+    return Geolocator.distanceBetween(x1, y1, x2, y2).round() - radius;
+  } 
+
+  bool isInValidLocation([double? x1, double? y1, double? x2, double? y2, int? radius]) { // 
+    if (x1 == null) x1 = _currentPos.latitude;
+    if (y1 == null) y1 = _currentPos.longitude;
+    if (x2 == null) x2 = getTargetLocation['latitude'] ?? 0;
+    if (y2 == null) y2 = getTargetLocation['longitude'] ?? 0;
+    if (radius == null) radius = getTargetLocation['radius'] ?? 0;
+    inspect(Geolocator.distanceBetween(x1, y1, x2!, y2!));
+    inspect(getTargetLocation);
+    return Geolocator.distanceBetween(x1, y1, x2, y2).round() <= radius!; // return distance in meter
   }
 
   Future<Map<String, dynamic>> getValidLocation(BuildContext context) async {

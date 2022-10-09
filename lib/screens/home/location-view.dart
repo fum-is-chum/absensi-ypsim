@@ -10,6 +10,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 
+final LocationBloc locationBloc = LocationBloc(); 
 class LocationView extends StatefulWidget {
   LocationView({Key? key}) : super(key: key);
   @override
@@ -17,6 +18,12 @@ class LocationView extends StatefulWidget {
 }
 
 class _LocationView extends State<LocationView> {
+  @override
+  void initState() {
+    super.initState();
+    locationBloc.initLocation();
+  }
+
   GlobalKey<_MyMapView> mapKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
@@ -49,13 +56,29 @@ class _LocationView extends State<LocationView> {
                         color: Colors.white,
                       ),
                       SizedBox(width: 8),
-                      Text(
-                        "Lokasi Anda",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
+                      
+                      StreamBuilder(
+                        stream: locationBloc.targetLocation$,
+                        builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> targetLocation) {
+                          if(!targetLocation.hasData || (targetLocation.hasData && targetLocation.data!['latitude'] == null)) {
+                            return Text(
+                              "Lokasi Anda",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            );
+                          }
+
+                          return Text(
+                            "Lokasi Anda ${locationBloc.getDistance}m",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          );
+                        }
+                      )
                     ],
                   ),
                   Material(
@@ -97,7 +120,6 @@ class MyMapView extends StatefulWidget {
 
 class _MyMapView extends State<MyMapView> {
   WebViewController? webView;
-  LocationBloc locationBloc = LocationBloc(); 
   late StreamSubscription<ServiceStatus> serviceStatus;
   late StreamSubscription<Position> positionStatus;
   bool findLocationClicked = false;
@@ -126,7 +148,6 @@ class _MyMapView extends State<MyMapView> {
   @override
   void initState() {
     super.initState();
-    locationBloc.initLocation();
     serviceStatus = locationBloc.serviceStatusStream$.listen((event) { 
       setState(() {
         

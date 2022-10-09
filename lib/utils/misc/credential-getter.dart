@@ -11,6 +11,7 @@ class CredentialGetter {
   factory CredentialGetter() => _shared;
   late SharedPreferences sharedPref;
   LoginResult? _inMemoryUserData;
+  Map<String, dynamic> _loginCredential = {};
 
   Future<void> init() async {
     sharedPref = await SharedPreferences.getInstance();
@@ -31,6 +32,12 @@ class CredentialGetter {
     return _inMemoryUserData!.Data!;
   }
 
+  Future<Map<String, dynamic>> get loginCredential async {
+    if(_loginCredential['username'] != null) return _loginCredential;
+    _loginCredential = await _loadLoginCredential();
+    return _loginCredential;
+  }
+
   Future<int> get userId async {
     if(_inMemoryUserData != null) return _inMemoryUserData!.Data!.id!;
 
@@ -48,7 +55,15 @@ class CredentialGetter {
     return null;
   }
 
+  Future<Map<String, dynamic>> _loadLoginCredential() async {
+    if(sharedPref.containsKey('login')) {
+      return jsonDecode(decryptAESCryptoJS(sharedPref.getString('login')!, '&*()'));
+    }
+    return {};
+  }
+
   void reset() {
     _inMemoryUserData = null;
+    _loginCredential = {};
   }
 }

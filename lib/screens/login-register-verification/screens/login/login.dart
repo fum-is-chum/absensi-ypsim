@@ -112,7 +112,7 @@ class _LoginView extends State<LoginView> {
                           onClick: () async {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              if (await _bloc.loginUser(context))
+                              if (await _bloc.loginUser())
                                 // _formKey.currentState!.reset();
                                 Navigator.pushNamedAndRemoveUntil(
                                   context, '/home', (Route<dynamic> route) => false

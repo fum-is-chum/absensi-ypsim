@@ -395,13 +395,23 @@ class CheckInButtonContainer extends StatelessWidget {
                 return StreamBuilder(
                   stream: homeBloc.attendanceStatus$,
                   builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> attendance) {
-                    if(!attendance.hasData) {
+                    if(!attendance.hasData || !position.hasData) {
                       return CheckInButton(disabled: true, isCheckout: false);
                     }
 
-                    return CheckInButton(
-                      disabled: !position.hasData || !attendance.hasData || (attendance.data!['check_in'] != null && attendance.data!['check_out'] != null),
-                      isCheckout: attendance.hasData && attendance.data!['check_in'] != null && attendance.data!['check_out'] == null
+                    return StreamBuilder(
+                      stream: locationBloc.targetLocation$,
+                      builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> targetLocation) {
+                        if(!targetLocation.hasData || (targetLocation.hasData && targetLocation.data!['latitude'] == null)) {
+                          return CheckInButton(disabled: true, isCheckout: false);
+                        }
+                        return CheckInButton(
+                          disabled: !position.hasData || !attendance.hasData || 
+                                    (attendance.data!['check_in'] != null && attendance.data!['check_out'] != null) ||
+                                    !locationBloc.isInValidLocation(),
+                          isCheckout: attendance.hasData && attendance.data!['check_in'] != null && attendance.data!['check_out'] == null
+                        );
+                      },
                     );
                   }
                 );

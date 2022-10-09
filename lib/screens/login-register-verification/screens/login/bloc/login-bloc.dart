@@ -1,16 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login.dart';
 import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
+import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
 import 'package:absensi_ypsim/utils/misc/crypto.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:absensi_ypsim/widgets/spinner.dart';
-import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,11 +34,11 @@ class LoginBloc {
 
   Future<void> saveCredentials(LoginResult cred) async {
     SharedPreferences sharedPref = await SharedPreferences.getInstance();
-    // inspect(cred.toJson());
     sharedPref.setString('user', encryptAESCryptoJS(jsonEncode(cred.toJson()),'1!1!'));
+    sharedPref.setString('login', encryptAESCryptoJS(jsonEncode(model),  '&*()'));
   }
 
-  Future<bool> loginUser(BuildContext context) async {
+  Future<bool> loginUser() async {
     sp.show();
     try {
       Response resp = await login();
@@ -51,42 +48,43 @@ class LoginBloc {
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(e);;
+      await handleError(e);
       return false;
     }
   }
 
-  Future<bool> logoutUser(BuildContext context) async {
+  Future<bool> logoutUser() async {
     try {
       sp.show();
       await logout();
+
       sp.hide();
       return true;
     } catch (e) {
       sp.hide();
-      String error = "";
-      if(e is DioError) {
-        if(e.response != null) {
-          error = "${e.message}\n${e.response.toString()}";
-        } else if(e.error is SocketException) {
-          error = "Tidak ada koneksi";
-        } else if(e.error is TimeoutException) {
-          error = "${e.requestOptions.baseUrl}${e.requestOptions.path}\nRequest Timeout";
-        }
-      } else {
-        error = e.toString();
-      }
-        await ArtSweetAlert.show(
-          context: context,
-          artDialogArgs: ArtDialogArgs(
-            type: ArtSweetAlertType.danger,
-            title: "Gagal",
-            text: error
-          )
-        );
+      await handleError(e);
       return false;
     }
   }
+
+  Future<bool> relogin() async {
+    try{
+      sp.show();
+      model = await CredentialGetter().loginCredential;
+      if(model['username'] == null) {
+        sp.hide();
+        return false;
+      }
+      await login();
+      sp.hide();
+      return true;
+    } catch (e) {
+      sp.hide();
+      await handleError(e);
+      return false;
+    }
+  }
+
   Future<Response> login() {
     return DioClient().dio.post('/login', data: model);
   }

@@ -30,7 +30,7 @@ class MaterialDrawer extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.symmetric(horizontal: 8),
               children: [
-                Divider(),
+                // Divider(),
                 SizedBox(height: 8),
                 DrawerTile(
                     icon: Icons.home,
@@ -81,7 +81,7 @@ class MaterialDrawer extends StatelessWidget {
                 icon: Icons.logout,
                 onTap: () async {
                   if (currentPage != "logout") {
-                    await LoginBloc().logoutUser(context);
+                    await LoginBloc().logoutUser();
                     SharedPreferences sharedPref = await SharedPreferences.getInstance();
                     sharedPref.remove('user');
                     CredentialGetter().reset();
