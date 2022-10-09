@@ -18,7 +18,7 @@ class TokenInterceptor extends Interceptor {
 
   @override
   void onError(DioError dioError, ErrorInterceptorHandler handler) async {
-    if(dioError.response != null && dioError.response!.statusCode == 401) { // unauthenticated
+    if(dioError.response != null && dioError.response!.statusCode == 301 || dioError.response!.statusCode == 401) { // unauthenticated
       SharedPreferences sharedPref = await SharedPreferences.getInstance();
       sharedPref.remove('user');
       CredentialGetter().reset();
