@@ -51,19 +51,18 @@ class HomeBloc {
   Map<String, dynamic> get attendanceStatus => _attendanceStatus.value;
 
   Future<bool> getAttendanceStatus({
-    required BuildContext context,
     required String date
   }) async {
-    // sp.show(context: context);
+    sp.show();
     try {
       Map<String, dynamic> data = ApiResponse.fromJson((await _getAttendanceStatus(date: date)).data!).Result;
-      inspect(data);
+      // inspect(data);
       this._attendanceStatus.sink.add(data);
-      // sp.hide();
+      sp.hide();
       return true;
     } catch (e) {
-      // sp.hide();
-      await handleError(context, e);
+      sp.hide();
+      await handleError(e);
       return false;
     }
   }
@@ -74,14 +73,14 @@ class HomeBloc {
     required String dateTime,
     required File photo,
   }) async {
-    sp.show(context: context);
+    sp.show();
     try {
       Response response = await _checkIn(pos: pos, dateTime: dateTime, photo: photo);
       sp.hide();
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(context, e);
+      await handleError(e);;
       return false;
     }
    }
@@ -92,14 +91,14 @@ class HomeBloc {
     required String dateTime,
     required File photo,
   }) async {
-    sp.show(context: context);
+    sp.show();
     try {
       Response response = await _checkOut(pos: pos, dateTime: dateTime, photo: photo);
       sp.hide();
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(context, e);
+      await handleError(e);;
       return false;
     }
    }

@@ -42,7 +42,7 @@ class LoginBloc {
   }
 
   Future<bool> loginUser(BuildContext context) async {
-    sp.show(context: context);
+    sp.show();
     try {
       Response resp = await login();
       // inspect(resp.data['Result']);
@@ -51,14 +51,14 @@ class LoginBloc {
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(context, e);
+      await handleError(e);;
       return false;
     }
   }
 
   Future<bool> logoutUser(BuildContext context) async {
     try {
-      sp.show(context: context);
+      sp.show();
       await logout();
       sp.hide();
       return true;

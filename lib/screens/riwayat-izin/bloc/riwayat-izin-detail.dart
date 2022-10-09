@@ -24,14 +24,14 @@ class RiwayatIzinDetailBloc {
   }
 
   Future<PengajuanIzinModel?> getDetail(BuildContext? context, int permission_id) async {
-    if(context != null) sp.show(context: context);
+    if(context != null) sp.show();
     try {
       PengajuanIzinModel? data = await detail(permission_id);
       if(context != null) sp.hide();
       return data;
     } catch (e) {
       if(context != null) sp.hide();
-      await handleError(context, e);
+      await handleError(e);;
     }
     return null;
   }

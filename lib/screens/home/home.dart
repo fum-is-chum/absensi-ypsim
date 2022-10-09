@@ -7,7 +7,6 @@ import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
 import 'package:absensi_ypsim/screens/home/bloc/time-bloc.dart';
 import 'package:absensi_ypsim/screens/home/camera.dart';
 import 'package:absensi_ypsim/screens/home/location-view.dart';
-import 'package:absensi_ypsim/screens/home/models/attendance-status.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/widgets/card-small.dart';
 import 'package:absensi_ypsim/widgets/drawer.dart';
@@ -51,7 +50,34 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        final shouldPop = await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Keluar dari aplikasi?'),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: const Text('Tidak'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                  child: const Text('Ya'),
+                ),
+              ],
+            );
+          },
+        );
+        return shouldPop!;
+      },
+      child: Scaffold(
         appBar: AppBar(
           title: Text(
             "Home",
@@ -93,7 +119,9 @@ class _HomeState extends State<Home> {
               ],
             ),
           ),
-        ));
+        )
+      ),
+    );
   }
 }
 
@@ -111,7 +139,7 @@ class _ImageRow extends State<ImageRow> {
       timeBloc.dateStream$,
       homeBloc.reloadAttendance$
     ]).listen((event) {
-      if(timeBloc.currentDate != "") homeBloc.getAttendanceStatus(context: context, date: timeBloc.currentDate);
+      if(timeBloc.currentDate != "") homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
     });
     super.initState();
   }

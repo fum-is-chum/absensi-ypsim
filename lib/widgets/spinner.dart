@@ -1,3 +1,4 @@
+import 'package:absensi_ypsim/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
@@ -37,10 +38,10 @@ Widget splashScreen(BuildContext context) {
 class Spinner {
   BuildContext? dialogContext;
   
-  Future<dynamic> show({ required BuildContext context }) {
-    dialogContext = context;
+  Future<dynamic> show() {
+    dialogContext = navigatorKey.currentContext;
     return showGeneralDialog(
-      context: context,
+      context: dialogContext!,
       pageBuilder: (BuildContext buildContext, Animation<double> animation,
           Animation<double> secondaryAnimation) {
         return loadingSpinner();

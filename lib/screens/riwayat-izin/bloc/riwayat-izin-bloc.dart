@@ -41,7 +41,7 @@ class RiwayatIzinBloc {
       // inspect(body.Result);
       return body.Result;
     } catch (e) {
-      throw await handleError(null, e);
+      throw await handleError(e);
     } finally {
       this.loadingSubject$.sink.add(false);
     }

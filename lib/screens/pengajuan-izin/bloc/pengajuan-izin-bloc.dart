@@ -40,7 +40,7 @@ class PengajuanIzinBloc {
 
   Future<bool> updateIzin(BuildContext context) async {
     try{
-      sp.show(context: context);
+      sp.show();
       await update();
       sp.hide();
       await ArtSweetAlert.show(
@@ -54,14 +54,14 @@ class PengajuanIzinBloc {
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(context, e);
+      await handleError(e);;
       return false;
     }
   }
 
   Future<bool> createIzin(BuildContext context) async {
     try{
-      sp.show(context: context);
+      sp.show();
       Response resp = await create();
       sp.hide();
       await ArtSweetAlert.show(
@@ -75,7 +75,7 @@ class PengajuanIzinBloc {
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(context, e);
+      await handleError(e);;
       return false;
     }
   }

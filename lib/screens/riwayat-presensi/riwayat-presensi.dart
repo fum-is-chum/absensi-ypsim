@@ -20,70 +20,76 @@ class _History extends State<RiwayatPresensi> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: MaterialDrawer(currentPage: "Riwayat Presensi"),
-      backgroundColor: MaterialColors.bgColorScreen,
-      body: Container(
-        width: double.infinity,
-        height: MediaQuery.of(context).size.height,
-        child: CustomScrollView(
-          slivers: <Widget>[
-            SliverAppBar(
-              forceElevated: true,
-              title: Text("Riwayat Presensi",
-                style: TextStyle(color: Colors.black),
-              ),
-              backgroundColor: MaterialColors.bgColorScreen,
-              iconTheme: IconThemeData(color: Colors.black),
-              pinned: true,
-              // snap: true,
-              // floating: true,
-              expandedHeight: 144,
-              collapsedHeight: 144,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  // duration: Duration(milliseconds: 500),
-                  padding: EdgeInsets.only(top: 56 + 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        child: TanggalField(),
-                        width: MediaQuery.of(context).size.width / 2.3,
-                      ),
-                      SizedBox(width: 20),
-                      SizedBox(
-                        child: TanggalField(isAkhir: true),
-                        width: MediaQuery.of(context).size.width / 2.3,
-                      ),
-                    ],
-                  )
+    return WillPopScope(
+      onWillPop: () async {
+  Navigator.pushReplacementNamed(context, '/home');
+  return false;
+}, 
+      child: Scaffold(
+        drawer: MaterialDrawer(currentPage: "Riwayat Presensi"),
+        backgroundColor: MaterialColors.bgColorScreen,
+        body: Container(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          child: CustomScrollView(
+            slivers: <Widget>[
+              SliverAppBar(
+                forceElevated: true,
+                title: Text("Riwayat Presensi",
+                  style: TextStyle(color: Colors.black),
+                ),
+                backgroundColor: MaterialColors.bgColorScreen,
+                iconTheme: IconThemeData(color: Colors.black),
+                pinned: true,
+                // snap: true,
+                // floating: true,
+                expandedHeight: 144,
+                collapsedHeight: 144,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Container(
+                    // duration: Duration(milliseconds: 500),
+                    padding: EdgeInsets.only(top: 56 + 24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          child: TanggalField(),
+                          width: MediaQuery.of(context).size.width / 2.3,
+                        ),
+                        SizedBox(width: 20),
+                        SizedBox(
+                          child: TanggalField(isAkhir: true),
+                          width: MediaQuery.of(context).size.width / 2.3,
+                        ),
+                      ],
+                    )
+                  ),
                 ),
               ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return HistoryPresensiItem(
-                      date: widget.log[index]['date'],
-                      checkIn: widget.log[index]['checkIn'],
-                      checkOut: widget.log[index]['checkOut'],
-                      status: widget.log[index]['status'],
-                      tap: () {
-                        Navigator.pushNamed(
-                            context, widget.log[index]['link']);
-                      },
-                    );
-                  },
-                  childCount: widget.log.length,
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      return HistoryPresensiItem(
+                        date: widget.log[index]['date'],
+                        checkIn: widget.log[index]['checkIn'],
+                        checkOut: widget.log[index]['checkOut'],
+                        status: widget.log[index]['status'],
+                        tap: () {
+                          Navigator.pushNamed(
+                              context, widget.log[index]['link']);
+                        },
+                      );
+                    },
+                    childCount: widget.log.length,
+                  ),
                 ),
-              ),
-            )
-          ]
-        ),
-      )
+              )
+            ]
+          ),
+        )
+      ),
     );
   }
 }

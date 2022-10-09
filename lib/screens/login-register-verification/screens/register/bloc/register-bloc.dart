@@ -40,7 +40,7 @@ class RegisterBloc {
   }
 
   Future<bool> registerUser(BuildContext context) async {
-    sp.show(context: context);
+    sp.show();
     try {
       await register();
       sp.hide();

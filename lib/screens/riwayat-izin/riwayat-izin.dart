@@ -32,56 +32,62 @@ class _HistoryIzin extends State<RiwayatIzin> {
   // late Future<List<dynamic>> Function() data = 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: MaterialDrawer(currentPage: "Riwayat Izin",),
-      backgroundColor: MaterialColors.bgColorScreen,
-      body: Container(
-        width: double.infinity,
-        height: MediaQuery.of(context).size.height,
-        child: CustomScrollView(
-          slivers: <Widget>[
-            SliverAppBar(
-              forceElevated: true,
-              title: Text("Riwayat Izin",
-                style: TextStyle(color: Colors.black)
-              ),
-              backgroundColor: MaterialColors.bgColorScreen,
-              iconTheme: IconThemeData(color: Colors.black),
-              pinned: true,
-              // floating: true,
-              // snap: false,
-              expandedHeight: 144,
-              collapsedHeight: 144,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  // duration: Duration(milliseconds: 500),
-                  padding: EdgeInsets.only(top: 56 + 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        child: TanggalField(),
-                        width: MediaQuery.of(context).size.width / 2.3,
-                      ),
-                      SizedBox(width: 20),
-                      SizedBox(
-                        child: TanggalField(isAkhir: true),
-                        width: MediaQuery.of(context).size.width / 2.3,
-                      ),
-                    ],
-                  )
+    return WillPopScope(
+      onWillPop: () async {
+  Navigator.pushReplacementNamed(context, '/home');
+  return false;
+},
+        child: Scaffold(
+        drawer: MaterialDrawer(currentPage: "Riwayat Izin",),
+        backgroundColor: MaterialColors.bgColorScreen,
+        body: Container(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          child: CustomScrollView(
+            slivers: <Widget>[
+              SliverAppBar(
+                forceElevated: true,
+                title: Text("Riwayat Izin",
+                  style: TextStyle(color: Colors.black)
+                ),
+                backgroundColor: MaterialColors.bgColorScreen,
+                iconTheme: IconThemeData(color: Colors.black),
+                pinned: true,
+                // floating: true,
+                // snap: false,
+                expandedHeight: 144,
+                collapsedHeight: 144,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Container(
+                    // duration: Duration(milliseconds: 500),
+                    padding: EdgeInsets.only(top: 56 + 24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          child: TanggalField(),
+                          width: MediaQuery.of(context).size.width / 2.3,
+                        ),
+                        SizedBox(width: 20),
+                        SizedBox(
+                          child: TanggalField(isAkhir: true),
+                          width: MediaQuery.of(context).size.width / 2.3,
+                        ),
+                      ],
+                    )
+                  ),
                 ),
               ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-              sliver: SliverToBoxAdapter(
-                child: RiwayatIzinList()
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                sliver: SliverToBoxAdapter(
+                  child: RiwayatIzinList()
+                )
               )
-            )
-          ],
-        ),
-      )
+            ],
+          ),
+        )
+      ),
     );
   }
 }

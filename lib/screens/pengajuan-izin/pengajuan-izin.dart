@@ -58,103 +58,109 @@ class _PengajuanIzin extends State<PengajuanIzin> {
       onTap: () {
         hideKeyboard(context);
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Pengajuan Izin",
-            style: TextStyle(
-              color: Colors.black,
-            ),
-          ),
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.black),
-          // automaticallyImplyLeading: editData != null,
-        ),
-        backgroundColor: MaterialColors.bgColorScreen,
-        // key: _scaffoldKey,
-        drawer: _drawer(),
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.all(24),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _key,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Tanggal Awal',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  const SizedBox(height: 4,),
-                  TanggalField(),
-                  const SizedBox(height: 16,),
-                  const Text(
-                    'Tanggal Akhir',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  const SizedBox(height: 4,),
-                  TanggalField(isAkhir: true,),
-                  const SizedBox(height: 16,),
-                  const Text(
-                    'Keterangan',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  const SizedBox(height: 4,),
-                  KeteranganField(),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Lampiran',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold
-                    )
-                  ),
-                  const SizedBox(height: 4,),
-                  LampiranField(key: _lampiranKey),
-                  const SizedBox(height: 16,),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            if(_key.currentState!.validate()) {
-                              _key.currentState!.save();
-                              try {
-                                if(_isEdit) {
-                                  if(_hasFile && _fileLoading) throw 'File Loading';
-                                  if(await _pengajuanIzinBloc.updateIzin(context)) {
-                                    await Future.delayed(Duration(milliseconds: 500));
-                                    Navigator.popUntil(context, ModalRoute.withName('/riwayat-izin'));
-                                  }
-                                } else if(!_isEdit) {
-                                  if(await _pengajuanIzinBloc.createIzin(context)) {
-                                    _key.currentState!.reset();
-                                    _lampiranKey.currentState!.reset();
-                                  }
-                                }
-                              } catch (e) {
-                                await handleError(context, e);
-                              }
-                            }
-                          },
-                          child: Text('Submit')
-                        ),
-                      )
-                    ],
-                  )
-                ]
+      child: WillPopScope(
+        onWillPop: () async {
+  Navigator.pushReplacementNamed(context, '/home');
+  return false;
+},
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              "Pengajuan Izin",
+              style: TextStyle(
+                color: Colors.black,
               ),
-            )
+            ),
+            backgroundColor: Colors.white,
+            iconTheme: IconThemeData(color: Colors.black),
+            // automaticallyImplyLeading: editData != null,
           ),
-        )
+          backgroundColor: MaterialColors.bgColorScreen,
+          // key: _scaffoldKey,
+          drawer: _drawer(),
+          body: Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.all(24),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _key,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Tanggal Awal',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    const SizedBox(height: 4,),
+                    TanggalField(),
+                    const SizedBox(height: 16,),
+                    const Text(
+                      'Tanggal Akhir',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    const SizedBox(height: 4,),
+                    TanggalField(isAkhir: true,),
+                    const SizedBox(height: 16,),
+                    const Text(
+                      'Keterangan',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    const SizedBox(height: 4,),
+                    KeteranganField(),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Lampiran',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      )
+                    ),
+                    const SizedBox(height: 4,),
+                    LampiranField(key: _lampiranKey),
+                    const SizedBox(height: 16,),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if(_key.currentState!.validate()) {
+                                _key.currentState!.save();
+                                try {
+                                  if(_isEdit) {
+                                    if(_hasFile && _fileLoading) throw 'File Loading';
+                                    if(await _pengajuanIzinBloc.updateIzin(context)) {
+                                      await Future.delayed(Duration(milliseconds: 500));
+                                      Navigator.popUntil(context, ModalRoute.withName('/riwayat-izin'));
+                                    }
+                                  } else if(!_isEdit) {
+                                    if(await _pengajuanIzinBloc.createIzin(context)) {
+                                      _key.currentState!.reset();
+                                      _lampiranKey.currentState!.reset();
+                                    }
+                                  }
+                                } catch (e) {
+                                  await handleError(e);;
+                                }
+                              }
+                            },
+                            child: Text('Submit')
+                          ),
+                        )
+                      ],
+                    )
+                  ]
+                ),
+              )
+            ),
+          )
+        ),
       ),
     );
   }

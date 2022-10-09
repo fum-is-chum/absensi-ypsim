@@ -1,12 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/widgets/drawer.dart';
+import 'package:flutter/material.dart';
 
 class RiwayatPresensiDetail extends StatelessWidget {
   // final GlobalKey _scaffoldKey = new GlobalKey();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushReplacementNamed(context, '/home');
+        return false;
+      },
+      child: Scaffold(
         appBar: AppBar(
           title: Text(
             "Detail Riwayat Presensi",
@@ -75,6 +80,8 @@ class RiwayatPresensiDetail extends StatelessWidget {
               ],
             ),
           ),
-        ));
+        )
+      ),
+    );
   }
 }

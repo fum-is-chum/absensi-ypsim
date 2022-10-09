@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:absensi_ypsim/main.dart';
 import 'package:absensi_ypsim/models/api-response.dart';
 import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
@@ -18,7 +19,7 @@ String formatTimeOnly(dynamic date) {
   return DateFormat("HH:mm:ss", "id_ID").format(date is String ? DateTime.parse(date): date);
 }
 
-Future<String> handleError(BuildContext? context, dynamic e) async {
+Future<String> handleError(dynamic e) async {
   String error = "";
   if(e is DioError) {
     if(e.response != null && e.response!.data != null) {
@@ -35,15 +36,15 @@ Future<String> handleError(BuildContext? context, dynamic e) async {
   } else {
     error = e.toString();
   }
-  if(context != null)
-    await ArtSweetAlert.show(
-      context: context,
-      artDialogArgs: ArtDialogArgs(
-        type: ArtSweetAlertType.danger,
-        title: "Gagal",
-        text: error
-      )
-    );
+  await ArtSweetAlert.show(
+    context: navigatorKey.currentContext!,
+    artDialogArgs: ArtDialogArgs(
+      type: ArtSweetAlertType.danger,
+      title: "Gagal",
+      text: error
+    )
+  );
+    
   return error;
 }
 
@@ -62,7 +63,7 @@ Future<File> createFileOfPdfUrl(BuildContext? context, String url) async {
     completer.complete(file);
     // print("Done");
   } catch (e) {
-    await handleError(context, e);
+    await handleError(e);
   }
 
   return completer.future;

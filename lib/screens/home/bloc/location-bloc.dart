@@ -1,4 +1,12 @@
+import 'dart:developer';
+
+import 'package:absensi_ypsim/models/api-response.dart';
+import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
+import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -7,7 +15,11 @@ class LocationBloc {
   late Position _currentPos;
   bool? serviceEnabled;
   LocationPermission? permission;
-  BehaviorSubject<bool> _locationLoading = new BehaviorSubject.seeded(false);
+  Spinner sp = Spinner();
+  BehaviorSubject<bool> _locationLoading = BehaviorSubject.seeded(false);
+  BehaviorSubject<Map<String, dynamic>> _targetLocation = BehaviorSubject.seeded({});
+  double x2 = 0;
+  double y2 = 0;
 
   LocationBloc._();
   static final _instance = LocationBloc._();
@@ -15,22 +27,29 @@ class LocationBloc {
     return _instance; // singleton service
   }
 
+  void init() {
+    _locationLoading = BehaviorSubject.seeded(false);
+    _targetLocation = BehaviorSubject.seeded({});
+  }
 
-  Position get getCurrentPosition => _currentPos;
   void updatePosition(Position pos) {
     _currentPos = pos;
   }
   
+  void dispose() {
+    _locationLoading.close();
+    _targetLocation.close();
+  }
+
+  Stream<Map<String, dynamic>> get targetLocation$ => _targetLocation.asBroadcastStream();
+  Map<String, dynamic> get getTargetLocation => _targetLocation.value;
+  Position get getCurrentPosition => _currentPos;
   Stream<bool> get locationLoading$ => _locationLoading.stream.asBroadcastStream();
   bool get isLoading => _locationLoading.value;
   Future<bool> get isLocationOn => Geolocator.isLocationServiceEnabled();
   Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: _locationSettings);
   Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream();
 
-  void dispose() {
-    _locationLoading.close();
-  }
-  
   /// start - Location Service
   void initLocation() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -134,8 +153,32 @@ class LocationBloc {
   }
   // end - Location Service
 
-  bool isInValidLocation() { // 
-    // Geolocator.distanceBetween(startLatitude, startLongitude, endLatitude, endLongitude); // return distance in meter
-    return true;
+  bool isInValidLocation(double x1, double y1, double x2, double y2, double radius) { // 
+    return Geolocator.distanceBetween(x1, y1, x2, y2) <= radius; // return distance in meter
+  }
+
+  Future<Map<String, dynamic>> getValidLocation(BuildContext context) async {
+    // sp.show();
+    try {
+      ApiResponse response = ApiResponse.fromJson((await this._getValidLocation()).data);
+      Map<String, dynamic> result = response.Result;
+      _targetLocation.sink.add(result);
+      // sp.hide();
+      return result;
+    } catch (e) {
+      // sp.hide();
+      handleError(e);;
+      return {};
+    }
+  }
+
+  Future<Response> _getValidLocation() {
+    return DioClient().dio.get('/get-validation-location',
+      options: Options(
+        headers: {
+          'RequireToken': ''
+        }
+      )
+    );
   }
 }
