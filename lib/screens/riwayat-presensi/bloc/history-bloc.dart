@@ -1,37 +1,63 @@
+import 'dart:async';
 
+import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
+import 'package:dio/dio.dart';
+import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
+import 'package:absensi_ypsim/models/api-response.dart';
+import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:rxdart/rxdart.dart';
 
-class HistoryModel {
-  String? tanggalAwal;
-  String? tanggalAkhir;
-
-  HistoryModel({String? tanggalAwal, String? tanggalAkhir})
-      : this.tanggalAwal = tanggalAwal ?? DateTime.now().toIso8601String(),
-        this.tanggalAkhir = tanggalAkhir ?? DateTime.now().toIso8601String();
-
-  HistoryModel.fromJson(Map<String, dynamic> json) {
-    tanggalAwal = json['tanggalAwal'];
-    tanggalAkhir = json['tanggalAkhir'];
-  }
-
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['tanggalAwal'] = this.tanggalAwal;
-    data['tanggalAkhir'] = this.tanggalAkhir;
-    return data;
-  }
-}
+import '../models/history-model.dart';
 
 class HistoryBloc {
-  late Map<String, dynamic> _historyModel;
+  HistoryFilter _filter = HistoryFilter();
+  late BehaviorSubject<bool> reloadSubject$;
+  late BehaviorSubject<bool> loadingSubject$;
 
-  HistoryBloc() {
-    _historyModel = new HistoryModel().toJson();
+  RiwayatIzinBloc() {
+    init();
   }
 
-  void setValue(String key, dynamic value) => _historyModel[key] = value;
+  void init() {
+    reloadSubject$ = new BehaviorSubject.seeded(true);
+    loadingSubject$ = new BehaviorSubject.seeded(false);
+  }
 
+  HistoryFilter get filter => _filter;
+  Stream<bool> get reloadStream => reloadSubject$.asBroadcastStream();
+  Stream<bool> get loadingStream => loadingSubject$.asBroadcastStream();
 
-  String getValue(String key) => _historyModel[key];
-  Map<String, dynamic> getRawValue() => _historyModel;
+  triggerReload() {
+    reloadSubject$.sink.add(!reloadSubject$.value);
+  }
+
+  Future<List<dynamic>> getPermission() async {
+    try {
+      this.loadingSubject$.sink.add(true);
+      Response resp = await get();
+      ApiResponse body = ApiResponse.fromJson(resp.data);
+      // inspect(body.Result);
+      return body.Result;
+    } catch (e) {
+      throw await handleError(e);
+    } finally {
+      this.loadingSubject$.sink.add(false);
+    }
+  }
+
+  Future<Response> get() async {
+    int id = await CredentialGetter().userId;
+    return DioClient().dio.get("/permission/$id?start_date=${_filter.startDate}&end_date=${_filter.endDate}",
+      options:  Options(
+        headers: {
+          'RequireToken': ''
+        }
+      )
+    );
+  }
+
+  void dispose() {
+    reloadSubject$.close();
+    loadingSubject$.close();
+  }
 }

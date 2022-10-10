@@ -43,7 +43,6 @@ class MaterialKitPROFlutter extends StatelessWidget {
               "/verification": (BuildContext context) => Verification(),
               "/home": (BuildContext context) => Home(),
               "/riwayat-presensi": (BuildContext context) => RiwayatPresensi(),
-              "/riwayat-presensi-detail": (BuildContext context) => RiwayatPresensiDetail(),
               "/riwayat-izin": (BuildContext context) => RiwayatIzin(),
               "/pengajuan-izin": (BuildContext context) => PengajuanIzin()
             },

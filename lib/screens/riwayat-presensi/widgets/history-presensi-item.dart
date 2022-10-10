@@ -1,20 +1,15 @@
+import 'package:absensi_ypsim/screens/riwayat-presensi/models/history-model.dart';
+import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 
 class HistoryPresensiItem extends StatelessWidget {
-  HistoryPresensiItem(
-      {this.date = "Sabtu, 14 Mei 2022",
-      this.checkIn = "07:30",
-      this.checkOut = "16:30",
-      this.status = "Tepat Waktu",
-      this.tap = defaultFunc});
 
-  final String date;
-  final String checkIn;
-  final String checkOut;
-  final String status;
+  final HistoryModel item;
   final Function tap;
+
+  HistoryPresensiItem({required this.item, this.tap = defaultFunc});
 
   static void defaultFunc() {
     print("the function works!");
@@ -40,7 +35,7 @@ class HistoryPresensiItem extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(date),
+                    Text(formatDateOnly(item.created_at,format: 'EEEE, d MMMM yyyy')),
                     SizedBox(height: 12),
                     Row(
                       children: [
@@ -54,7 +49,7 @@ class HistoryPresensiItem extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 8),
-                            Text(checkIn),
+                            Text(formatDateOnly(item.start_date, format: 'H:mm')),
                           ],
                         ),
                         SizedBox(width: 20),
@@ -68,7 +63,7 @@ class HistoryPresensiItem extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 8),
-                            Text(checkOut),
+                            Text(formatDateOnly(item.end_date, format: 'H:mm')),
                           ],
                         ),
                       ],
@@ -88,23 +83,15 @@ class HistoryPresensiItem extends StatelessWidget {
                         boxShadow: [
                           BoxShadow(
                             color: (() {
-                              if(status == "Absen") return MaterialColors.error;
-                              if(status == "Cepat Pulang") return MaterialColors.info;
+                              if(item.status == "Absen") return MaterialColors.error;
                               return MaterialColors.bgSecondary;
                             }()),
                             blurRadius: 2.0
                           )
                         ],
                         color: (() {
-                          if (status == "Telat") {
-                            return MaterialColors.bgPrimary;
-                          } else if (status == "Absen") {
-                            return MaterialColors.error;
-                          } else if (status == "Cepat Pulang") {
-                            return MaterialColors.info;
-                          } else {
-                            return MaterialColors.bgSecondary;
-                          }
+                          if (item.status == "Absen") return MaterialColors.error;
+                          return MaterialColors.bgSecondary;
                         }()),
                       ),
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -113,13 +100,11 @@ class HistoryPresensiItem extends StatelessWidget {
                         runAlignment: WrapAlignment.center,
                         children: [
                           Text(
-                            status,
+                            item.status,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 10,
-                              color: status == "Telat"
-                                  ? Colors.black87
-                                  : Colors.white,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
