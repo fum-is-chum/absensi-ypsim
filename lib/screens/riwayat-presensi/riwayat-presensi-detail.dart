@@ -1,3 +1,4 @@
+import 'package:absensi_ypsim/screens/riwayat-izin/riwayat-izin-detail.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/models/history-model.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
@@ -76,10 +77,17 @@ class RiwayatPresensiDetail extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              Text(
-                "Lihat Foto",
-                style: TextStyle(decoration: TextDecoration.underline),
-              ),
+              // Text(
+              //   "Lihat Foto",
+              //   style: TextStyle(decoration: TextDecoration.underline),
+              // ),
+              (() {
+                if (item.file != null) {
+                  return LampiranView(
+                      url: "https://presensi.ypsimlibrary.com${item.file!}");
+                }
+                return Container();
+              }())
             ],
           ),
         ),
