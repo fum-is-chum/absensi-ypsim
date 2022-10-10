@@ -1,5 +1,6 @@
 import 'package:absensi_ypsim/screens/riwayat-presensi/bloc/history-bloc.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/models/history-model.dart';
+import 'package:absensi_ypsim/screens/riwayat-presensi/riwayat-presensi-detail.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/widgets/history-presensi-item.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
@@ -143,12 +144,11 @@ class _ListWidget extends State<HistoryList> {
       child: HistoryPresensiItem(
         item: HistoryModel.fromJson(data[index]),
         tap: () async {
-          // await Navigator.of(context)
-          //     .push(MaterialPageRoute(builder: (context) {
-          //   // if(DateTime.parse(data[index]['startDate']).isBefore())
-          //   return RiwayatPresensiDetail(
-          //       item: HistoryModel.fromJson(data[index]));
-          // }));
+          await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            // if(DateTime.parse(data[index]['startDate']).isBefore())
+            return RiwayatPresensiDetail(
+                item: HistoryModel.fromJson(data[index]));
+          }));
           _getData();
         },
       ),
