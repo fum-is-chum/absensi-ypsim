@@ -12,7 +12,7 @@ import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:absensi_ypsim/widgets/spinner.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import 'bloc/riwayat-izin-detail.dart';
+import 'bloc/riwayat-izin-detail-bloc.dart';
 
 RiwayatIzinDetailBloc _riwayatIzinBloc = RiwayatIzinDetailBloc();
 

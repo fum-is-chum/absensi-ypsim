@@ -21,8 +21,8 @@ class RiwayatIzinBloc {
   }
 
   void init() {
-    reloadSubject$ = new BehaviorSubject.seeded(true);
-    loadingSubject$ = new BehaviorSubject.seeded(false);
+    reloadSubject$ = BehaviorSubject.seeded(true);
+    loadingSubject$ = BehaviorSubject.seeded(false);
   }
 
   RiwayatIzinFilter get filter => _filter;
