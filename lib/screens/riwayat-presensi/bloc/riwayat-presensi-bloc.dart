@@ -7,7 +7,7 @@ import 'package:absensi_ypsim/models/api-response.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../models/history-model.dart';
+import '../models/riwayat-presensi-model.dart';
 
 class HistoryBloc {
   HistoryFilter _filter = HistoryFilter();

@@ -23,15 +23,15 @@ class RiwayatIzinDetailBloc {
     }
   }
 
-  Future<PengajuanIzinModel?> getDetail(BuildContext? context, int permission_id) async {
-    if(context != null) sp.show();
+  Future<PengajuanIzinModel?> getDetail(int permission_id) async {
+    sp.show();
     try {
       PengajuanIzinModel? data = await detail(permission_id);
-      if(context != null) sp.hide();
+      sp.hide();
       return data;
     } catch (e) {
-      if(context != null) sp.hide();
-      await handleError(e);;
+      sp.hide();
+      await handleError(e);
     }
     return null;
   }

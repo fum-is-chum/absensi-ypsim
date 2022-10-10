@@ -1,5 +1,5 @@
 import 'package:absensi_ypsim/screens/riwayat-izin/riwayat-izin-detail.dart';
-import 'package:absensi_ypsim/screens/riwayat-presensi/models/history-model.dart';
+import 'package:absensi_ypsim/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:absensi_ypsim/widgets/drawer.dart';

@@ -1,4 +1,4 @@
-import 'package:absensi_ypsim/screens/riwayat-presensi/models/history-model.dart';
+import 'package:absensi_ypsim/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:flutter/material.dart';
 

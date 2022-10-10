@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:absensi_ypsim/models/api-response.dart';
@@ -15,12 +14,13 @@ import 'package:rxdart/rxdart.dart';
 
 class HomeBloc {
   Spinner sp = Spinner();
-  BehaviorSubject<Map<String, dynamic>> _attendanceStatus = BehaviorSubject.seeded({});
-  BehaviorSubject<void> _reloadAttendanceStatus = BehaviorSubject.seeded(null);
+  late BehaviorSubject<Map<String, dynamic>> _attendanceStatus;
+  late BehaviorSubject<void> _reloadAttendanceStatus;
 
-  HomeBloc() {
-    _attendanceStatus = BehaviorSubject.seeded({});
-    _reloadAttendanceStatus = BehaviorSubject.seeded(null);
+  HomeBloc._();
+  static final _instance = HomeBloc._();
+  factory HomeBloc() {
+    return _instance; // singleton service
   }
 
   void init() {
@@ -32,14 +32,6 @@ class HomeBloc {
     _attendanceStatus.close();
     _reloadAttendanceStatus.close();
   }
-
-  /// false -> untuk checkin, true -> untuk checkout, nilai berubah sesuai dengan response API
-  // bool statusAbsensi() { 
-  //   if(status.checkInTime == '' && status.checkInImg == '') {
-  //     return false;
-  //   }
-  //   return status.checkOutTime == '' && status.checkOutImg == '';
-  // }
 
   Stream<void> get reloadAttendance$ => _reloadAttendanceStatus.asBroadcastStream();
   void triggerReload() {
@@ -80,7 +72,7 @@ class HomeBloc {
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(e);;
+      await handleError(e);
       return false;
     }
    }
@@ -113,7 +105,7 @@ class HomeBloc {
     checkInModel.latitude = pos.latitude;
     checkInModel.longitude = pos.longitude;
     checkInModel.date = dateTime.substring(0, 10);
-    checkInModel.time = dateTime.substring(11, 16);
+    checkInModel.time = dateTime.substring(11, 19);
     
     var formData = FormData.fromMap({
       ...checkInModel.toJson(),
@@ -147,7 +139,7 @@ class HomeBloc {
     checkOutModel.latitude = pos.latitude;
     checkOutModel.longitude = pos.longitude;
     checkOutModel.date = dateTime.substring(0, 10);
-    checkOutModel.time = dateTime.substring(11, 16);
+    checkOutModel.time = dateTime.substring(11, 19);
     
     var formData = FormData.fromMap({
       ...checkOutModel.toJson(),

@@ -43,8 +43,8 @@ class LoggingInterceptors extends Interceptor {
     print(
       "<-- ${response.statusCode} ${response.realUri.toString()}"
     );
-    print("Headers:");
-    response.headers.forEach((k, v) => print('$k: $v'));
+    // print("Headers:");
+    // response.headers.forEach((k, v) => print('$k: $v'));
     print("Response: ${response.data}");
     print("<-- END HTTP");
     super.onResponse(response, handler);

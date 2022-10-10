@@ -18,8 +18,6 @@ class LocationBloc {
   Spinner sp = Spinner();
   BehaviorSubject<bool> _locationLoading = BehaviorSubject.seeded(false);
   BehaviorSubject<Map<String, dynamic>> _targetLocation = BehaviorSubject.seeded({});
-  double x2 = 0;
-  double y2 = 0;
 
   LocationBloc._();
   static final _instance = LocationBloc._();
@@ -27,18 +25,8 @@ class LocationBloc {
     return _instance; // singleton service
   }
 
-  void init() {
-    _locationLoading = BehaviorSubject.seeded(false);
-    _targetLocation = BehaviorSubject.seeded({});
-  }
-
   void updatePosition(Position pos) {
     _currentPos = pos;
-  }
-  
-  void dispose() {
-    _locationLoading.close();
-    _targetLocation.close();
   }
 
   Stream<Map<String, dynamic>> get targetLocation$ => _targetLocation.asBroadcastStream();
@@ -48,7 +36,7 @@ class LocationBloc {
   bool get isLoading => _locationLoading.value;
   Future<bool> get isLocationOn => Geolocator.isLocationServiceEnabled();
   Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: _locationSettings);
-  Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream();
+  Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream().asBroadcastStream();
 
   /// start - Location Service
   void initLocation() async {
@@ -158,31 +146,34 @@ class LocationBloc {
     double x2 = getTargetLocation['latitude'] ?? 0;
     double y2 = getTargetLocation['longitude'] ?? 0;
     int radius = getTargetLocation['radius'] ?? 0;
+    
     return Geolocator.distanceBetween(x1, y1, x2, y2).round() - radius;
   } 
 
-  bool isInValidLocation([double? x1, double? y1, double? x2, double? y2, int? radius]) { // 
-    if (x1 == null) x1 = _currentPos.latitude;
-    if (y1 == null) y1 = _currentPos.longitude;
-    if (x2 == null) x2 = getTargetLocation['latitude'] ?? 0;
-    if (y2 == null) y2 = getTargetLocation['longitude'] ?? 0;
-    if (radius == null) radius = getTargetLocation['radius'] ?? 0;
-    inspect(Geolocator.distanceBetween(x1, y1, x2!, y2!));
-    inspect(getTargetLocation);
-    return Geolocator.distanceBetween(x1, y1, x2, y2).round() <= radius!; // return distance in meter
+  bool isInValidLocation() { // 
+    double x1 = _currentPos.latitude;
+    double y1 = _currentPos.longitude;
+    double x2 = getTargetLocation['latitude'] ?? 0;
+    double y2 = getTargetLocation['longitude'] ?? 0;
+    int radius = getTargetLocation['radius'] ?? 0;
+    // inspect(Geolocator.distanceBetween(x1, y1, x2!, y2!));
+    // inspect(getTargetLocation);
+    return Geolocator.distanceBetween(x1, y1, x2, y2).round() <= radius; // return distance in meter
   }
 
   Future<Map<String, dynamic>> getValidLocation(BuildContext context) async {
     // sp.show();
     try {
+      _targetLocation.sink.add({});
       ApiResponse response = ApiResponse.fromJson((await this._getValidLocation()).data);
       Map<String, dynamic> result = response.Result;
+
       _targetLocation.sink.add(result);
       // sp.hide();
       return result;
     } catch (e) {
       // sp.hide();
-      handleError(e);;
+      handleError(e);
       return {};
     }
   }

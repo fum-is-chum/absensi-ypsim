@@ -21,14 +21,18 @@ class _LocationView extends State<LocationView> {
   @override
   void initState() {
     super.initState();
-    locationBloc.initLocation();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   GlobalKey<_MyMapView> mapKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
+        elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
@@ -60,18 +64,9 @@ class _LocationView extends State<LocationView> {
                       StreamBuilder(
                         stream: locationBloc.targetLocation$,
                         builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> targetLocation) {
-                          if(!targetLocation.hasData || (targetLocation.hasData && targetLocation.data!['latitude'] == null)) {
-                            return Text(
-                              "Lokasi Anda",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            );
-                          }
-
+                          bool targetLocationIsValid = targetLocation.hasData && targetLocation.data != null && targetLocation.data!['latitude'] != null;
                           return Text(
-                            "Lokasi Anda ${locationBloc.getDistance}m",
+                            "Lokasi Anda ${targetLocationIsValid ? locationBloc.getDistance : 0}m",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 14,
@@ -124,14 +119,18 @@ class _MyMapView extends State<MyMapView> {
   late StreamSubscription<Position> positionStatus;
   bool findLocationClicked = false;
 
-  Future<void> loadMaps(Position pos) async {
-    locationBloc.updatePosition(pos);
-    await webView?.runJavascript(redrawMaps(
-      pos.latitude,
-      pos.longitude,
-      locationBloc.getTargetLocation['latitude'],
-      locationBloc.getTargetLocation['longitude'],
-    ));
+  Future<void> loadMaps(Position? pos) async {
+    
+    if(pos != null) {
+        locationBloc.updatePosition(pos);
+      if(webView != null )
+        await webView?.runJavascript(redrawMaps(
+          pos.latitude,
+          pos.longitude,
+          locationBloc.getTargetLocation['latitude'],
+          locationBloc.getTargetLocation['longitude'],
+        ));
+    }
     locationBloc.updateLoadingStatus(false);
     // setState(() {
       
@@ -153,15 +152,13 @@ class _MyMapView extends State<MyMapView> {
         
       });
     });
-
-    positionStatus = locationBloc.positionStream$.distinct().listen(loadMaps);
+    positionStatus = locationBloc.positionStream$.listen(loadMaps);
   }
 
   @override 
   void dispose() {
     serviceStatus.cancel();
     positionStatus.cancel();
-    // locationBloc.dispose();
     super.dispose();
   }
 
@@ -177,14 +174,36 @@ class _MyMapView extends State<MyMapView> {
           future: locationBloc.getPosition,
           builder: (BuildContext context, AsyncSnapshot<Position> position) {
             if(!position.hasData || position.data?.latitude == null) {
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    CircularProgressIndicator(),
+                    const SizedBox(height: 8,),
+                    Text('Sedang mengambil lokasi gps')
+                  ],
+                ),
+              );
             }
 
             return FutureBuilder(
               future: locationBloc.getValidLocation(context),
               builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> targetLocation) {
                 if(!targetLocation.hasData || targetLocation.data?['latitude'] == null)
-                  return Center(child: CircularProgressIndicator(),);
+                  return Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        CircularProgressIndicator(),
+                        const SizedBox(height: 8,),
+                        Text('Sedang membuka map')
+                      ],
+                    ),
+                  );
                 
                 return Stack(
                   children: [

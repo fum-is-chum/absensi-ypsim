@@ -27,9 +27,9 @@ Widget splashScreen(BuildContext context) {
       ),
     ),
     child: Center(
-      child: SpinKitFoldingCube(
+      child: SpinKitCircle(
         color: MaterialColors.bgPrimary,
-        size: 48,
+        size: 64,
       ),
     ),
   );

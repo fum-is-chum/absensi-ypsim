@@ -1,21 +1,21 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:art_sweetalert/art_sweetalert.dart';
+import 'package:absensi_ypsim/models/api-response.dart';
+import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
+import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
-import 'package:absensi_ypsim/models/api-response.dart';
 import 'package:rxdart/rxdart.dart';
 
 class TimeBloc {
   late BehaviorSubject<bool> reloadSubject$;
   late BehaviorSubject<String> _date;
-  String count = "00:00:00";
+  BehaviorSubject<String> count = BehaviorSubject.seeded("00:00:00");
   
-  TimeBloc() {
-    reloadSubject$ = new BehaviorSubject.seeded(true);
-    _date = BehaviorSubject.seeded("");
+  TimeBloc._();
+  static final _instance = TimeBloc._();
+  factory TimeBloc() {
+    return _instance; // singleton service
   }
 
   void init() {
@@ -24,8 +24,13 @@ class TimeBloc {
   }
   
   Stream<bool> get reloadStream => reloadSubject$.asBroadcastStream();
-
   Stream<String> get dateStream$ => _date.asBroadcastStream();
+  Stream<String> get count$ => count.asBroadcastStream();
+
+  void updateCount(String val) {
+    count.sink.add(val);
+  }
+  
   String get currentDate => _date.value;
   void updateDate(String date) {
     _date.sink.add(date);
@@ -41,28 +46,7 @@ class TimeBloc {
       ApiResponse body = ApiResponse.fromJson(resp.data);
       return body.Result;
     } catch (e) {
-      String error = "";
-      if (e is DioError) {
-        if (e.response != null) {
-          error = "${e.message}\n${e.response.toString()}";
-        } else if (e.error is SocketException) {
-          error = "Tidak ada koneksi";
-        } else if (e.error is TimeoutException) {
-          error =
-              "${e.requestOptions.baseUrl}${e.requestOptions.path}\nRequest Timeout";
-        }
-      } else {
-        error = e.toString();
-      }
-      await ArtSweetAlert.show(
-          context: context,
-          artDialogArgs: ArtDialogArgs(
-            type: ArtSweetAlertType.danger,
-            title: "Gagal", 
-            text: error
-          )
-      );
-
+      handleError(e);
       return "";
     }
   }

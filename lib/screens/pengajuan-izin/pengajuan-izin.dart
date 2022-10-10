@@ -39,30 +39,38 @@ class _PengajuanIzin extends State<PengajuanIzin> {
   final GlobalKey<_LampiranField> _lampiranKey = new GlobalKey<_LampiranField>();
 
   @override
+  void initState() {
+    if(widget.editData != null) {
+      _pengajuanIzinBloc.setInitialValue(widget.editData!);
+      // inspect(_pengajuanIzinBloc.model);
+    }
+    super.initState();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     _pengajuanIzinBloc.dispose();
   }
 
   Widget? _drawer() {
-    if(widget.editData == null)
+    if(widget.editData == null) 
       return MaterialDrawer(currentPage: "Pengajuan Izin");
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    if(widget.editData != null) _pengajuanIzinBloc.setInitialValue(widget.editData!);
-
     return GestureDetector(
       onTap: () {
         hideKeyboard(context);
       },
       child: WillPopScope(
         onWillPop: () async {
-  Navigator.pushReplacementNamed(context, '/home');
-  return false;
-},
+          if(_isEdit) Navigator.pop(context);
+          else Navigator.pushReplacementNamed(context, '/home');
+          return false;
+        },
         child: Scaffold(
           appBar: AppBar(
             title: Text(
@@ -183,6 +191,26 @@ class _TanggalField extends State<TanggalField> {
     _controller.text = widget.isAkhir ? _pengajuanIzinBloc.model.end_date : _pengajuanIzinBloc.model.start_date;
   }
 
+  void _showDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.parse(widget.isAkhir? _pengajuanIzinBloc.model.end_date: _pengajuanIzinBloc.model.start_date),
+      firstDate: widget.isAkhir? DateTime.parse(_pengajuanIzinBloc.model.start_date) : DateTime.fromMillisecondsSinceEpoch(0),
+      lastDate: DateTime(DateTime.now().year + 10)
+    ).then((DateTime? value) {
+      if(value != null){
+        if(widget.isAkhir)
+          _pengajuanIzinBloc.model.end_date = formatDateOnly(value);
+        else
+          _pengajuanIzinBloc.model.start_date = formatDateOnly(value);
+        _controller.text = formatDateOnly(value);
+        setState(() {
+          
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -190,7 +218,6 @@ class _TanggalField extends State<TanggalField> {
       readOnly: true,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (String? val) {
-
         if(val != null && widget.isAkhir && DateTime.parse(val).isBefore(DateTime.parse(_pengajuanIzinBloc.model.start_date))) {
           return '';
         }
@@ -201,48 +228,12 @@ class _TanggalField extends State<TanggalField> {
           padding: EdgeInsets.zero,
           icon: const Icon(Icons.date_range),
           // color: MaterialColors.muted,
-          onPressed: (){
-            showDatePicker(
-              context: context,
-              initialDate: DateTime.parse(_pengajuanIzinBloc.model.start_date),
-              firstDate: widget.isAkhir? DateTime.parse(_pengajuanIzinBloc.model.start_date) : DateTime.now(),
-              lastDate: DateTime(DateTime.now().year + 10)
-            ).then((DateTime? value) {
-              if(value != null){
-                if(widget.isAkhir)
-                  _pengajuanIzinBloc.model.end_date = formatDateOnly(value);
-                else
-                  _pengajuanIzinBloc.model.start_date = formatDateOnly(value);
-                _controller.text = formatDateOnly(value);
-                setState(() {
-                  
-                });
-              }
-            });
-          }
+          onPressed: _showDatePicker
         ),
         hintText: widget.isAkhir? "Tanggal Akhir" : "Tanggal Awal",
         border: OutlineInputBorder(),
       ),
-      onTap: (){
-        showDatePicker(
-          context: context,
-          initialDate: DateTime.parse(_pengajuanIzinBloc.model.start_date),
-          firstDate: widget.isAkhir? DateTime.parse(_pengajuanIzinBloc.model.start_date) : DateTime.fromMillisecondsSinceEpoch(0),
-          lastDate: DateTime(DateTime.now().year + 10)
-        ).then((DateTime? value) {
-          if(value != null){
-            if(widget.isAkhir)
-                _pengajuanIzinBloc.model.end_date = formatDateOnly(value);
-              else
-                _pengajuanIzinBloc.model.start_date = formatDateOnly(value);
-            _controller.text = formatDateOnly(value);
-            setState(() {
-              
-            });
-          }
-        });
-      }
+      onTap: _showDatePicker
     );
   }
 }
