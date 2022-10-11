@@ -42,7 +42,7 @@ class _PengajuanIzin extends State<PengajuanIzin> {
   void initState() {
     if(widget.editData != null) {
       _pengajuanIzinBloc.setInitialValue(widget.editData!);
-      // inspect(_pengajuanIzinBloc.model);
+      
     }
     super.initState();
   }

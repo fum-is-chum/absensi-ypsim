@@ -38,7 +38,7 @@ class RiwayatIzinBloc {
       this.loadingSubject$.sink.add(true);
       Response resp = await get();
       ApiResponse body = ApiResponse.fromJson(resp.data);
-      // inspect(body.Result);
+      
       return body.Result;
     } catch (e) {
       throw await handleError(e);

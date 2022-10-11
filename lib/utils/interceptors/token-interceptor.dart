@@ -12,7 +12,6 @@ class TokenInterceptor extends Interceptor {
       String token = await CredentialGetter().userAccessToken;
       options.headers['Authorization'] = "Bearer $token";
     }
-    // inspect(options);
     handler.next(options);
   }
 

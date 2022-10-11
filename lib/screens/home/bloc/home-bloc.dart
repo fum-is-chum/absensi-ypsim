@@ -15,7 +15,7 @@ import 'package:rxdart/rxdart.dart';
 class HomeBloc {
   Spinner sp = Spinner();
   late BehaviorSubject<Map<String, dynamic>> _attendanceStatus;
-  late BehaviorSubject<void> _reloadAttendanceStatus;
+  late BehaviorSubject<bool> _reloadAttendanceStatus;
 
   HomeBloc._();
   static final _instance = HomeBloc._();
@@ -25,7 +25,7 @@ class HomeBloc {
 
   void init() {
     _attendanceStatus = BehaviorSubject.seeded({});
-    _reloadAttendanceStatus = BehaviorSubject.seeded(null);
+    _reloadAttendanceStatus = BehaviorSubject.seeded(false);
   }
 
   void dispose() {
@@ -33,9 +33,9 @@ class HomeBloc {
     _reloadAttendanceStatus.close();
   }
 
-  Stream<void> get reloadAttendance$ => _reloadAttendanceStatus.asBroadcastStream();
+  Stream<bool> get reloadAttendance$ => _reloadAttendanceStatus.asBroadcastStream();
   void triggerReload() {
-    _reloadAttendanceStatus.sink.add(null);
+    _reloadAttendanceStatus.sink.add(!_reloadAttendanceStatus.value);
   }
 
   Stream<Map<String, dynamic>> get attendanceStatus$ => _attendanceStatus.asBroadcastStream();
@@ -48,7 +48,6 @@ class HomeBloc {
     sp.show();
     try {
       Map<String, dynamic> data = ApiResponse.fromJson((await _getAttendanceStatus(date: date)).data!).Result;
-      // inspect(data);
       this._attendanceStatus.sink.add(data);
       sp.hide();
       return true;

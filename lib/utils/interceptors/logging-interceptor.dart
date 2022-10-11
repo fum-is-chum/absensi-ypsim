@@ -7,20 +7,19 @@ class LoggingInterceptors extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     print("--> ${options.method.toUpperCase()}");
     print("${options.baseUrl}${options.path}");
-    print("Headers:");
-    options.headers.forEach((k, v) => print(' $k: $v'));
-    if (options.queryParameters.isNotEmpty) {
-      print("queryParameters:");
-      options.queryParameters.forEach((k, v) => print('$k: $v'));
-    }
-    if (options.data != null) {
-      if(options.data is FormData) {
-        inspect((options.data as FormData).fields);
-        print("Body: ${(options.data as FormData).fields}");
-      } else {
-        print("Body: ${options.data}");
-      }
-    }
+    // print("Headers:");
+    // options.headers.forEach((k, v) => print(' $k: $v'));
+    // if (options.queryParameters.isNotEmpty) {
+    //   print("queryParameters:");
+    //   options.queryParameters.forEach((k, v) => print('$k: $v'));
+    // }
+    // if (options.data != null) {
+    //   if(options.data is FormData) {
+    //     print("Body: ${(options.data as FormData).fields}");
+    //   } else {
+    //     print("Body: ${options.data}");
+    //   }
+    // }
     print(
         "--> END ${options.method.toUpperCase()}");
 

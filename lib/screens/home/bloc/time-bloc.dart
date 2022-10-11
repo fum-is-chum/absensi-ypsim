@@ -20,7 +20,7 @@ class TimeBloc {
 
   void init() {
     reloadSubject$ = new BehaviorSubject.seeded(true);
-    _date = BehaviorSubject.seeded("");
+    _date = BehaviorSubject.seeded(formatDateOnly(DateTime.now()));
   }
   
   Stream<bool> get reloadStream => reloadSubject$.asBroadcastStream();

@@ -1,23 +1,22 @@
-import 'dart:developer';
-
 import 'package:absensi_ypsim/models/api-response.dart';
 import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:absensi_ypsim/widgets/spinner.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
 
 class LocationBloc {
   late LocationSettings _locationSettings;
-  late Position _currentPos;
+  Position? _currentPos;
   bool? serviceEnabled;
   LocationPermission? permission;
   Spinner sp = Spinner();
   BehaviorSubject<bool> _locationLoading = BehaviorSubject.seeded(false);
   BehaviorSubject<Map<String, dynamic>> _targetLocation = BehaviorSubject.seeded({});
+  BehaviorSubject<bool> _fetchingPosition = BehaviorSubject.seeded(false);
 
   LocationBloc._();
   static final _instance = LocationBloc._();
@@ -29,12 +28,16 @@ class LocationBloc {
     _currentPos = pos;
   }
 
-  Stream<Map<String, dynamic>> get targetLocation$ => _targetLocation.asBroadcastStream();
   Map<String, dynamic> get getTargetLocation => _targetLocation.value;
-  Position get getCurrentPosition => _currentPos;
-  Stream<bool> get locationLoading$ => _locationLoading.stream.asBroadcastStream();
+  Position? get getCurrentPosition => _currentPos;
   bool get isLoading => _locationLoading.value;
+
   Future<bool> get isLocationOn => Geolocator.isLocationServiceEnabled();
+  Future<Position?> get lastKnownPosition => Geolocator.getLastKnownPosition();
+
+  Stream<bool> get fetchingPostion$ => _fetchingPosition.asBroadcastStream();
+  Stream<bool> get locationLoading$ => _locationLoading.asBroadcastStream();
+  Stream<Map<String, dynamic>> get targetLocation$ => _targetLocation.asBroadcastStream();
   Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: _locationSettings);
   Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream().asBroadcastStream();
 
@@ -98,7 +101,10 @@ class LocationBloc {
     _locationLoading.sink.add(value);
   }
 
-  Future<Position> get getPosition async {
+  Future<Position?> get getPosition async {
+    if(_fetchingPosition.value) return null;
+    print('A');
+    _fetchingPosition.sink.add(true);
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled!) {
@@ -136,32 +142,57 @@ class LocationBloc {
     } catch(e) {
 
     }
+    _fetchingPosition.sink.add(false);
+    // print('B');
     return _currentPos;
   }
   // end - Location Service
 
   int get getDistance {
-    double x1 = _currentPos.latitude;
-    double y1 = _currentPos.longitude;
-    double x2 = getTargetLocation['latitude'] ?? 0;
-    double y2 = getTargetLocation['longitude'] ?? 0;
-    int radius = getTargetLocation['radius'] ?? 0;
+    if(_currentPos == null || getTargetLocation['latitude'] == null) 
+      return 0;
+    double x1 = _currentPos!.latitude; 
+    double y1 = _currentPos!.longitude;
+    double x2 = getTargetLocation['latitude'];
+    double y2 = getTargetLocation['longitude'];
+    int radius = getTargetLocation['radius'];
     
     return Geolocator.distanceBetween(x1, y1, x2, y2).round() - radius;
   } 
 
   bool isInValidLocation() { // 
-    double x1 = _currentPos.latitude;
-    double y1 = _currentPos.longitude;
-    double x2 = getTargetLocation['latitude'] ?? 0;
-    double y2 = getTargetLocation['longitude'] ?? 0;
-    int radius = getTargetLocation['radius'] ?? 0;
-    // inspect(Geolocator.distanceBetween(x1, y1, x2!, y2!));
-    // inspect(getTargetLocation);
+    if(_currentPos == null || getTargetLocation['latitude'] == null) 
+      return false;
+    double x1 = _currentPos!.latitude;
+    double y1 = _currentPos!.longitude;
+    double x2 = getTargetLocation['latitude'];
+    double y2 = getTargetLocation['longitude'];
+    int radius = getTargetLocation['radius'];
+
     return Geolocator.distanceBetween(x1, y1, x2, y2).round() <= radius; // return distance in meter
   }
 
-  Future<Map<String, dynamic>> getValidLocation(BuildContext context) async {
+  /*
+    data = [
+      isLocationOn -> bool,
+      getPosition -> Position,
+      getValidLocation -> Map<String, dynamic>
+    ]
+  */
+  int mapViewValid(List<dynamic>? data) {
+    if(data == null) return 0;
+    if(data[0] == false) return -1;
+    if((data[1] as Position?)?.latitude == null) return -2;
+    if((data[2] as Map<String, dynamic>?)?['latitude'] == null) return -3;
+    return 1;
+    // return
+    //   data[0] == true &&
+    //   (data[1] as Position?)?.latitude != null &&
+    //   (data[2] as Map<String, dynamic>?)?['latitude'] != null
+    // ;
+
+  }
+  Future<Map<String, dynamic>> getValidLocation() async {
     // sp.show();
     try {
       _targetLocation.sink.add({});

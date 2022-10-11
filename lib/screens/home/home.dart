@@ -94,28 +94,34 @@ class _HomeState extends State<Home> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.symmetric(horizontal: 16),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 30,),
-                ImageRow(),
-                SizedBox(height: 20),
-                CheckInCard(),
-                FractionalTranslation(
-                  translation: Offset(0, -0.5),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: CheckInButtonContainer()
+          child: RefreshIndicator(
+            onRefresh: () async {
+              await homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
+              setState(() {});
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(height: 30,),
+                  ImageRow(),
+                  SizedBox(height: 20),
+                  CheckInCard(),
+                  FractionalTranslation(
+                    translation: Offset(0, -0.5),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: CheckInButtonContainer()
+                    ),
                   ),
-                ),
-                FractionalTranslation(
-                  translation: Offset(0, -0.1),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: LocationView(),
+                  FractionalTranslation(
+                    translation: Offset(0, -0.1),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: LocationView(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         )
@@ -134,11 +140,12 @@ class _ImageRow extends State<ImageRow> {
 
   @override
   void initState() {
-    Rx.merge([
-      timeBloc.dateStream$,
+    Rx.combineLatestList([
+      timeBloc.dateStream$.distinct(),
       homeBloc.reloadAttendance$
     ]).listen((event) {
-      if(timeBloc.currentDate != "") homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
+      print(event);
+      homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
     });
     super.initState();
   }
