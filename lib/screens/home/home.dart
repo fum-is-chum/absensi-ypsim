@@ -96,8 +96,10 @@ class _HomeState extends State<Home> {
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: RefreshIndicator(
             onRefresh: () async {
-              await homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
-              setState(() {});
+              await Future.wait([
+                homeBloc.getAttendanceStatus(date: timeBloc.currentDate),
+                locationBloc.getValidLocation()
+              ]);
             },
             child: SingleChildScrollView(
               child: Column(

@@ -157,7 +157,8 @@ class LocationBloc {
     double y2 = getTargetLocation['longitude'];
     int radius = getTargetLocation['radius'];
     
-    return Geolocator.distanceBetween(x1, y1, x2, y2).round() - radius;
+    int distance = Geolocator.distanceBetween(x1, y1, x2, y2).round() - radius;
+    return distance >= 0 ? distance : 0;
   } 
 
   bool isInValidLocation() { // 

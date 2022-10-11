@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:absensi_ypsim/utils//iframe/iframe.dart';
 import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
@@ -117,18 +118,23 @@ class MyMapView extends StatefulWidget {
 class _MyMapView extends State<MyMapView> {
   WebViewController? webView;
   late StreamSubscription<ServiceStatus> serviceStatus;
-  late StreamSubscription<Position> positionStatus;
+  late StreamSubscription<List<dynamic>> positionStatus;
 
-  Future<void> loadMaps(Position? pos) async {
+  Future<void> loadMaps(List<dynamic> data) async {
+    Position? pos = data[0];
+    Map<String, dynamic> target = data[1];
     if(pos != null) {
         locationBloc.updatePosition(pos);
-      if(webView != null )
-        await webView?.runJavascript(redrawMaps(
+      if(webView != null ) {
+        inspect(locationBloc.getTargetLocation);
+        await webView!.runJavascript(redrawMaps(
           pos.latitude,
           pos.longitude,
-          locationBloc.getTargetLocation['latitude'],
-          locationBloc.getTargetLocation['longitude'],
+          target['latitude'],
+          target['longitude'],
+          target['radius']
         ));
+      }
     }
     locationBloc.updateLoadingStatus(false);
     // setState(() {
@@ -139,7 +145,10 @@ class _MyMapView extends State<MyMapView> {
   void reload() async {
     if(!locationBloc.isLoading) {
       locationBloc.updateLoadingStatus(true);
-      await locationBloc.getPosition.then(loadMaps);
+      await Future.wait([
+        locationBloc.getPosition,
+        locationBloc.getValidLocation()
+      ]).then(loadMaps);
     }
   }
 
@@ -151,7 +160,10 @@ class _MyMapView extends State<MyMapView> {
         
       });
     });
-    positionStatus = locationBloc.positionStream$.listen(loadMaps);
+    positionStatus = CombineLatestStream.list([
+      locationBloc.positionStream$,
+      locationBloc.targetLocation$
+    ]).listen(loadMaps);
   }
 
   @override 

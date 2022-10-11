@@ -1,4 +1,4 @@
-String redrawMaps(double lat1, double long1, double lat2, double long2) {
+String redrawMaps(double lat1, double long1, double lat2, double long2, int radius) {
   // return """
   //   zoom = 19 - ratios.findIndex((d) => d >= D*6);
   //   D = distanceMeter(x1,y1,x2,y2) * 2;
@@ -14,6 +14,8 @@ String redrawMaps(double lat1, double long1, double lat2, double long2) {
 
     x2 = $lat2;
     y2 = $long2;
+
+    radius = $radius * 2;
 
     D = distanceMeter(x1,y1,x2,y2) * 2;
     zoom = 19 - ratios.findIndex((d) => {
