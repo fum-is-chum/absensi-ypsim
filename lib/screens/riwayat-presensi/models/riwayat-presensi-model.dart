@@ -3,26 +3,36 @@ import 'package:absensi_ypsim/utils/services/shared-service.dart';
 class HistoryModel {
   int id = 0;
   int employee_id = 0;
-  String start_date = '';
-  String end_date = '';
-  String? file;
-  String remark = '';
-  String status = 'Pending';
-  String? reason; // alasan penolakan (?)
-  String created_at = '';
-  String updated_at = '';
+  String check_in = '';
+  String check_out = '';
+  String date = '';
+  String status = '';
+  String reason = '';
+  String status_check_in = '';
+  String status_check_out = '';
+  String photo_check_in = '';
+  String photo_check_out = '';
+  String latitude_check_in = '';
+  String latitude_check_out = '';
+  String longitude_check_in = '';
+  String longitude_check_out = '';
 
   HistoryModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     employee_id = json['employee_id'];
-    start_date = formatDateOnly(DateTime.parse(json['start_date']));
-    end_date = formatDateOnly(DateTime.parse(json['end_date']));
-    file = json['file']; // load file from path
-    remark = json['remark'];
+    check_in = formatDateOnly(DateTime.parse(json['check_in']));
+    check_out = formatDateOnly(DateTime.parse(json['check_out']));
+    date = formatDateOnly(DateTime.parse(json['date']));
     status = json['status'];
     reason = json['reason'];
-    created_at = json['created_at'];
-    updated_at = json['updated_at'];
+    status_check_in = json['status_check_in'];
+    status_check_out = json['status_check_out'];
+    photo_check_in = json['photo_check_in'];
+    photo_check_out = json['photo_check_out'];
+    latitude_check_in = json['latitude_check_in'];
+    latitude_check_out = json['latitude_check_out'];
+    longitude_check_in = json['longitude_check_in'];
+    longitude_check_out = json['longitude_check_out'];
   }
 }
 
@@ -31,7 +41,6 @@ class HistoryFilter {
   String? endDate;
 
   HistoryFilter({String? startDate, String? endDate})
-      : this.startDate = formatDateOnly(DateTime(
-            DateTime.now().year, DateTime.now().month, DateTime.now().day - 7)),
+      : this.startDate = formatDateOnly(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 7)),
         this.endDate = formatDateOnly(DateTime.now());
 }

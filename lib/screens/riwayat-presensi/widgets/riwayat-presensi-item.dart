@@ -35,7 +35,7 @@ class HistoryPresensiItem extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(formatDateOnly(item.created_at,format: 'EEEE, d MMMM yyyy')),
+                    Text(formatDateOnly(item.date,format: 'EEEE, d MMMM yyyy')),
                     SizedBox(height: 12),
                     Row(
                       children: [
@@ -49,7 +49,7 @@ class HistoryPresensiItem extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 8),
-                            Text(formatDateOnly(item.start_date, format: 'H:mm')),
+                            Text(formatDateOnly(item.check_in, format: 'H:mm')),
                           ],
                         ),
                         SizedBox(width: 20),
@@ -63,7 +63,7 @@ class HistoryPresensiItem extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 8),
-                            Text(formatDateOnly(item.end_date, format: 'H:mm')),
+                            Text(formatDateOnly(item.check_out, format: 'H:mm')),
                           ],
                         ),
                       ],
