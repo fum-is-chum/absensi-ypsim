@@ -2,7 +2,6 @@ import 'package:absensi_ypsim/screens/riwayat-izin/riwayat-izin-detail.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 
 class RiwayatPresensiDetail extends StatelessWidget {
@@ -54,7 +53,7 @@ class RiwayatPresensiDetail extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              Text(formatDateOnly(item.created_at,
+              Text(formatDateOnly(item.date,
                     format: 'EEEE, d MMMM yyyy')),
               SizedBox(height: 16),
               Text(
@@ -62,7 +61,7 @@ class RiwayatPresensiDetail extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              Text(formatDateOnly(item.start_date,
+              Text(formatDateOnly(item.check_in,
                     format: 'H:mm')),
               SizedBox(height: 16),
               Text(
@@ -70,21 +69,38 @@ class RiwayatPresensiDetail extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              Text(formatDateOnly(item.end_date, format: 'H:mm')),
+              Text(formatDateOnly(item.check_out, format: 'H:mm')),
               SizedBox(height: 16),
               Text(
-                "Foto",
+                "Foto Check In",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              // Text(
-              //   "Lihat Foto",
-              //   style: TextStyle(decoration: TextDecoration.underline),
-              // ),
+              Text(
+                "Lihat Foto",
+                style: TextStyle(decoration: TextDecoration.underline),
+              ),
               (() {
-                if (item.file != null) {
+                if (item.photo_check_in != null) {
                   return LampiranView(
-                      url: "https://presensi.ypsimlibrary.com${item.file!}");
+                      url: "https://presensi.ypsimlibrary.com${item.photo_check_in!}");
+                }
+                return Container();
+              }()),
+              SizedBox(height: 16),
+              Text(
+                "Foto Check Out",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text(
+                "Lihat Foto",
+                style: TextStyle(decoration: TextDecoration.underline),
+              ),
+              (() {
+                if (item.photo_check_out != null) {
+                  return LampiranView(
+                      url: "https://presensi.ypsimlibrary.com${item.photo_check_out!}");
                 }
                 return Container();
               }())

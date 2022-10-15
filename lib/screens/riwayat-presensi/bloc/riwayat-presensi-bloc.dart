@@ -14,7 +14,7 @@ class HistoryBloc {
   late BehaviorSubject<bool> reloadSubject$;
   late BehaviorSubject<bool> loadingSubject$;
 
-  RiwayatIzinBloc() {
+  HistoryBloc() {
     init();
   }
 
@@ -31,7 +31,7 @@ class HistoryBloc {
     reloadSubject$.sink.add(!reloadSubject$.value);
   }
 
-  Future<List<dynamic>> getPermission() async {
+  Future<List<dynamic>> getAttendances() async {
     try {
       this.loadingSubject$.sink.add(true);
       Response resp = await get();
@@ -47,7 +47,7 @@ class HistoryBloc {
 
   Future<Response> get() async {
     int id = await CredentialGetter().userId;
-    return DioClient().dio.get("/permission/$id?start_date=${_filter.startDate}&end_date=${_filter.endDate}",
+    return DioClient().dio.get("/attendance/$id?start_date=${_filter.startDate}&end_date=${_filter.endDate}",
       options:  Options(
         headers: {
           'RequireToken': ''

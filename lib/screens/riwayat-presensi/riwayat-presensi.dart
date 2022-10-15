@@ -121,7 +121,7 @@ class _ListWidget extends State<HistoryList> {
   _getData() async {
     _reset();
     try {
-      List<dynamic> newData = await historyBloc.getPermission();
+      List<dynamic> newData = await historyBloc.getAttendances();
       if (newData.length == 0)
         throw 'Tidak ada data';
       else {
@@ -147,7 +147,7 @@ class _ListWidget extends State<HistoryList> {
           await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             // if(DateTime.parse(data[index]['startDate']).isBefore())
             return RiwayatPresensiDetail(
-                item: HistoryModel.fromJson(data[index]));
+                item: data[index]);
           }));
           _getData();
         },
