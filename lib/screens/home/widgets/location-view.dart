@@ -126,7 +126,6 @@ class _MyMapView extends State<MyMapView> {
     if(pos != null) {
         locationBloc.updatePosition(pos);
       if(webView != null ) {
-        inspect(locationBloc.getTargetLocation);
         await webView!.runJavascript(redrawMaps(
           pos.latitude,
           pos.longitude,
@@ -183,7 +182,6 @@ class _MyMapView extends State<MyMapView> {
       ]),
       builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
         int status = locationBloc.mapViewValid(snapshot.data);
-        inspect(status);
         if(!snapshot.hasData || status != 1) {
           return Center(
             child: Column(

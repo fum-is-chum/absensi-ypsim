@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:absensi_ypsim/main.dart';
 import 'package:absensi_ypsim/models/api-response.dart';
 import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
+import 'package:absensi_ypsim/utils/services/error-bloc.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,6 +23,9 @@ String formatTimeOnly(dynamic date) {
 Future<String> handleError(dynamic e) async {
   String error = "";
   if(e is DioError) {
+    if(e.response != null && e.response!.statusCode == 301 || e.response!.statusCode == 401) {
+      ErrorBloc().updateState(true);
+    }
     if(e.response != null && e.response!.data != null) {
       try {
         error = "${ApiResponse.fromJson(e.response!.data is String ? jsonDecode(e.response!.data) : e.response!.data).Message}";
@@ -36,15 +40,16 @@ Future<String> handleError(dynamic e) async {
   } else {
     error = e.toString();
   }
-  await ArtSweetAlert.show(
-    context: navigatorKey.currentContext!,
-    artDialogArgs: ArtDialogArgs(
-      type: ArtSweetAlertType.danger,
-      title: "Gagal",
-      text: error
-    )
-  );
-    
+  if(!ErrorBloc().isTokenExpired) {
+    await ArtSweetAlert.show(
+      context: navigatorKey.currentContext!,
+      artDialogArgs: ArtDialogArgs(
+        type: ArtSweetAlertType.danger,
+        title: "Gagal",
+        text: error
+      )
+    ); 
+  }
   return error;
 }
 

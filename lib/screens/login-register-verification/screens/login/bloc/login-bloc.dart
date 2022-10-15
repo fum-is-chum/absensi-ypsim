@@ -57,8 +57,9 @@ class LoginBloc {
     try {
       sp.show();
       await logout();
-
+      CredentialGetter().logout();
       sp.hide();
+      
       return true;
     } catch (e) {
       sp.hide();
@@ -69,17 +70,18 @@ class LoginBloc {
 
   Future<bool> relogin() async {
     try{
-      sp.show();
+      // sp.show();
+      // await logoutUser();
       model = await CredentialGetter().loginCredential;
       if(model['username'] == null) {
-        sp.hide();
+        // sp.hide();
         return false;
       }
-      await login();
-      sp.hide();
+      await loginUser();
+      // sp.hide();
       return true;
     } catch (e) {
-      sp.hide();
+      // sp.hide();
       await handleError(e);
       return false;
     }

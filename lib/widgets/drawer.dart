@@ -82,8 +82,6 @@ class MaterialDrawer extends StatelessWidget {
                 onTap: () async {
                   if (currentPage != "logout") {
                     await LoginBloc().logoutUser();
-                    SharedPreferences sharedPref = await SharedPreferences.getInstance();
-                    sharedPref.remove('user');
                     CredentialGetter().reset();
                     Navigator.pushNamedAndRemoveUntil(
                       context, '/login', (Route<dynamic> route) => false

@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CheckInBloc {
   late BehaviorSubject<bool> _isTimeValid;
-  late Timer _timer;
 
   CheckInBloc() {
   }

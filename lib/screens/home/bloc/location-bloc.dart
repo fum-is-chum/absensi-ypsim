@@ -103,7 +103,6 @@ class LocationBloc {
 
   Future<Position?> get getPosition async {
     if(_fetchingPosition.value) return null;
-    print('A');
     _fetchingPosition.sink.add(true);
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();

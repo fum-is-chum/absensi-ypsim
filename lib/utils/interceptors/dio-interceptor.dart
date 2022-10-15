@@ -1,6 +1,7 @@
-import 'package:absensi_ypsim/utils/interceptors/logging-interceptor.dart';
 import 'package:absensi_ypsim/utils/interceptors/token-interceptor.dart';
 import 'package:dio/dio.dart';
+
+import 'logging-interceptor.dart';
 
 class DioClient {
   DioClient._sharedInstance();
@@ -17,7 +18,7 @@ class DioClient {
         contentType: 'application/json;charset=utf-8',
         responseType: responseType,
         headers: {
-          'Accept': '*/*',
+          'Accept': 'application/json',
         }
       )
     );

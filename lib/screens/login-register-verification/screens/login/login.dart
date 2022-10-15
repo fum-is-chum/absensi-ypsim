@@ -162,7 +162,7 @@ class _PasswordField extends State<PasswordField> {
         return Padding(
           padding: EdgeInsets.only(top: 12),
           child: TextFormField(
-            initialValue: '123456789',
+            initialValue: '12345678',
             decoration: InputDecoration(
               labelText: "Kata Sandi",
               isDense: true,

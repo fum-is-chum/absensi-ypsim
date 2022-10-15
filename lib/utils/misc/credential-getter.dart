@@ -66,4 +66,9 @@ class CredentialGetter {
     _inMemoryUserData = null;
     _loginCredential = {};
   }
+
+  void logout() {
+    if(sharedPref.containsKey('user')) sharedPref.remove('user');
+    if(sharedPref.containsKey('login')) sharedPref.remove('login');
+  }
 }

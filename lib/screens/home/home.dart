@@ -146,7 +146,6 @@ class _ImageRow extends State<ImageRow> {
       timeBloc.dateStream$.distinct(),
       homeBloc.reloadAttendance$
     ]).listen((event) {
-      print(event);
       homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
     });
     super.initState();
