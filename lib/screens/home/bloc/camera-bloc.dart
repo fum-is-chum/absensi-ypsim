@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 class CameraBloc {
@@ -47,7 +46,7 @@ class CameraBloc {
       //   preferredCameraDevice: CameraDevice.front
       // );
       this._imageFile.sink.add(File(img.path));
-      snapTime = formatTimeOnly(DateTime.now()) + ' WIB';
+      // snapTime = formatTimeOnly(DateTime.now()) + ' WIB';
       // final File imageTemp = File();
       // setState(() => this.image = imageTemp);
     } on PlatformException catch(e) {

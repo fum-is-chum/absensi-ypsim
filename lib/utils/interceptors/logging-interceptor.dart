@@ -13,13 +13,13 @@ class LoggingInterceptors extends Interceptor {
     //   print("queryParameters:");
     //   options.queryParameters.forEach((k, v) => print('$k: $v'));
     // }
-    // if (options.data != null) {
-    //   if(options.data is FormData) {
-    //     print("Body: ${(options.data as FormData).fields}");
-    //   } else {
-    //     print("Body: ${options.data}");
-    //   }
-    // }
+    if (options.data != null) {
+      if(options.data is FormData) {
+        print("Body: ${(options.data as FormData).fields}");
+      } else {
+        print("Body: ${options.data}");
+      }
+    }
     print(
         "--> END ${options.method.toUpperCase()}");
 

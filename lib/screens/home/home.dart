@@ -166,7 +166,11 @@ class _ImageRow extends State<ImageRow> {
   String _img(Map<String, dynamic>? data, {bool isCheckIn = true}) {
     if(data == null) return "assets/img/no-image.jpg";
     if(data['personal_calender'] == null) return "assets/img/no-image.jpg";
-    return isCheckIn? data['personal_calender']['photo_check_in'] ?? "assets/img/no-image.jpg" : data['personal_calender']['photo_check_out'] ?? "assets/img/no-image.jpg";
+    return isCheckIn
+      ? data['personal_calender']['photo_check_in'] != null ? 
+        "https://presensi.ypsimlibrary.com${data['personal_calender']['photo_check_in']}" : "assets/img/no-image.jpg" 
+      : data['personal_calender']['photo_check_out'] != null ? 
+        "https://presensi.ypsimlibrary.com${data['personal_calender']['photo_check_out']}" : "assets/img/no-image.jpg";
   }
 
   @override

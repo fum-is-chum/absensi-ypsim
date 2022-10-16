@@ -124,20 +124,20 @@ String bypass() {
 
 String updatePosition(Position pos, Map<String, dynamic> target) {
   return """
-    // try {
-    //     coordinates[0] = {
-    //     lat: ${pos.latitude},
-    //     lng: ${pos.longitude}
-    //   }
+    try {
+        coordinates[0] = {
+        lat: ${pos.latitude},
+        lng: ${pos.longitude}
+      }
 
-    //   coordinates[1] = {
-    //     lat: ${target['latitude']},
-    //     lng: ${target['longitude']}
-    //   }
-    //   document.dispatchEvent(POSITION_UPDATE);
-    // } catch (e) {
-    //   alert(e);
-    // }
+      coordinates[1] = {
+        lat: ${target['latitude']},
+        lng: ${target['longitude']}
+      }
+      document.dispatchEvent(new Event(POSITION_UPDATE));
+    } catch (e) {
+      alert(e);
+    }
   """;
 }
 
@@ -179,7 +179,7 @@ String homeMap(Position pos1, double lat2, double lng2, int radius) {
           markers.push(marker);
         })
 
-        new google.maps.Circle({
+        const targetRadius = new google.maps.Circle({
           map: map,
           radius: $radius,
           strokeColor: '#000000',
@@ -201,6 +201,7 @@ String homeMap(Position pos1, double lat2, double lng2, int radius) {
             markers[idx].setPosition(coordinate);
             newMarkerbounds.extend(coordinate);
           })
+          targetRadius.setPosition(coordinates[0]);
           map.fitBounds(markerBounds);
         })
       }

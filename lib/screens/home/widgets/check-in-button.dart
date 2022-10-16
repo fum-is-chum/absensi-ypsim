@@ -174,13 +174,13 @@ class _CheckInButton extends State<CheckInButton> {
               await homeBloc.checkOut(
                 context: context, 
                 pos: locationBloc.getCurrentPosition!,
-                dateTime: "${timeBloc.currentDate} ${timeBloc.count}",
+                dateTime: "${timeBloc.currentDate} ${timeBloc.currentTime}",
                 photo: cameraBloc.imageFile!
               ) : 
               await homeBloc.checkIn(
                 context: context, 
                 pos: locationBloc.getCurrentPosition!,
-                dateTime: "${timeBloc.currentDate} ${timeBloc.count}",
+                dateTime: "${timeBloc.currentDate} ${timeBloc.currentTime}",
                 photo: cameraBloc.imageFile!
               );
             cameraBloc.reset();

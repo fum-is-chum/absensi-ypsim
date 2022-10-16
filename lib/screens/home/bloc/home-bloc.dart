@@ -105,7 +105,6 @@ class HomeBloc {
     checkInModel.longitude = pos.longitude;
     checkInModel.date = dateTime.substring(0, 10);
     checkInModel.time = dateTime.substring(11, 19);
-    
     var formData = FormData.fromMap({
       ...checkInModel.toJson(),
       'photo': MultipartFile.fromBytes(
@@ -120,6 +119,7 @@ class HomeBloc {
       options: Options(
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Accept': '*/*',
           'Connection': 'keep-alive',
           'Accept-Encoding': 'gzip, deflat, br',
           'RequireToken': ''
@@ -154,6 +154,7 @@ class HomeBloc {
       options: Options(
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Accept': '*/*',
           'Connection': 'keep-alive',
           'Accept-Encoding': 'gzip, deflat, br',
           'RequireToken': ''

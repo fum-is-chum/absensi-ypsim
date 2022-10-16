@@ -58,12 +58,13 @@ class _CameraPageState extends State<CameraPage> {
         flush: true,
       )).path);
 
-      Navigator.push(
+      bool result = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PreviewPage(
                   picture: fixedFile,
                 )));
+      return result;
     } on CameraException catch (e) {
       debugPrint('Error occured while taking picture: $e');
       return null;
@@ -162,12 +163,8 @@ class _CameraPageState extends State<CameraPage> {
                         },
                       ),
                     ),
-                    IconButton(
+                    ShutterButton(
                       onPressed: takePicture,
-                      iconSize: 64,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      icon: const Icon(Icons.circle, color: Colors.white),
                     ),
                     Container(
                       decoration: BoxDecoration(
@@ -196,6 +193,44 @@ class _CameraPageState extends State<CameraPage> {
           ]
         ),
       )
+    );
+  }
+}
+
+class ShutterButton extends StatefulWidget {
+  final Function onPressed;
+  ShutterButton({Key? key, required this.onPressed}) : super(key: key);
+
+  @override
+  State<ShutterButton> createState() => _ShutterButton();
+}
+
+class _ShutterButton extends State<ShutterButton> {
+  bool disabled = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return disabled ? 
+    CircularProgressIndicator()
+    : IconButton(
+      onPressed: () async {
+        if(!disabled) {
+          disabled = true;
+          setState(() {
+            
+          });
+          if(!(await widget.onPressed())) {
+            disabled = false;
+            setState(() {
+              
+            });
+          }
+        }
+      },
+      iconSize: 64,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+      icon: const Icon(Icons.circle, color: Colors.white),
     );
   }
 }

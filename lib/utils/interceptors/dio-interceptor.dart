@@ -24,7 +24,7 @@ class DioClient {
     );
 
     dio..interceptors.add(TokenInterceptor());
-    dio..interceptors.add(LoggingInterceptors());
+    // dio..interceptors.add(LoggingInterceptors());
     return dio;
   }
 }

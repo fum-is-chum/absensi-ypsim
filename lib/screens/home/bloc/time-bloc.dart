@@ -10,7 +10,7 @@ import 'package:rxdart/rxdart.dart';
 class TimeBloc {
   late BehaviorSubject<bool> reloadSubject$;
   late BehaviorSubject<String> _date;
-  BehaviorSubject<String> count = BehaviorSubject.seeded("00:00:00");
+  BehaviorSubject<String> _count = BehaviorSubject.seeded("00:00:00");
   
   TimeBloc._();
   static final _instance = TimeBloc._();
@@ -25,10 +25,12 @@ class TimeBloc {
   
   Stream<bool> get reloadStream => reloadSubject$.asBroadcastStream();
   Stream<String> get dateStream$ => _date.asBroadcastStream();
-  Stream<String> get count$ => count.asBroadcastStream();
-
+  Stream<String> get count$ => _count.asBroadcastStream();
+  
+  String get currentTime => _count.value;
+  
   void updateCount(String val) {
-    count.sink.add(val);
+    _count.sink.add(val);
   }
   
   String get currentDate => _date.value;

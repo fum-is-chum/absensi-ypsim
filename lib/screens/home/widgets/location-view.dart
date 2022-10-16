@@ -137,7 +137,21 @@ class _MyMapView extends State<MyMapView> {
 
   void reload() async {
     if(webView != null) {
-      webView!.reload();
+      Future.wait([
+        locationBloc.getPosition,
+        locationBloc.getValidLocation()
+      ]).then((value) async {
+        Map<String, dynamic> targetLocation = value[1] as Map<String, dynamic>;
+        await webView!.loadUrl(
+          Uri.dataFromString(homeMap(
+            value[0] as Position,
+            targetLocation['latitude'],
+            targetLocation['longitude'],
+            targetLocation['radius']
+          ), 
+          mimeType: 'text/html').toString()
+        );
+      });
     }
   }
 
@@ -209,6 +223,7 @@ class _MyMapView extends State<MyMapView> {
           );
         }
 
+        Map<String, dynamic> targetLocation = snapshot.data![1];
         return StreamBuilder(
           stream: locationBloc.positionStream$,
           initialData: locationBloc.getCurrentPosition,
@@ -216,7 +231,6 @@ class _MyMapView extends State<MyMapView> {
             if(!pos.hasData || (pos.hasData && pos.data == null)) {
               return Center(child: CircularProgressIndicator());
             }
-            Map<String, dynamic> targetLocation = snapshot.data![1];
             return Stack(
               children: [
                 WebView(
@@ -236,6 +250,15 @@ class _MyMapView extends State<MyMapView> {
                     targetLocation['radius']
                   ), mimeType: 'text/html').toString(),
                   javascriptMode: JavascriptMode.unrestricted,
+                ),
+                StreamBuilder(
+                  stream: locationBloc.locationLoading$,
+                  builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    if(!snapshot.hasData || snapshot.data == true) {
+                      return Center(child: CircularProgressIndicator(),);
+                    }
+                    return Container();
+                  },
                 )
               ]
             );

@@ -50,7 +50,7 @@ class PreviewPage extends StatelessWidget {
                           color: Colors.white
                         ),
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pop(context, false);
                         },
                       ),
                     ),
@@ -68,7 +68,7 @@ class PreviewPage extends StatelessWidget {
                         ),
                         onPressed: () {
                           CameraBloc().pickImage(picture);
-                          Navigator.popUntil(context, ModalRoute.withName("/home"));
+                          Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => route.isFirst);
                         },
                       ),
                     ),
