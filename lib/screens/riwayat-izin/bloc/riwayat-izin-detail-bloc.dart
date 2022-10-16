@@ -31,7 +31,7 @@ class RiwayatIzinDetailBloc {
       return data;
     } catch (e) {
       if(context != null) sp.hide();
-      await handleError(e);;
+      await handleError(e);
     }
     return null;
   }

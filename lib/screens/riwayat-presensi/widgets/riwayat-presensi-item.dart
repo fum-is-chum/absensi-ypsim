@@ -6,7 +6,7 @@ import 'package:absensi_ypsim/utils/constants/Theme.dart';
 
 class HistoryPresensiItem extends StatelessWidget {
 
-  final HistoryModel item;
+  final RiwayatPresensiModel item;
   final Function tap;
 
   HistoryPresensiItem({required this.item, this.tap = defaultFunc});
@@ -49,7 +49,7 @@ class HistoryPresensiItem extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 8),
-                            Text(formatDateOnly(item.check_in, format: 'H:mm')),
+                            Text(item.check_in),
                           ],
                         ),
                         SizedBox(width: 20),
@@ -63,7 +63,7 @@ class HistoryPresensiItem extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: 8),
-                            Text(formatDateOnly(item.check_out, format: 'H:mm')),
+                            Text(item.check_out),
                           ],
                         ),
                       ],

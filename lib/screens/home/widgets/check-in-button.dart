@@ -45,6 +45,11 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
       attendanceStatus['personal_calender']?['check_out'] == null;
   }
 
+  bool _isHoliday(Map<String, dynamic>? data) {
+    if(data == null) return false;
+    return data['is_holiday'] ?? false;
+  }
+
   bool _isTimeValid(Map<String, dynamic>? data, String current) {
     if(data == null) return false;
     String date = data['personal_calender']['date'];
@@ -116,7 +121,7 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
                         return CheckInButton(disabled: true, isCheckout: false);
                     }
                     return CheckInButton(
-                      disabled: !_isTimeValid(snapshot.data![0], time.data!) || !locationBloc.isInValidLocation(),
+                      disabled: !_isTimeValid(snapshot.data![0], time.data!) || !locationBloc.isInValidLocation() || _isHoliday(snapshot.data![0]),
                       isCheckout: _isCheckout(snapshot.data?[0])
                     );
                   },

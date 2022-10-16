@@ -1,13 +1,18 @@
-import 'package:absensi_ypsim/screens/riwayat-izin/riwayat-izin-detail.dart';
+import 'package:absensi_ypsim/screens/home/home.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
+import 'package:absensi_ypsim/utils/iframe/iframe.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:absensi_ypsim/widgets/card-small.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class RiwayatPresensiDetail extends StatelessWidget {
-  final HistoryModel item;
+  final RiwayatPresensiModel item;
 
-  RiwayatPresensiDetail({Key? key, required this.item}): super(key: key);
+  const RiwayatPresensiDetail({Key? key, required this.item}): super(key: key);
 
   // final GlobalKey _scaffoldKey = new GlobalKey();
   @override
@@ -33,13 +38,8 @@ class RiwayatPresensiDetail extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  color: Colors.black26,
-                ),
-                height: 200,
-              ),
+              SizedBox(height: 16),
+              ImageRow(item: item,),
               SizedBox(height: 16),
               Text(
                 "Status",
@@ -57,57 +57,99 @@ class RiwayatPresensiDetail extends StatelessWidget {
                     format: 'EEEE, d MMMM yyyy')),
               SizedBox(height: 16),
               Text(
-                "Waktu Check In",
+                "Lokasi Absensi",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              Text(formatDateOnly(item.check_in,
-                    format: 'H:mm')),
-              SizedBox(height: 16),
-              Text(
-                "Waktu Check Out",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(formatDateOnly(item.check_out, format: 'H:mm')),
-              SizedBox(height: 16),
-              Text(
-                "Foto Check In",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                "Lihat Foto",
-                style: TextStyle(decoration: TextDecoration.underline),
-              ),
               (() {
-                if (item.photo_check_in != null) {
-                  return LampiranView(
-                      url: "https://presensi.ypsimlibrary.com${item.photo_check_in!}");
+                if(item.latitude_check_in != null) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 400,
+                    child: LokasiAbsensiMap(item: item,)
+                  );
+                } else {
+                  return Container();
                 }
-                return Container();
               }()),
-              SizedBox(height: 16),
-              Text(
-                "Foto Check Out",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                "Lihat Foto",
-                style: TextStyle(decoration: TextDecoration.underline),
-              ),
-              (() {
-                if (item.photo_check_out != null) {
-                  return LampiranView(
-                      url: "https://presensi.ypsimlibrary.com${item.photo_check_out!}");
-                }
-                return Container();
-              }())
+              SizedBox(height: 24,)
             ],
           ),
         ),
       )
+    );
+  }
+}
+
+class ImageRow extends StatelessWidget {
+  final RiwayatPresensiModel item;
+  const ImageRow({Key? key, required this.item}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: homeBloc.attendanceStatus$,
+      builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CardSmall(
+              cta: item.check_in,
+              title: "IN",
+              img:  item.photo_check_in != null ? "https://presensi.ypsimlibrary.com${item.photo_check_in}" : 'assets/img/no-image.jpg',
+              tap: () {
+              }
+            ),
+            SizedBox(width: 8),
+            CardSmall(
+              cta: item.check_out,
+              title: "OUT",
+              img: item.photo_check_out != null ? "https://presensi.ypsimlibrary.com${item.photo_check_out}" : 'assets/img/no-image.jpg',
+              // img: 'assets/img/no-image.jpg',
+              tap: () {
+                // Navigator.pushReplacementNamed(context, '/pro');
+              }
+            )
+          ],
+        );
+      },
+    );
+  }
+}
+
+class LokasiAbsensiMap extends StatefulWidget {
+  final RiwayatPresensiModel item;
+  LokasiAbsensiMap({Key? key, required this.item}) : super(key: key);
+
+  @override
+  State<LokasiAbsensiMap> createState() => _LokasiAbsensiMap();
+}
+
+class _LokasiAbsensiMap extends State<LokasiAbsensiMap> {
+  late WebViewController webView;
+  @override
+  Widget build(BuildContext contexet) {
+    return Stack(
+      children: [
+        WebView(
+          gestureRecognizers: [
+            Factory<OneSequenceGestureRecognizer>(
+              () => EagerGestureRecognizer(),
+            ),
+          ].toSet(),
+          onWebViewCreated: (WebViewController wv) {
+            webView = wv;
+          },
+          
+          initialUrl: Uri.dataFromString(detailPresensiMap(
+            widget.item.latitude_check_in!,
+            widget.item.longitude_check_in!,
+            widget.item.latitude_check_out!,
+            widget.item.longitude_check_out!
+          ), mimeType: 'text/html').toString(),
+          javascriptMode: JavascriptMode.unrestricted,
+        )
+      ],
     );
   }
 }

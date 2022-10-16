@@ -5,7 +5,7 @@ class CardSmall extends StatelessWidget {
   CardSmall(
       {this.title = "Placeholder Title",
       this.cta = "",
-      this.img = "https://via.placeholder.com/200",
+      this.img = "assets/img/no-image.jpg",
       this.tap = defaultFunc});
 
   final String cta;

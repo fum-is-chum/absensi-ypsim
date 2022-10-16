@@ -9,12 +9,12 @@ import 'package:rxdart/rxdart.dart';
 
 import '../models/riwayat-presensi-model.dart';
 
-class HistoryBloc {
+class RiwayatPresensiBloc {
   HistoryFilter _filter = HistoryFilter();
   late BehaviorSubject<bool> reloadSubject$;
   late BehaviorSubject<bool> loadingSubject$;
 
-  HistoryBloc() {
+  RiwayatPresensiBloc() {
     init();
   }
 

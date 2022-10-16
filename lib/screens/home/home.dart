@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:absensi_ypsim/screens/home/bloc/camera-bloc.dart';
 import 'package:absensi_ypsim/screens/home/bloc/home-bloc.dart';
@@ -139,7 +140,6 @@ class ImageRow extends StatefulWidget {
 }
 
 class _ImageRow extends State<ImageRow> {
-
   @override
   void initState() {
     Rx.combineLatestList([
@@ -157,6 +157,18 @@ class _ImageRow extends State<ImageRow> {
     super.dispose();
   }
 
+  String _cta(Map<String, dynamic>? data, {bool isCheckIn = true}) {
+    if(data == null) return "00:00:00 WIB";
+    if(data['personal_calender'] == null) return "00:00:00 WIB";
+    return isCheckIn ? data['personal_calender']['check_in'] ?? "00:00:00 WIB" : data['personal_calender']['check_out'] ?? "00:00:00 WIB";
+  }
+
+  String _img(Map<String, dynamic>? data, {bool isCheckIn = true}) {
+    if(data == null) return "assets/img/no-image.jpg";
+    if(data['personal_calender'] == null) return "assets/img/no-image.jpg";
+    return isCheckIn? data['personal_calender']['photo_check_in'] ?? "assets/img/no-image.jpg" : data['personal_calender']['photo_check_out'] ?? "assets/img/no-image.jpg";
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
@@ -166,11 +178,9 @@ class _ImageRow extends State<ImageRow> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CardSmall(
-              cta:  snapshot.hasData && snapshot.data != null && 
-                    snapshot.data?['personal_calender'] != null ? "${snapshot.data?['personal_calender']['check_in'] ?? '00:00:00'} WIB" : '00:00:00 WIB',
+              cta: _cta(snapshot.data),
               title: "IN",
-              img:  snapshot.hasData && snapshot.data != null && snapshot.data?['personal_calender']?['photo_check_in'] != null ? 
-                    "https://presensi.ypsimlibrary.com${snapshot.data?['personal_calender']['photo_check_in']}" : 'assets/img/no-image.jpg',
+              img:  _img(snapshot.data),
               // img: 'assets/img/no-image.jpg',
               tap: () {
                 // Navigator.pushReplacementNamed(context, '/pro');
@@ -178,11 +188,9 @@ class _ImageRow extends State<ImageRow> {
             ),
             SizedBox(width: 8),
             CardSmall(
-              cta:  snapshot.hasData && snapshot.data != null && 
-                    snapshot.data?['personal_calender'] != null ? "${snapshot.data?['personal_calender']['check_out'] ?? '00:00:00'} WIB" : '00:00:00 WIB',
+              cta: _cta(snapshot.data, isCheckIn: false),
               title: "OUT",
-              img: snapshot.hasData && snapshot.data != null && snapshot.data?['personal_calender']?['photo_check_out'] != null ? 
-                  "https://presensi.ypsimlibrary.com${snapshot.data?['personal_calender']['photo_check_out']}" : 'assets/img/no-image.jpg',
+              img: _img(snapshot.data, isCheckIn: false),
               // img: 'assets/img/no-image.jpg',
               tap: () {
                 // Navigator.pushReplacementNamed(context, '/pro');

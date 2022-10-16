@@ -2,13 +2,13 @@ import 'package:absensi_ypsim/screens/riwayat-presensi/bloc/riwayat-presensi-blo
 import 'package:absensi_ypsim/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/riwayat-presensi-detail.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/widgets/riwayat-presensi-item.dart';
-import 'package:flutter/material.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:absensi_ypsim/widgets/drawer.dart';
 import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:flutter/material.dart';
 
-late HistoryBloc historyBloc;
+late RiwayatPresensiBloc riwayatPresensiBloc;
 
 class RiwayatPresensi extends StatefulWidget {
   RiwayatPresensi({Key? key}) : super(key: key);
@@ -20,13 +20,13 @@ class RiwayatPresensi extends StatefulWidget {
 class _RiwayatPresensi extends State<RiwayatPresensi> {
   @override
   void initState() {
-    historyBloc = new HistoryBloc();
+    riwayatPresensiBloc = new RiwayatPresensiBloc();
     super.initState();
   }
 
   @override
   void dispose() {
-    // HistoryBloc.dispose();
+    // RiwayatPresensiBloc.dispose();
     super.dispose();
   }
 
@@ -121,7 +121,7 @@ class _ListWidget extends State<HistoryList> {
   _getData() async {
     _reset();
     try {
-      List<dynamic> newData = await historyBloc.getAttendances();
+      List<dynamic> newData = await riwayatPresensiBloc.getAttendances();
       if (newData.length == 0)
         throw 'Tidak ada data';
       else {
@@ -139,15 +139,16 @@ class _ListWidget extends State<HistoryList> {
 
   Widget _buildItem(
       BuildContext context, int index, Animation<double> animation) {
+    
     return FadeTransition(
       opacity: animation,
       child: HistoryPresensiItem(
-        item: HistoryModel.fromJson(data[index]),
+        item: RiwayatPresensiModel.fromJson(data[index]),
         tap: () async {
           await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             // if(DateTime.parse(data[index]['startDate']).isBefore())
             return RiwayatPresensiDetail(
-                item: data[index]);
+                item: RiwayatPresensiModel.fromJson(data[index]));
           }));
           _getData();
         },
@@ -157,10 +158,10 @@ class _ListWidget extends State<HistoryList> {
 
   @override
   void initState() {
-    historyBloc.init();
+    riwayatPresensiBloc.init();
 
     // _getData().then((value) => setState((){}));
-    historyBloc.reloadStream.listen((event) {
+    riwayatPresensiBloc.reloadStream.listen((event) {
       _getData().then((value) => setState(() {}));
     });
 
@@ -170,7 +171,7 @@ class _ListWidget extends State<HistoryList> {
   @override
   void dispose() {
     super.dispose();
-    historyBloc.dispose();
+    riwayatPresensiBloc.dispose();
   }
 
   @override
@@ -184,7 +185,7 @@ class _ListWidget extends State<HistoryList> {
               return _getData();
             },
             child: StreamBuilder<bool>(
-                stream: historyBloc.loadingStream,
+                stream: riwayatPresensiBloc.loadingStream,
                 builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                   if (!snapshot.hasData || (snapshot.hasData && snapshot.data!))
                     return loadingSpinner();
@@ -230,8 +231,8 @@ class _TanggalField extends State<TanggalField> {
   void initState() {
     super.initState();
     _controller.text = widget.isAkhir
-        ? historyBloc.filter.endDate!
-        : historyBloc.filter.startDate!;
+        ? riwayatPresensiBloc.filter.endDate!
+        : riwayatPresensiBloc.filter.startDate!;
   }
 
   @override
@@ -249,24 +250,24 @@ class _TanggalField extends State<TanggalField> {
                 showDatePicker(
                         context: context,
                         initialDate: DateTime.parse(widget.isAkhir &&
-                                DateTime.parse(historyBloc.filter.startDate!)
+                                DateTime.parse(riwayatPresensiBloc.filter.startDate!)
                                     .isBefore(DateTime.parse(
-                                        historyBloc.filter.endDate!))
-                            ? historyBloc.filter.endDate!
-                            : historyBloc.filter.startDate!),
+                                        riwayatPresensiBloc.filter.endDate!))
+                            ? riwayatPresensiBloc.filter.endDate!
+                            : riwayatPresensiBloc.filter.startDate!),
                         firstDate: widget.isAkhir
-                            ? DateTime.parse(historyBloc.filter.startDate!)
+                            ? DateTime.parse(riwayatPresensiBloc.filter.startDate!)
                             : DateTime(2022),
                         lastDate: DateTime(DateTime.now().year + 10))
                     .then((DateTime? value) {
                   if (value != null) {
                     if (widget.isAkhir) {
-                      historyBloc.filter.endDate = formatDateOnly(value);
+                      riwayatPresensiBloc.filter.endDate = formatDateOnly(value);
                     } else {
-                      historyBloc.filter.startDate = formatDateOnly(value);
+                      riwayatPresensiBloc.filter.startDate = formatDateOnly(value);
                     }
                     _controller.text = formatDateOnly(value);
-                    historyBloc.triggerReload();
+                    riwayatPresensiBloc.triggerReload();
                     // widget.key.
                     setState(() {});
                   }
@@ -278,17 +279,17 @@ class _TanggalField extends State<TanggalField> {
         onTap: () {
           showDatePicker(
                   context: context,
-                  initialDate: DateTime.parse(historyBloc.filter.startDate!),
+                  initialDate: DateTime.parse(riwayatPresensiBloc.filter.startDate!),
                   firstDate: widget.isAkhir
-                      ? DateTime.parse(historyBloc.filter.startDate!)
+                      ? DateTime.parse(riwayatPresensiBloc.filter.startDate!)
                       : DateTime.fromMillisecondsSinceEpoch(0),
                   lastDate: DateTime(DateTime.now().year + 10))
               .then((DateTime? value) {
             if (value != null) {
               if (widget.isAkhir) {
-                historyBloc.filter.endDate = formatDateOnly(value);
+                riwayatPresensiBloc.filter.endDate = formatDateOnly(value);
               } else {
-                historyBloc.filter.startDate = formatDateOnly(value);
+                riwayatPresensiBloc.filter.startDate = formatDateOnly(value);
               }
               _controller.text = formatDateOnly(value);
               setState(() {});

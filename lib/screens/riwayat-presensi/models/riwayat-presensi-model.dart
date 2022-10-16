@@ -1,29 +1,29 @@
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 
-class HistoryModel {
+class RiwayatPresensiModel {
   int id = 0;
   int employee_id = 0;
-  String check_in = '';
-  String check_out = '';
+  late String check_in;
+  late String check_out;
   String date = '';
-  String status = '';
-  String reason = '';
-  String status_check_in = '';
-  String status_check_out = '';
-  String photo_check_in = '';
-  String photo_check_out = '';
-  String latitude_check_in = '';
-  String latitude_check_out = '';
-  String longitude_check_in = '';
-  String longitude_check_out = '';
+  late String status;
+  String? reason;
+  int status_check_in = 0;
+  int status_check_out = 0;
+  String? photo_check_in;
+  String? photo_check_out;
+  double? latitude_check_in;
+  double? latitude_check_out;
+  double? longitude_check_in;
+  double? longitude_check_out;
 
-  HistoryModel.fromJson(Map<String, dynamic> json) {
+  RiwayatPresensiModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     employee_id = json['employee_id'];
-    check_in = formatDateOnly(DateTime.parse(json['check_in']));
-    check_out = formatDateOnly(DateTime.parse(json['check_out']));
+    check_in = json['check_in'] ?? "00:00:00";
+    check_out = json['check_out'] ?? "00:00:00";
     date = formatDateOnly(DateTime.parse(json['date']));
-    status = json['status'];
+    status = json['status'] ?? "Absen";
     reason = json['reason'];
     status_check_in = json['status_check_in'];
     status_check_out = json['status_check_out'];

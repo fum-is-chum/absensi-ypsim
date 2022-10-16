@@ -172,26 +172,6 @@ class LocationBloc {
     return Geolocator.distanceBetween(x1, y1, x2, y2).round() <= radius; // return distance in meter
   }
 
-  /*
-    data = [
-      isLocationOn -> bool,
-      getPosition -> Position,
-      getValidLocation -> Map<String, dynamic>
-    ]
-  */
-  int mapViewValid(List<dynamic>? data) {
-    if(data == null) return 0;
-    if(data[0] == false) return -1;
-    if((data[1] as Position?)?.latitude == null) return -2;
-    if((data[2] as Map<String, dynamic>?)?['latitude'] == null) return -3;
-    return 1;
-    // return
-    //   data[0] == true &&
-    //   (data[1] as Position?)?.latitude != null &&
-    //   (data[2] as Map<String, dynamic>?)?['latitude'] != null
-    // ;
-
-  }
   Future<Map<String, dynamic>> getValidLocation() async {
     // sp.show();
     try {
