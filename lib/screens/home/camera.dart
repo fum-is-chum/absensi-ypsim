@@ -75,7 +75,7 @@ class _CameraPageState extends State<CameraPage> {
     _cameraController =
         CameraController(
           cameraDescription, 
-          ResolutionPreset.high,
+          ResolutionPreset.medium,
           enableAudio: false
         );
     try {

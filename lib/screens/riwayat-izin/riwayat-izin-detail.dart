@@ -169,10 +169,10 @@ class LampiranView extends StatefulWidget {
 }
 
 class _LampiranView extends State<LampiranView> {
-
+  static const imgExts = ['.jpg', '.jpeg', '.png'];
   @override 
   Widget build(BuildContext context) {
-    if(widget.url.indexOf(".pdf") == -1)
+    if(imgExts.any((element) => widget.url.toLowerCase().indexOf(element) != -1))
       return Container(
         height: 500,
         decoration: BoxDecoration(
@@ -203,17 +203,21 @@ class _LampiranView extends State<LampiranView> {
                     *{
                       box-sizing: border-box;
                     }
-                    body{
+                    html,body{
+                      width: 100%;
+                      height: 100%; 
                       margin: 0px;
                     }
-                    iframe{
-                      height: 100vh;
-                      width: 100vw;
+                    iframe {
+                      height: 100%;
+                      width: 100%;
+                      background: url(${widget.url}) no-repeat;
+                      background-size: contain;
                     }
                   </style>
                 </head>
                 <body>
-                  <iframe id="embed-maps" height="auto" frameBorder="0" src="${widget.url}"></iframe>
+                  <iframe id="file-view" class="frame" frameBorder="0"></iframe>
                 </body>
               </html>""", 
               mimeType: 'text/html'
@@ -221,17 +225,19 @@ class _LampiranView extends State<LampiranView> {
           javascriptMode: JavascriptMode.unrestricted,
         )
       );
-    return Container(
-      height: 500,
-      child: FutureBuilder(
-        future: createFileOfPdfUrl(context, widget.url),
-        builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-          if(!snapshot.hasData)
-            return loadingSpinner();
-          return PDFScreen(path: snapshot.data!.path,);
-        },
-      ),
-    );
+    else if(widget.url.toLowerCase().indexOf('.pdf') != -1)
+      return Container(
+        height: 500,
+        child: FutureBuilder(
+          future: createFileOfPdfUrl(context, widget.url),
+          builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+            if(!snapshot.hasData)
+              return loadingSpinner();
+            return PDFScreen(path: snapshot.data!.path,);
+          },
+        ),
+      );
+    return Container();
   }
 }
 

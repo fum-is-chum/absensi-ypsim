@@ -133,7 +133,7 @@ class _ListWidget extends State<HistoryList> {
         }
       }
     } catch (e) {
-      err = e as String;
+      handleError(e);
     }
   }
 

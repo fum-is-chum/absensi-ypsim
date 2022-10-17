@@ -213,7 +213,7 @@ String homeMap(Position pos1, double lat2, double lng2, int radius) {
     """;
 }
 
-String detailPresensiMap(double lat1, double lng1, double lat2, double lng2) {
+String detailPresensiMap(double? lat1, double? lng1, double? lat2, double? lng2) {
   return map() + """
     <script>
      // Initialize and add the map
@@ -230,19 +230,20 @@ String detailPresensiMap(double lat1, double lng1, double lat2, double lng2) {
         var markerBounds = new google.maps.LatLngBounds();
 
         coordinates.forEach((coordinate, idx) => {
-          const marker = new google.maps.Marker({
-            position: coordinate,
-            map: map,
-            animation: google.maps.Animation.DROP
-          });
-          
-          new google.maps.InfoWindow({
-            position: coordinate,
-            content: `<h5>${idx == 0 ? 'Check In' : 'Check Out'}</h5>`
-          }).open(map, marker);
+          if(coordinate.lat && coordinate.lng) {
+            const marker = new google.maps.Marker({
+              position: coordinate,
+              map: map,
+              animation: google.maps.Animation.DROP
+            });
+            
+            new google.maps.InfoWindow({
+              position: coordinate,
+              content: `<h5>${idx == 0 ? 'Check In' : 'Check Out'}</h5>`
+            }).open(map, marker);
 
-          markerBounds.extend(coordinate);
-
+            markerBounds.extend(coordinate);
+          }
         })
         map.fitBounds(markerBounds);
       }

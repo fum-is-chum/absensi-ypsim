@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:developer';
 
+import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
+import 'package:absensi_ypsim/utils//iframe/iframe.dart';
+import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:absensi_ypsim/utils//iframe/iframe.dart';
-import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
 
 final LocationBloc locationBloc = LocationBloc(); 
 class LocationView extends StatefulWidget {
@@ -118,7 +116,7 @@ class MyMapView extends StatefulWidget {
 class _MyMapView extends State<MyMapView> {
   WebViewController? webView;
   late StreamSubscription<ServiceStatus> serviceStatus;
-  late StreamSubscription<List<dynamic>> positionStatus;
+  StreamSubscription<List<dynamic>>? positionStatus;
 
   Future<void> loadMaps(List<dynamic> data) async {
     Position? pos = data[0];
@@ -163,16 +161,18 @@ class _MyMapView extends State<MyMapView> {
         
       });
     });
-    positionStatus = CombineLatestStream.list([
-      locationBloc.positionStream$,
-      locationBloc.targetLocation$
-    ]).listen(loadMaps);
+    locationBloc.getPosition.then((value) {
+      positionStatus = CombineLatestStream.list([
+        locationBloc.positionStream$,
+        locationBloc.targetLocation$
+      ]).listen(loadMaps);
+    });
   }
 
   @override 
   void dispose() {
     serviceStatus.cancel();
-    positionStatus.cancel();
+    if(positionStatus != null) positionStatus!.cancel();
     super.dispose();
   }
 

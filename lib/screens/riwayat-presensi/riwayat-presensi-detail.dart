@@ -142,10 +142,10 @@ class _LokasiAbsensiMap extends State<LokasiAbsensiMap> {
           },
           
           initialUrl: Uri.dataFromString(detailPresensiMap(
-            widget.item.latitude_check_in!,
-            widget.item.longitude_check_in!,
-            widget.item.latitude_check_out!,
-            widget.item.longitude_check_out!
+            widget.item.latitude_check_in,
+            widget.item.longitude_check_in,
+            widget.item.latitude_check_out,
+            widget.item.longitude_check_out
           ), mimeType: 'text/html').toString(),
           javascriptMode: JavascriptMode.unrestricted,
         )
