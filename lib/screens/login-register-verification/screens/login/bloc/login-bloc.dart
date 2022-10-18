@@ -32,8 +32,8 @@ class LoginBloc {
     _obscureText$.sink.add(state);
   }
 
-  Future<void> saveCredentials(LoginResult cred) async {
-    SharedPreferences sharedPref = await SharedPreferences.getInstance();
+  void saveCredentials(LoginResult cred) {
+    SharedPreferences sharedPref = CredentialGetter.sharedPref;
     sharedPref.setString('user', encryptAESCryptoJS(jsonEncode(cred.toJson()),'1!1!'));
     sharedPref.setString('login', encryptAESCryptoJS(jsonEncode(model),  '&*()'));
   }
@@ -43,7 +43,7 @@ class LoginBloc {
     try {
       Response resp = await login();
       
-      await saveCredentials(LoginResult.fromJson(resp.data['Result']));
+      saveCredentials(LoginResult.fromJson(resp.data['Result']));
       sp.hide();
       return true;
     } catch (e) {
@@ -57,7 +57,7 @@ class LoginBloc {
     try {
       sp.show();
       await logout();
-      CredentialGetter().logout();
+      CredentialGetter.logout();
       sp.hide();
       
       return true;

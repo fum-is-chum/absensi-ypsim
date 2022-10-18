@@ -1,6 +1,5 @@
 
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:absensi_ypsim/screens/home/bloc/check-in-bloc.dart';
 import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
@@ -70,20 +69,71 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
     return !(_curr.isBefore(_start) || _curr.isAfter(_end));
   }
 
-  bool _disabled(ServiceStatus? status, Position? pos) {
-    return status == null || pos == null || status == ServiceStatus.disabled;
+  bool _disabled(dynamic status, Position? pos) {
+    return status == null || (pos == null && !kIsWeb) || status == ServiceStatus.disabled;
   }
 
+  Widget _webWidgets() {
+    return FutureBuilder(
+      future: Future.wait([
+        locationBloc.isLocationOn
+      ]),
+      builder: (BuildContext context, AsyncSnapshot<List<dynamic>> location) {
+        if(!location.hasData) {
+          return CheckInButton(disabled: true, isCheckout: false,);
+        }
 
-  @override
-  Widget build(BuildContext context) {    
-    return !kIsWeb ? FutureBuilder(
+        return StreamBuilder<List<dynamic>>(
+          stream: CombineLatestStream.list([
+            locationBloc.positionStream$
+          ]),
+          builder: (BuildContext context, AsyncSnapshot<List<dynamic>> locationStream) {
+            if(!locationStream.hasData || _disabled(locationStream.data?[0], null)) {
+              return CheckInButton(disabled: true, isCheckout: false);
+            }
+
+            return StreamBuilder(
+              stream: CombineLatestStream.list([
+                homeBloc.attendanceStatus$,
+                locationBloc.targetLocation$
+              ]),
+              builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+                bool attendanceIsValid = snapshot.data?[0]['personal_calender'] != null;
+                bool targetLocationIsValid = snapshot.data?[1] != null;
+
+                if(!snapshot.hasData || !attendanceIsValid || !targetLocationIsValid) {
+                  return CheckInButton(disabled: true, isCheckout: _isCheckout(snapshot.data?[0]));
+                }
+                
+                return StreamBuilder(
+                  stream: timeBloc.count$,
+                  builder: (BuildContext context, AsyncSnapshot<String> time) {
+                    if(!time.hasData || time.data == null) {
+                        return CheckInButton(disabled: true, isCheckout: false);
+                    }
+                    // return CheckInButton(disabled: false, isCheckout: false,);
+                    return CheckInButton(
+                      disabled: !_isTimeValid(snapshot.data![0], time.data!) || !locationBloc.isInValidLocation() || _isHoliday(snapshot.data![0]),
+                      isCheckout: _isCheckout(snapshot.data?[0])
+                    );
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _androidWidgets() {
+    return FutureBuilder(
       future: Future.wait([
         locationBloc.isLocationOn,
         locationBloc.lastKnownPosition
       ]),
       builder: (BuildContext context, AsyncSnapshot<List<dynamic>> location) {
-        if(!location.hasData || !location.data?[0]) {
+        if(!location.hasData || (location.hasData && !location.data?[0])) {
           return CheckInButton(disabled: true, isCheckout: false,);
         }
 
@@ -96,8 +146,8 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
             location.data![0] ? ServiceStatus.enabled : ServiceStatus.disabled,
             location.data?[1]
           ],
-          builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-            if(!snapshot.hasData || _disabled(snapshot.data?[0], snapshot.data?[1])) {
+          builder: (BuildContext context, AsyncSnapshot<List<dynamic>> locationStream) {
+            if(!locationStream.hasData || _disabled(locationStream.data?[0], locationStream.data?[1])) {
               return CheckInButton(disabled: true, isCheckout: false);
             }
 
@@ -131,8 +181,13 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
           },
         );
       },
-    )
-    : Container();
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {    
+    return kIsWeb ? _webWidgets() : _androidWidgets();
   }
 }
 

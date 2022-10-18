@@ -9,7 +9,7 @@ class TokenInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     if(options.headers.containsKey("RequireToken")) {
       options.headers.remove("RequireToken");
-      String token = await CredentialGetter().userAccessToken;
+      String token = await CredentialGetter.userAccessToken;
       options.headers['Authorization'] = "Bearer $token";
     }
     handler.next(options);
@@ -19,7 +19,7 @@ class TokenInterceptor extends Interceptor {
   void onError(DioError dioError, ErrorInterceptorHandler handler) async {
     const _statusCodes = [301, 302, 401];
     if(_statusCodes.indexOf(dioError.response!.statusCode!) != -1) { // unauthenticated
-      CredentialGetter().reset();
+      CredentialGetter.reset();
       bool status = await LoginBloc().relogin();
       if(!(status)) {
         navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (route) => false);

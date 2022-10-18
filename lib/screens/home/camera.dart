@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:absensi_ypsim/screens/home/preview_page.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
@@ -33,19 +34,16 @@ class _CameraPageState extends State<CameraPage> {
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    initCamera(widget.cameras![1]);
+    initCamera(widget.cameras![widget.cameras!.length - 1]);
     super.initState();
   }
 
   Future takePicture() async {
-    if (!_cameraController.value.isInitialized) {
-      return null;
-    }
-    if (_cameraController.value.isTakingPicture) {
+    if (!_cameraController.value.isInitialized || _cameraController.value.isTakingPicture) {
       return null;
     }
     try {
-      await _cameraController.setFlashMode(FlashMode.off);
+      if(!kIsWeb) await _cameraController.setFlashMode(FlashMode.off);
       XFile picture = await _cameraController.takePicture();
       final imageBytes = await picture.readAsBytes();
       img.Image? originalImage = img.decodeImage(imageBytes);

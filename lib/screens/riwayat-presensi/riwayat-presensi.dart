@@ -62,7 +62,7 @@ class _RiwayatPresensi extends State<RiwayatPresensi> {
                   flexibleSpace: FlexibleSpaceBar(
                     background: Container(
                         // duration: Duration(milliseconds: 500),
-                        padding: EdgeInsets.only(top: 56 + 24),
+                        padding: EdgeInsets.only(top: 56),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

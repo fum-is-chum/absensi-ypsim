@@ -115,10 +115,11 @@ class MyMapView extends StatefulWidget {
 
 class _MyMapView extends State<MyMapView> {
   WebViewController? webView;
-  late StreamSubscription<ServiceStatus> serviceStatus;
+  StreamSubscription<ServiceStatus>? serviceStatus;
   StreamSubscription<List<dynamic>>? positionStatus;
 
   Future<void> loadMaps(List<dynamic> data) async {
+    locationBloc.updateLoadingStatus(true);
     Position? pos = data[0];
     Map<String, dynamic> target = data[1];
     if(pos != null) {
@@ -135,43 +136,71 @@ class _MyMapView extends State<MyMapView> {
 
   void reload() async {
     if(webView != null) {
-      Future.wait([
-        locationBloc.getPosition,
-        locationBloc.getValidLocation()
-      ]).then((value) async {
-        Map<String, dynamic> targetLocation = value[1] as Map<String, dynamic>;
-        await webView!.loadUrl(
-          Uri.dataFromString(homeMap(
-            value[0] as Position,
-            targetLocation['latitude'],
-            targetLocation['longitude'],
-            targetLocation['radius']
-          ), 
-          mimeType: 'text/html').toString()
-        );
-      });
+      if(!kIsWeb) {
+        locationBloc.updateLoadingStatus(true);
+        Future.wait([
+          locationBloc.getPosition,
+          locationBloc.getValidLocation()
+        ]).then((value) async {
+          Map<String, dynamic> targetLocation = value[1] as Map<String, dynamic>;
+          await webView!.loadUrl(
+            Uri.dataFromString(homeMap(
+              value[0] as Position,
+              targetLocation['latitude'],
+              targetLocation['longitude'],
+              targetLocation['radius']
+            ), 
+            mimeType: 'text/html').toString()
+          );
+          locationBloc.updateLoadingStatus(false);
+        });
+      } else {
+        webView!.reload();
+        setState(() {
+          
+        });
+      }
     }
   }
 
   @override
   void initState() {
     super.initState();
-    serviceStatus = locationBloc.serviceStatusStream$.listen((event) { 
-      setState(() {
-        
+    if(!kIsWeb) {
+      serviceStatus = locationBloc.serviceStatusStream$.listen((event) { 
+        setState(() {
+          
+        });
       });
-    });
-    locationBloc.getPosition.then((value) {
-      positionStatus = CombineLatestStream.list([
-        locationBloc.positionStream$,
-        locationBloc.targetLocation$
-      ]).listen(loadMaps);
-    });
+      locationBloc.getPosition.then((value) {
+        positionStatus = CombineLatestStream.list([
+          locationBloc.positionStream$,
+          locationBloc.targetLocation$
+        ]).listen(loadMaps);
+      });
+    } else {
+      locationBloc.getPosition.then((value) {
+        positionStatus = CombineLatestStream.list([
+          locationBloc.positionStream$,
+          locationBloc.targetLocation$
+        ]).listen((value) {
+          locationBloc.updatePosition(value[0] as Position);
+          if(webView != null) {
+            webView!.loadUrl(Uri.dataFromString(webMap(
+              value[0] as Position,
+              (value[1] as Map<String, dynamic>)['latitude'],
+              (value[1] as Map<String, dynamic>)['longitude'],
+              (value[1] as Map<String, dynamic>)['radius']
+            ), mimeType: 'text/html').toString());
+          }
+        });
+      });
+    }
   }
 
   @override 
   void dispose() {
-    serviceStatus.cancel();
+    if(serviceStatus != null) serviceStatus!.cancel();
     if(positionStatus != null) positionStatus!.cancel();
     super.dispose();
   }
@@ -196,6 +225,100 @@ class _MyMapView extends State<MyMapView> {
 
   }
 
+  Widget _androidWidgets(Map<String, dynamic> targetLocation) {
+    return StreamBuilder(
+      stream: locationBloc.positionStream$,
+      initialData: locationBloc.getCurrentPosition,
+      builder: (BuildContext context, AsyncSnapshot<Position> pos) {
+        if(!pos.hasData || pos.data == null) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                CircularProgressIndicator(),
+                Text('Sedang mengambil lokasi')
+              ],
+            )
+          );
+        }
+        return Stack(
+          children: [
+            WebView(
+              gestureRecognizers: [
+                Factory<OneSequenceGestureRecognizer>(
+                  () => EagerGestureRecognizer(),
+                ),
+              ].toSet(),
+              onWebViewCreated: (WebViewController wv) {
+                webView = wv;
+              },
+              
+              initialUrl: Uri.dataFromString(homeMap(
+                pos.data!,
+                targetLocation['latitude'],
+                targetLocation['longitude'],
+                targetLocation['radius']
+              ), mimeType: 'text/html').toString(),
+              javascriptMode: JavascriptMode.unrestricted,
+            ),
+            StreamBuilder(
+              stream: locationBloc.locationLoading$,
+              initialData: false,
+              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                if(!snapshot.hasData || snapshot.data == true) {
+                  return Center(child: CircularProgressIndicator(),);
+                }
+                return Container();
+              },
+            )
+          ]
+        );
+      },
+    );
+  }
+
+  Widget _webWidgets(Map<String, dynamic> targetLocation) {
+    return StreamBuilder(
+      stream: locationBloc.positionStream$,
+      // initialData: locationBloc.getCurrentPosition,
+      builder: (BuildContext context, AsyncSnapshot<Position> pos) {
+        if(!pos.hasData || pos.data == null) {
+          return Center(child: CircularProgressIndicator());
+        }
+        return Stack(
+          children: [
+            WebView(
+              gestureRecognizers: [
+                Factory<OneSequenceGestureRecognizer>(
+                  () => EagerGestureRecognizer(),
+                ),
+              ].toSet(),
+              initialUrl: Uri.dataFromString(webMap(
+                pos.data!,
+                targetLocation['latitude'],
+                targetLocation['longitude'],
+                targetLocation['radius']
+              ), mimeType: 'text/html').toString(),
+              onWebViewCreated: (WebViewController wv) {
+                webView = wv;
+              },
+            ),
+            StreamBuilder(
+              stream: locationBloc.locationLoading$,
+              initialData: false,
+              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                if(!snapshot.hasData || snapshot.data == true) {
+                  return Center(child: CircularProgressIndicator(),);
+                }
+                return Container();
+              },
+            )
+          ]
+        );
+      },
+    );
+  }
+
   @override 
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -217,53 +340,17 @@ class _MyMapView extends State<MyMapView> {
                     Text('Hidupkan Akses Lokasi')
                   ];
                 }
-                return <Widget>[CircularProgressIndicator()];
+                return <Widget>[
+                  CircularProgressIndicator(),
+                  Text('Sedang mengambil radius absensi')
+                ];
               } ()),
             ),
           );
         }
 
         Map<String, dynamic> targetLocation = snapshot.data![1];
-        return StreamBuilder(
-          stream: locationBloc.positionStream$,
-          initialData: locationBloc.getCurrentPosition,
-          builder: (BuildContext context, AsyncSnapshot<Position> pos) {
-            if(!pos.hasData || (pos.hasData && pos.data == null)) {
-              return Center(child: CircularProgressIndicator());
-            }
-            return Stack(
-              children: [
-                WebView(
-                  gestureRecognizers: [
-                    Factory<OneSequenceGestureRecognizer>(
-                      () => EagerGestureRecognizer(),
-                    ),
-                  ].toSet(),
-                  onWebViewCreated: (WebViewController wv) {
-                    webView = wv;
-                  },
-                  
-                  initialUrl: Uri.dataFromString(homeMap(
-                    pos.data!,
-                    targetLocation['latitude'],
-                    targetLocation['longitude'],
-                    targetLocation['radius']
-                  ), mimeType: 'text/html').toString(),
-                  javascriptMode: JavascriptMode.unrestricted,
-                ),
-                StreamBuilder(
-                  stream: locationBloc.locationLoading$,
-                  builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                    if(!snapshot.hasData || snapshot.data == true) {
-                      return Center(child: CircularProgressIndicator(),);
-                    }
-                    return Container();
-                  },
-                )
-              ]
-            );
-          },
-        );
+        return kIsWeb ? _webWidgets(targetLocation) : _androidWidgets(targetLocation);
       }
     );
   }

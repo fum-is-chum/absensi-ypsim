@@ -11,22 +11,24 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import '/utils/misc/credential-getter.dart';
-
+import 'register_web_webview_stub.dart' 
+  if (dart.library.html) 'register_web_webview.dart';
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  initializeDateFormatting('id_ID', null).then((_) => runApp(MaterialKitPROFlutter()));
+  registerWebViewWebImplementation();
+  initializeDateFormatting('id_ID', null).then((_) => runApp(AbsensiYPSIM()));
 }
 
 Future<String> initialize() async {
-  await CredentialGetter().init();
-  String token = await CredentialGetter().userAccessToken;
+  await CredentialGetter.init();
+  String token = await CredentialGetter.userAccessToken;
   // await new Future.delayed(Duration(seconds: 3));
   return token;
 }
 
-class MaterialKitPROFlutter extends StatelessWidget {
+class AbsensiYPSIM extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

@@ -185,8 +185,8 @@ String homeMap(Position pos1, double lat2, double lng2, int radius) {
             markers[idx].setPosition(coordinate);
             newMarkerbounds.extend(coordinate);
           })
-          targetRadius.setPosition(coordinates[0]);
-          map.fitBounds(markerBounds);
+          targetRadius.setCenter(coordinates[1]);
+          map.fitBounds(newMarkerbounds);
         })
       }
       window.initMap = initMap;
@@ -237,4 +237,141 @@ String detailPresensiMap(double? lat1, double? lng1, double? lat2, double? lng2)
   </body>
 </html>
     """;
+}
+
+
+String webMap(Position pos1, double lat2, double lng2, int radius) {
+  return """
+    <html>
+      <head>
+        <title>Add Map</title>
+        <meta name="referrer" content="no-referrer"> 
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+        <!-- <link rel="stylesheet" type="text/css" href="./style.css" /> -->
+        <!-- <script type="module" src="./index.js"></script> -->
+        <style>
+          *{
+            box-sizing: border-box;
+          }
+          html,body{
+            margin: 0;
+          }
+          #map {
+            height: 100%;
+            /* The height is 400 pixels */
+            width: 100%;
+            /* The width is the width of the web page */
+          }
+        </style>
+      </head>
+      <body>
+        <!--The div element for the map -->
+        <div id="map"></div>
+
+        <!-- 
+        The `defer` attribute causes the callback to execute after the full HTML
+        document has been parsed. For non-blocking uses, avoiding race conditions,
+        and consistent behavior across browsers, consider loading using Promises
+        with https://www.npmjs.com/package/@googlemaps/js-api-loader.
+        -->
+        <script
+          src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"
+          defer
+        ></script>
+        <script>
+        // Initialize and add the map
+          const coordinates = [
+            { lat: ${pos1.latitude}, lng: ${pos1.longitude} },
+            { lat: $lat2, lng: $lng2 }
+          ]; 
+
+          const markers = [];
+          let targetRadius;
+          let map;
+          
+          // const getLocation = () => {
+          //   if(navigator.geolocation){
+          //     // timeout at 60000 milliseconds (60 seconds)
+          //     var options = {timeout:60000};
+          //     navigator.geolocation.getCurrentPosition(updateLocation, errorHandler, options);
+          //   } else{
+          //       alert("Sorry, browser does not support geolocation!");
+          //   }
+          // }
+
+          // const updateLocation = (pos) => {
+          //   alert('update');
+          //   const newMarkerbounds = new google.maps.LatLngBounds();
+          //   coordinates[0].lat = pos.coords.latitude;
+          //   coordinates[0].lng = pos.coords.longitude;
+            
+          //   coordinates.forEach((coordinate, idx) => {
+          //     markers[idx].setPosition(coordinate);
+          //     newMarkerbounds.extend(coordinate);
+          //   })
+          //   targetRadius.setCenter(coordinates[1]);
+          //   map.fitBounds(newMarkerbounds);
+          // }
+
+          // const errorHandler = (err) => {
+          //   if(err.code == 1) {
+          //       // alert("Error: Access is denied!");
+          //   } else if( err.code == 2) {
+          //       // alert("Error: Position is unavailable!");
+          //   }
+          // }
+
+          const initMap = () => {
+            map = new google.maps.Map(document.getElementById("map"));
+            const markerBounds = new google.maps.LatLngBounds();
+
+            coordinates.forEach((coordinate, idx) => {
+              const marker = new google.maps.Marker({
+                position: coordinate,
+                map: map,
+                animation: idx == 0 ? null : google.maps.Animation.DROP,
+                icon: idx == 1 ? null : 
+                  {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: '#4485f4',
+                    fillOpacity: 1,
+                    strokeColor: '#FFF',
+                    strokeOpacity: 0.9,
+                    strokeWeight: 2,
+                    scale: 7
+                  }
+              });
+
+              markerBounds.extend(coordinate);
+              markers.push(marker);
+            })
+
+            targetRadius = new google.maps.Circle({
+              map: map,
+              radius: 100,
+              strokeColor: '#000000',
+              strokeOpacity: 0.5,
+              strokeWeight: 2,
+              fillColor: '#000000',
+              fillOpacity: 0.2,
+              center: coordinates[1]
+            })
+
+            map.fitBounds(markerBounds);
+
+            // lacak perubahan posisi
+            // setInterval(() => {
+            //   getLocation();
+            // }, 8000)
+          }
+          window.initMap = initMap;
+          """ + bypass() + """
+        </script>
+      </body>
+    </html>
+  """;
 }

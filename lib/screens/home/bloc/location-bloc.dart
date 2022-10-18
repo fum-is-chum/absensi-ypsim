@@ -9,7 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
 
 class LocationBloc {
-  late LocationSettings _locationSettings;
+  LocationSettings? _locationSettings;
   Position? _currentPos;
   bool? serviceEnabled;
   LocationPermission? permission;
@@ -38,11 +38,10 @@ class LocationBloc {
   Stream<bool> get fetchingPostion$ => _fetchingPosition.asBroadcastStream();
   Stream<bool> get locationLoading$ => _locationLoading.asBroadcastStream();
   Stream<Map<String, dynamic>> get targetLocation$ => _targetLocation.asBroadcastStream();
-  Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: _locationSettings);
+  Stream<Position> get positionStream$ => Geolocator.getPositionStream(locationSettings: _locationSettings ?? setLocationSettings());
   Stream<ServiceStatus> get serviceStatusStream$ => Geolocator.getServiceStatusStream().asBroadcastStream();
 
-  /// start - Location Service
-  void initLocation() async {
+  LocationSettings setLocationSettings() {
     if (defaultTargetPlatform == TargetPlatform.android) {
       _locationSettings = AndroidSettings(
         accuracy: LocationAccuracy.best,
@@ -61,18 +60,22 @@ class LocationBloc {
       _locationSettings = AppleSettings(
         accuracy: LocationAccuracy.bestForNavigation,
         activityType: ActivityType.fitness,
-        distanceFilter: 50,
+        distanceFilter: 10,
         pauseLocationUpdatesAutomatically: true,
         // Only set to true if our app will be started up in the background.
         showBackgroundLocationIndicator: false,
       );
     } else {
         _locationSettings = LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 50,
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 10,
       );
     }
-
+    return _locationSettings!;
+  }
+  /// start - Location Service
+  void initLocation() async {
+    setLocationSettings();
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled!) {
       permission = await Geolocator.requestPermission();
@@ -105,34 +108,36 @@ class LocationBloc {
     if(_fetchingPosition.value) return null;
     _fetchingPosition.sink.add(true);
     // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled!) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the 
-      // App to enable the location services.
-      // return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale 
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        Geolocator.openLocationSettings();
-        // return Future.error('Location permissions are denied');
+    if(!kIsWeb) {
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled!) {
+        // Location services are not enabled don't continue
+        // accessing the position and request users of the 
+        // App to enable the location services.
+        // return Future.error('Location services are disabled.');
       }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          // Permissions are denied, next time you could try
+          // requesting permissions again (this is also where
+          // Android's shouldShowRequestPermissionRationale 
+          // returned true. According to Android guidelines
+          // your App should show an explanatory UI now.
+          Geolocator.openLocationSettings();
+          // return Future.error('Location permissions are denied');
+        }
+      }
+      
+      if (permission == LocationPermission.deniedForever) {
+        // Permissions are denied forever, handle appropriately.
+        Geolocator.openAppSettings();
+        // return Future.error(
+        //   'Location permissions are permanently denied, we cannot request permissions.');
+      } 
     }
-    
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      Geolocator.openAppSettings();
-      // return Future.error(
-      //   'Location permissions are permanently denied, we cannot request permissions.');
-    } 
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
