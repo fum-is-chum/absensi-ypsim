@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -10,15 +11,15 @@ class CameraBloc {
   factory CameraBloc() => _shared;
 
   String snapTime = '';
-  late BehaviorSubject<File?> _imageFile = BehaviorSubject<File?>.seeded(null);
+  late BehaviorSubject<dynamic> _imageFile = BehaviorSubject<dynamic>.seeded(null);
 
   
-  Stream<File?> get imageStream => _imageFile.stream;
+  Stream<dynamic> get imageStream => _imageFile.stream;
   void reset() {
     _imageFile.sink.add(null);
   }
   
-  File? get imageFile => _imageFile.value;
+  dynamic get imageFile => _imageFile.value;
 
   // Future openCamera() async {
   //   try {
@@ -45,7 +46,8 @@ class CameraBloc {
       //   imageQuality: 50,
       //   preferredCameraDevice: CameraDevice.front
       // );
-      this._imageFile.sink.add(File(img.path));
+      // this._imageFile.sink.add(File(img.path));
+      !kIsWeb ? this._imageFile.sink.add(File(img.path)) : this._imageFile.sink.add(img);
       // snapTime = formatTimeOnly(DateTime.now()) + ' WIB';
       // final File imageTemp = File();
       // setState(() => this.image = imageTemp);

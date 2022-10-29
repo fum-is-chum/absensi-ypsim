@@ -49,19 +49,29 @@ class _CameraPageState extends State<CameraPage> {
       img.Image? originalImage = img.decodeImage(imageBytes);
       img.Image fixedImage = img.flipHorizontal(originalImage!);
 
-      File file = File(picture.path);
+      if(!kIsWeb) {
+        File file = File(picture.path);
 
-      XFile fixedFile = new XFile((await file.writeAsBytes(
-        img.encodeJpg(fixedImage),
-        flush: true,
-      )).path);
-
+        XFile fixedFile = new XFile((await file.writeAsBytes(
+          img.encodeJpg(fixedImage),
+          flush: true,
+        )).path);
+        bool result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PreviewPage(
+                    picture: fixedFile,
+                  )));
+        Navigator.pop(context, true);
+        return result;
+      } 
       bool result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PreviewPage(
-                  picture: fixedFile,
-                )));
+        context,
+        MaterialPageRoute(
+          builder: (context) => PreviewPage(
+                picture: picture,
+              )));
+      Navigator.pop(context, true);
       return result;
     } on CameraException catch (e) {
       debugPrint('Error occured while taking picture: $e');
@@ -151,7 +161,7 @@ class _CameraPageState extends State<CameraPage> {
                       ),
                       child: IconButton(
                         padding: EdgeInsets.zero,
-                        iconSize: 30,
+                        iconSize: 24,
                         icon: Icon(
                           CupertinoIcons.xmark,
                           color: Colors.white
@@ -171,7 +181,7 @@ class _CameraPageState extends State<CameraPage> {
                       ),
                       child: IconButton(
                         padding: EdgeInsets.zero,
-                        iconSize: 30,
+                        iconSize: 24,
                         icon: Icon(
                           _isRearCameraSelected
                               ? CupertinoIcons.switch_camera

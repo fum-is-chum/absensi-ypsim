@@ -77,7 +77,7 @@ packages:
       name: camera_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0"
+    version: "0.3.0+1"
   carousel_slider:
     dependency: "direct main"
     description:

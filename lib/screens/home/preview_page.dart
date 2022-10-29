@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:absensi_ypsim/screens/home/bloc/camera-bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PreviewPage extends StatelessWidget {
-  const PreviewPage({Key? key, required this.picture}) : super(key: key);
-
   final XFile picture;
+  const PreviewPage({Key? key, required this.picture}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,9 @@ class PreviewPage extends StatelessWidget {
               Container(
                 height: MediaQuery.of(context).size.height,
                 width: double.infinity,
-                child: Image.file(File(picture.path), fit: BoxFit.cover),
+                child: !kIsWeb ? Image.file(File(picture.path), fit: BoxFit.cover) :
+                        Image.network(picture.path, fit: BoxFit.cover)
+                ,
               ),
               Align(
               alignment: Alignment.bottomCenter,
@@ -44,7 +46,7 @@ class PreviewPage extends StatelessWidget {
                       ),
                       child: IconButton(
                         padding: EdgeInsets.zero,
-                        iconSize: 30,
+                        iconSize: 24,
                         icon: Icon(
                           CupertinoIcons.xmark,
                           color: Colors.white
@@ -61,14 +63,14 @@ class PreviewPage extends StatelessWidget {
                       ),
                       child: IconButton(
                         padding: EdgeInsets.zero,
-                        iconSize: 30,
+                        iconSize: 24,
                         icon: Icon(
                           CupertinoIcons.checkmark_alt,
                           color: Colors.white
                         ),
                         onPressed: () {
                           CameraBloc().pickImage(picture);
-                          Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => route.isFirst);
+                          Navigator.pop(context, true);
                         },
                       ),
                     ),

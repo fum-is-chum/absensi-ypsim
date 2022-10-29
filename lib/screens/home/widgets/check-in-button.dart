@@ -83,6 +83,9 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
           return CheckInButton(disabled: true, isCheckout: false,);
         }
 
+        // return CheckInButton(disabled: false, isCheckout: false,);
+
+        
         return StreamBuilder<List<dynamic>>(
           stream: CombineLatestStream.list([
             locationBloc.positionStream$

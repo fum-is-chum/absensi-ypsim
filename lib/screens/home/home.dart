@@ -43,9 +43,9 @@ class _HomeState extends State<Home> {
 
   @override
   void dispose() {
-    timeBloc.dispose();
     // homeBloc.dispose();
     super.dispose();
+    timeBloc.dispose();
   }
 
   @override

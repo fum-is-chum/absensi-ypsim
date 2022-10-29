@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:absensi_ypsim/models/api-response.dart';
 import 'package:absensi_ypsim/screens/home/models/check-in.dart';
@@ -6,8 +7,10 @@ import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
 import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
@@ -62,7 +65,7 @@ class HomeBloc {
     required BuildContext context,
     required Position pos,
     required String dateTime,
-    required File photo,
+    required dynamic photo,
   }) async {
     sp.show();
     try {
@@ -80,7 +83,7 @@ class HomeBloc {
     required BuildContext context,
     required Position pos,
     required String dateTime,
-    required File photo,
+    required dynamic photo,
   }) async {
     sp.show();
     try {
@@ -89,7 +92,7 @@ class HomeBloc {
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(e);;
+      await handleError(e);
       return false;
     }
    }
@@ -97,7 +100,7 @@ class HomeBloc {
   Future<Response> _checkIn({
     required Position pos,
     required String dateTime,
-    required File photo
+    required dynamic photo
   }) async {
     CheckInOutModel checkInModel = CheckInOutModel();
     checkInModel.employee_id = await CredentialGetter().userId;
@@ -105,13 +108,26 @@ class HomeBloc {
     checkInModel.longitude = pos.longitude;
     checkInModel.date = dateTime.substring(0, 10);
     checkInModel.time = dateTime.substring(11, 19);
-    var formData = FormData.fromMap({
-      ...checkInModel.toJson(),
-      'photo': MultipartFile.fromBytes(
-                photo.readAsBytesSync(),
-                filename: basename(photo.path)
-      ),
-    });
+    FormData formData;
+
+    if(!kIsWeb) {
+      formData = FormData.fromMap({
+        ...checkInModel.toJson(),
+        'photo': MultipartFile.fromBytes(
+                  photo.readAsBytesSync(),
+                  filename: basename(photo.path)
+        ),
+      });
+    } else {
+      Uint8List bytes = await (photo as XFile).readAsBytes();
+      formData = FormData.fromMap({
+        ...checkInModel.toJson(),
+        'photo': MultipartFile.fromBytes(
+                  bytes,
+                  filename: basename(photo.path)
+        ),
+      });
+    }
 
     return DioClient().dioWithResponseType(ResponseType.plain).post(
       '/attendance/checkIn',
@@ -131,7 +147,7 @@ class HomeBloc {
   Future<Response> _checkOut({
     required Position pos,
     required String dateTime,
-    required File photo
+    required dynamic photo
   }) async {
     CheckInOutModel checkOutModel = CheckInOutModel();
     checkOutModel.employee_id = await CredentialGetter().userId;
@@ -139,14 +155,26 @@ class HomeBloc {
     checkOutModel.longitude = pos.longitude;
     checkOutModel.date = dateTime.substring(0, 10);
     checkOutModel.time = dateTime.substring(11, 19);
-    
-    var formData = FormData.fromMap({
-      ...checkOutModel.toJson(),
-      'photo': MultipartFile.fromBytes(
-                photo.readAsBytesSync(),
-                filename: basename(photo.path)
-      ),
-    });
+    FormData formData;
+
+    if(!kIsWeb) {
+      formData = FormData.fromMap({
+        ...checkOutModel.toJson(),
+        'photo': MultipartFile.fromBytes(
+                  photo.readAsBytesSync(),
+                  filename: basename(photo.path)
+        ),
+      });
+    } else {
+      Uint8List bytes = await (photo as XFile).readAsBytes();
+      formData = FormData.fromMap({
+        ...checkOutModel.toJson(),
+        'photo': MultipartFile.fromBytes(
+                  bytes,
+                  filename: basename(photo.path)
+        ),
+      });
+    }
 
     return DioClient().dioWithResponseType(ResponseType.plain).post(
       '/attendance/checkOut',

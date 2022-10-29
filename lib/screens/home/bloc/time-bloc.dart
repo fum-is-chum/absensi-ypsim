@@ -35,7 +35,7 @@ class TimeBloc {
   
   String get currentDate => _date.value;
   void updateDate(String date) {
-    _date.sink.add(date);
+    if(!_date.isClosed) _date.sink.add(date);
   }
 
   triggerReload() {
