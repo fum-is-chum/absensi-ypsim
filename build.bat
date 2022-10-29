@@ -1,1 +1,1 @@
-flutter clean && flutter build apk --release --split-per-abi -v && adb install -r build\app\outputs\flutter-apk\app-arm64-v8a-release.apk && copy /Y build\app\outputs\flutter-apk\app.apk .\
+flutter build apk --release --split-per-abi -v && adb install -r build\app\outputs\flutter-apk\app-arm64-v8a-release.apk && copy /Y build\app\outputs\flutter-apk\app.apk .\

@@ -5,6 +5,7 @@ import 'package:absensi_ypsim/utils/services/hide_keyboard.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgets/drawer.dart';
@@ -280,11 +281,13 @@ class LampiranField extends StatefulWidget {
 }
 
 class _LampiranField extends State<LampiranField> {
-  File? pickedFile;
+  dynamic pickedFile;
+  String? fileName = null;
   String? error;
 
   void reset() {
     pickedFile = null;
+    fileName = null;
     setState(() {
       
     });
@@ -361,7 +364,8 @@ class _LampiranField extends State<LampiranField> {
                             return;
                           }
                           error = null;
-                          pickedFile = File(result.files.single.path!);
+                          pickedFile = !kIsWeb ? File(result.files.single.path!) : result.files.single.bytes;
+                          fileName = result.files.single.name;
                           _pengajuanIzinBloc.model.file = pickedFile;
                           // _pengajuanIzinBloc.setValue('file')
                           setState(() {
@@ -378,7 +382,7 @@ class _LampiranField extends State<LampiranField> {
                     ),
                     const SizedBox(width: 5,),
                     Expanded(
-                      child: Text(pickedFile != null? pickedFile!.path.split('/').last : _hasFile ? 'Loading...' : ''),
+                      child: Text(fileName != null? fileName! : _hasFile ? 'Loading...' : '')
                     )
                   ],
                 ),

@@ -9,6 +9,7 @@ import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:absensi_ypsim/widgets/spinner.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
@@ -88,8 +89,8 @@ class PengajuanIzinBloc {
       ..._pengajuanIzinModel.toJson(),
       'file': _pengajuanIzinModel.file != null ?
               MultipartFile.fromBytes(
-              (_pengajuanIzinModel.file as File).readAsBytesSync(),
-              filename: basename((_pengajuanIzinModel.file as File).path)) 
+              !kIsWeb ? (_pengajuanIzinModel.file as File).readAsBytesSync() : _pengajuanIzinModel.file,
+              filename: 'izin') 
               : null
     });
     
@@ -111,12 +112,12 @@ class PengajuanIzinBloc {
     int? permissionId = _pengajuanIzinModel.id;
     // _pengajuanIzinModel.remove('file');
     // var formData = FormData.fromMap(_pengajuanIzinModel);
-    var formData = FormData.fromMap({
+    FormData formData = FormData.fromMap({
       ..._pengajuanIzinModel.toJson(),
       'file': _pengajuanIzinModel.file != null ?
               MultipartFile.fromBytes(
-              (_pengajuanIzinModel.file as File).readAsBytesSync(),
-              filename: basename((_pengajuanIzinModel.file as File).path)) 
+              !kIsWeb ? (_pengajuanIzinModel.file as File).readAsBytesSync() : _pengajuanIzinModel.file,
+              filename: 'izin') 
               : null
     });
 

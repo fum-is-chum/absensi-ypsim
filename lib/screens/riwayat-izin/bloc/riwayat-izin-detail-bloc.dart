@@ -26,7 +26,7 @@ class RiwayatIzinDetailBloc {
   Future<PengajuanIzinModel?> getDetail(BuildContext? context, int permission_id) async {
     if(context != null) sp.show();
     try {
-      PengajuanIzinModel? data = await detail(permission_id);
+      PengajuanIzinModel? data = await _getDetail(permission_id);
       if(context != null) sp.hide();
       return data;
     } catch (e) {
@@ -37,7 +37,7 @@ class RiwayatIzinDetailBloc {
   }
 
 
-  Future<PengajuanIzinModel?> detail(int permission_id) async {
+  Future<PengajuanIzinModel?> _getDetail(int permission_id) async {
     try {
       Response resp = await DioClient().dio.get(
         "/permission/detail/$permission_id",

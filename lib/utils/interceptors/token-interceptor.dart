@@ -18,7 +18,7 @@ class TokenInterceptor extends Interceptor {
   @override
   void onError(DioError dioError, ErrorInterceptorHandler handler) async {
     const _statusCodes = [301, 302, 401];
-    if(_statusCodes.indexOf(dioError.response!.statusCode!) != -1) { // unauthenticated
+    if(dioError.response != null && _statusCodes.indexOf(dioError.response!.statusCode!) != -1) { // unauthenticated
       CredentialGetter.reset();
       bool status = await LoginBloc().relogin();
       if(!(status)) {
