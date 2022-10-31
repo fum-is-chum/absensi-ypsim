@@ -234,6 +234,7 @@ class _MyMapView extends State<MyMapView> {
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(),
                 Text('Sedang mengambil lokasi')
