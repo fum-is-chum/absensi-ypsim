@@ -19,7 +19,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Environment.init(
-    flavor: BuildFlavor.production,
+    flavor: BuildFlavor.staging,
   );
   registerWebViewWebImplementation();
   initializeDateFormatting('id_ID', null).then((_) => runApp(AbsensiYPSIM()));
