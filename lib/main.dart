@@ -1,4 +1,5 @@
 // screens
+import 'package:absensi_ypsim/env.dart';
 import 'package:absensi_ypsim/screens/home/home.dart';
 import 'package:absensi_ypsim/screens/login-register-verification/screen.dart';
 import 'package:absensi_ypsim/screens/pengajuan-izin/pengajuan-izin.dart';
@@ -17,6 +18,9 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  Environment.init(
+    flavor: BuildFlavor.staging,
+  );
   registerWebViewWebImplementation();
   initializeDateFormatting('id_ID', null).then((_) => runApp(AbsensiYPSIM()));
 }

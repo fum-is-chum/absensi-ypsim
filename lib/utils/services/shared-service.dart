@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:absensi_ypsim/env.dart';
 import 'package:absensi_ypsim/main.dart';
 import 'package:absensi_ypsim/models/api-response.dart';
 import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
@@ -58,7 +59,7 @@ Future<File> createFileOfPdfUrl(BuildContext? context, String url) async {
   // print("Start download file from internet!");
   try {
     final filename = url.substring(url.lastIndexOf("/") + 1);
-    var bytes = (await DioClient().dioWithResponseType(ResponseType.bytes, baseUrl: 'https://presensi.ypsimlibrary.com').get(url)).data;
+    var bytes = (await DioClient().dioWithResponseType(ResponseType.bytes, baseUrl: '${Environment.baseUrl}').get(url)).data;
     var dir = await getApplicationDocumentsDirectory();
     // print("Download files");
     // print("${dir.path}/$filename");

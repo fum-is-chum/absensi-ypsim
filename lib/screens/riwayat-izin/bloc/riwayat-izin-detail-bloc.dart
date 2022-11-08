@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:absensi_ypsim/env.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
@@ -13,7 +14,7 @@ class RiwayatIzinDetailBloc {
   Spinner sp = Spinner();
 
   launchURL(String file) async {
-    Uri url = Uri.parse("https://presensi.ypsimlibrary.com$file");
+    Uri url = Uri.parse("${Environment.baseUrl}$file");
     if (await canLaunchUrl(url)) {
       await launchUrl(url,
         mode: LaunchMode.externalApplication

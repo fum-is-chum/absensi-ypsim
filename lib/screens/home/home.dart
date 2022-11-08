@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:absensi_ypsim/env.dart';
 import 'package:absensi_ypsim/screens/home/bloc/camera-bloc.dart';
 import 'package:absensi_ypsim/screens/home/bloc/home-bloc.dart';
 import 'package:absensi_ypsim/screens/home/bloc/time-bloc.dart';
@@ -168,9 +169,9 @@ class _ImageRow extends State<ImageRow> {
     if(data['personal_calender'] == null) return "assets/img/no-image.jpg";
     return isCheckIn
       ? data['personal_calender']['photo_check_in'] != null ? 
-        "https://presensi.ypsimlibrary.com${data['personal_calender']['photo_check_in']}" : "assets/img/no-image.jpg" 
+        "${Environment.baseUrl}${data['personal_calender']['photo_check_in']}" : "assets/img/no-image.jpg" 
       : data['personal_calender']['photo_check_out'] != null ? 
-        "https://presensi.ypsimlibrary.com${data['personal_calender']['photo_check_out']}" : "assets/img/no-image.jpg";
+        "${Environment.baseUrl}${data['personal_calender']['photo_check_out']}" : "assets/img/no-image.jpg";
   }
 
   @override

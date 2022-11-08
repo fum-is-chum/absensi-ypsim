@@ -1,3 +1,4 @@
+import 'package:absensi_ypsim/env.dart';
 import 'package:absensi_ypsim/screens/home/home.dart';
 import 'package:absensi_ypsim/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
@@ -96,7 +97,7 @@ class ImageRow extends StatelessWidget {
             CardSmall(
               cta: item.check_in,
               title: "IN",
-              img:  item.photo_check_in != null ? "https://presensi.ypsimlibrary.com${item.photo_check_in}" : 'assets/img/no-image.jpg',
+              img:  item.photo_check_in != null ? "${Environment.baseUrl}${item.photo_check_in}" : 'assets/img/no-image.jpg',
               tap: () {
               }
             ),
@@ -104,7 +105,7 @@ class ImageRow extends StatelessWidget {
             CardSmall(
               cta: item.check_out,
               title: "OUT",
-              img: item.photo_check_out != null ? "https://presensi.ypsimlibrary.com${item.photo_check_out}" : 'assets/img/no-image.jpg',
+              img: item.photo_check_out != null ? "${Environment.baseUrl}${item.photo_check_out}" : 'assets/img/no-image.jpg',
               // img: 'assets/img/no-image.jpg',
               tap: () {
                 // Navigator.pushReplacementNamed(context, '/pro');

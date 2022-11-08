@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:absensi_ypsim/env.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -147,7 +148,7 @@ class RiwayatIzinDetail extends StatelessWidget {
                 SizedBox(height: 16,),
                 (() {
                   if(item.file != null) {
-                    return LampiranView(url: "https://presensi.ypsimlibrary.com${item.file!}");
+                    return LampiranView(url: "${Environment.baseUrl}${item.file!}");
                   }
                   return Container();
                 } ())
