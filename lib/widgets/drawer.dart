@@ -2,7 +2,7 @@ import 'package:absensi_ypsim/screens/login-register-verification/screens/login/
 import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login-result.dart';
 import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
 // import 'package:url_launcher/url_launcher.dart';
-
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:absensi_ypsim/widgets/drawer-tile.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +13,8 @@ class MaterialDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
+    return PointerInterceptor(
+        child: Drawer(
       child: Container(
         child: Column(children: [
           SizedBox(
@@ -44,7 +45,8 @@ class MaterialDrawer extends StatelessWidget {
                     icon: Icons.post_add,
                     onTap: () {
                       if (currentPage != "Pengajuan-Izin")
-                        Navigator.pushReplacementNamed(context, '/pengajuan-izin');
+                        Navigator.pushReplacementNamed(
+                            context, '/pengajuan-izin');
                     },
                     iconColor: Colors.black,
                     title: "Pengajuan Izin",
@@ -53,11 +55,13 @@ class MaterialDrawer extends StatelessWidget {
                     icon: Icons.timelapse,
                     onTap: () {
                       if (currentPage != "Riwayat Presensi")
-                        Navigator.pushReplacementNamed(context, '/riwayat-presensi');
+                        Navigator.pushReplacementNamed(
+                            context, '/riwayat-presensi');
                     },
                     iconColor: Colors.black,
                     title: "Riwayat Presensi",
-                    isSelected: currentPage == "Riwayat Presensi" ? true : false),
+                    isSelected:
+                        currentPage == "Riwayat Presensi" ? true : false),
                 SizedBox(height: 8),
                 DrawerTile(
                     icon: Icons.timelapse,
@@ -83,8 +87,7 @@ class MaterialDrawer extends StatelessWidget {
                     await LoginBloc().logoutUser();
                     CredentialGetter.reset();
                     Navigator.pushNamedAndRemoveUntil(
-                      context, '/login', (Route<dynamic> route) => false
-                    );
+                        context, '/login', (Route<dynamic> route) => false);
                   }
                 },
                 iconColor: Colors.black,
@@ -93,19 +96,17 @@ class MaterialDrawer extends StatelessWidget {
           ),
         ]),
       ),
-    );
+    ));
   }
 }
 
 class UserInfo extends StatefulWidget {
-
   const UserInfo({Key? key}) : super(key: key);
-  @override 
+  @override
   State<UserInfo> createState() => _UserInfo();
 }
 
 class _UserInfo extends State<UserInfo> {
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -115,38 +116,34 @@ class _UserInfo extends State<UserInfo> {
         Center(
           child: CircleAvatar(
             radius: 70,
-            backgroundImage:
-                AssetImage("assets/img/logo-ypsim.jpeg"),
+            backgroundImage: AssetImage("assets/img/logo-ypsim.jpeg"),
           ),
         ),
         FutureBuilder<LoginData>(
-          future: CredentialGetter().userData,
-          builder: (BuildContext context, AsyncSnapshot<LoginData> snapshot) {
-            if(!snapshot.hasData) {
-              return Container();
-            }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
-                  child: Text(
-                    snapshot.data!.nama!,
-                    style: TextStyle(color: Colors.black87, fontSize: 21)
+            future: CredentialGetter().userData,
+            builder: (BuildContext context, AsyncSnapshot<LoginData> snapshot) {
+              if (!snapshot.hasData) {
+                return Container();
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
+                    child: Text(snapshot.data!.nama!,
+                        style: TextStyle(color: Colors.black87, fontSize: 21)),
                   ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      snapshot.data!.nik!,
-                      style: TextStyle(color: Colors.black54, fontSize: 16),
-                    ),
-                  ],
-                )
-              ],
-            );
-          }
-        ),
+                  Row(
+                    children: [
+                      Text(
+                        snapshot.data!.nik!,
+                        style: TextStyle(color: Colors.black54, fontSize: 16),
+                      ),
+                    ],
+                  )
+                ],
+              );
+            }),
       ],
     );
   }
