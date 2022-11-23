@@ -75,7 +75,7 @@ class RegisterBloc {
   }
 
   Future<Response> register() {
-    return DioClient().dio.post('/register', data: model);
+    return DioClient.dio.post('/register', data: model);
   }
 
   void dispose() {

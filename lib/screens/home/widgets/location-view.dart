@@ -313,7 +313,9 @@ class _MyMapView extends State<MyMapView> {
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: Future.wait(
-            [locationBloc.isLocationOn, locationBloc.getValidLocation()]),
+          [locationBloc.isLocationOn,
+          locationBloc.getValidLocation()
+        ]),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           int status = _mapViewValid(snapshot.data);
           if (!snapshot.hasData || status != 1) {

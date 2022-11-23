@@ -18,7 +18,7 @@ class HistoryPresensiItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: InkWell(
         onTap: () => tap(),
         child: Card(

@@ -94,7 +94,7 @@ class PengajuanIzinBloc {
               : null
     });
     
-    return DioClient().dioWithResponseType(ResponseType.plain).post(
+    return DioClient.dioWithResponseType(ResponseType.plain).post(
       '/permission/$userId',
       data: formData,
       options: Options(
@@ -121,7 +121,7 @@ class PengajuanIzinBloc {
               : null
     });
 
-    return DioClient().dioWithResponseType(ResponseType.plain).post(
+    return DioClient.dioWithResponseType(ResponseType.plain).post(
       '/permission/update/$permissionId',
       data: formData,
       options: Options(

@@ -47,6 +47,7 @@ class _HistoryIzin extends State<RiwayatIzin> {
             slivers: <Widget>[
               SliverAppBar(
                 forceElevated: true,
+                elevation: 2,
                 title: Text("Riwayat Izin",
                   style: TextStyle(color: Colors.black)
                 ),
@@ -55,12 +56,12 @@ class _HistoryIzin extends State<RiwayatIzin> {
                 pinned: true,
                 // floating: true,
                 // snap: false,
-                expandedHeight: 144,
-                collapsedHeight: 144,
+                expandedHeight: 128,
+                collapsedHeight: 128,
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
                     // duration: Duration(milliseconds: 500),
-                    padding: EdgeInsets.only(top: 56),
+                    padding: EdgeInsets.only(top: 72),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -78,11 +79,8 @@ class _HistoryIzin extends State<RiwayatIzin> {
                   ),
                 ),
               ),
-              SliverPadding(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-                sliver: SliverToBoxAdapter(
-                  child: RiwayatIzinList()
-                )
+              SliverToBoxAdapter(
+                child: RiwayatIzinList()
               )
             ],
           ),
@@ -177,7 +175,7 @@ class _ListWidget extends State<RiwayatIzinList> {
     return Container(
       // padding: EdgeInsets.only(bottom: 24),
       width: double.infinity,
-      height: MediaQuery.of(context).size.height - 144 - 56,
+      height: MediaQuery.of(context).size.height - 128 - 36,
       child: RefreshIndicator(
         onRefresh: () {
           return _getData();
@@ -192,8 +190,10 @@ class _ListWidget extends State<RiwayatIzinList> {
               return CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
-                    child: Center(
-                      child: Text(err!,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text(
+                        err!,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -202,6 +202,7 @@ class _ListWidget extends State<RiwayatIzinList> {
               );
             
             return CustomScrollView(
+              physics: const BouncingScrollPhysics(),
               slivers: [
                 SliverAnimatedList(
                   key: _listKey,

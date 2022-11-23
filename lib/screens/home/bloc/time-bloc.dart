@@ -54,7 +54,7 @@ class TimeBloc {
   }
 
   Future<Response> get() async {
-    return DioClient().dio.get(
+    return DioClient.dio.get(
       "/get-time",
       options: Options(headers: {'RequireToken': ''}));
   }

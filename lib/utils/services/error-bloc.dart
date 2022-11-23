@@ -5,11 +5,11 @@ class ErrorBloc {
   static final ErrorBloc _shared = ErrorBloc._sharedInstance();
   factory ErrorBloc() => _shared;
 
-  BehaviorSubject<bool> _tokenExpired = BehaviorSubject.seeded(false);
+  static BehaviorSubject<bool> _tokenExpired = BehaviorSubject.seeded(false);
 
-  void updateState(bool value) {
+  static void updateState(bool value) {
     _tokenExpired.sink.add(value);
   }
 
-  bool get isTokenExpired => _tokenExpired.value;
+  static bool get isTokenExpired => _tokenExpired.value;
 }
