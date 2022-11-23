@@ -88,11 +88,11 @@ class LoginBloc {
   }
 
   Future<Response> login() {
-    return DioClient().dio.post('/login', data: model);
+    return DioClient.dio.post('/login', data: model);
   }
 
   Future<Response> logout() {
-    return DioClient().dio.post(
+    return DioClient.dio.post(
       '/logout',
       data: null,
       options: Options(

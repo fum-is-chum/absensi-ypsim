@@ -49,7 +49,7 @@ class RiwayatIzinBloc {
 
   Future<Response> get() async {
     int id = await CredentialGetter().userId;
-    return DioClient().dio.get("/permission/$id?start_date=${_filter.startDate}&end_date=${_filter.endDate}",
+    return DioClient.dio.get("/permission/$id?start_date=${_filter.startDate}&end_date=${_filter.endDate}",
       options:  Options(
         headers: {
           'RequireToken': ''

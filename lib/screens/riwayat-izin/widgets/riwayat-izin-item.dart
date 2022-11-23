@@ -22,7 +22,7 @@ class RiwayatIzinItem extends StatelessWidget {
     return InkWell(
       onTap: () => tap(),
       child: Card(
-        margin: EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),

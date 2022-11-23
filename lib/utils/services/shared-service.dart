@@ -25,7 +25,7 @@ Future<String> handleError(dynamic e) async {
   String error = "";
   if(e is DioError) {
     if(e.response != null && e.response!.statusCode == 301 || e.response!.statusCode == 401) {
-      ErrorBloc().updateState(true);
+      ErrorBloc.updateState(true);
     }
     if(e.response != null && e.response!.data != null) {
       try {
@@ -41,7 +41,7 @@ Future<String> handleError(dynamic e) async {
   } else {
     error = e.toString();
   }
-  if(!ErrorBloc().isTokenExpired) {
+  if(!ErrorBloc.isTokenExpired) {
     await ArtSweetAlert.show(
       context: navigatorKey.currentContext!,
       artDialogArgs: ArtDialogArgs(
@@ -59,7 +59,7 @@ Future<File> createFileOfPdfUrl(BuildContext? context, String url) async {
   // print("Start download file from internet!");
   try {
     final filename = url.substring(url.lastIndexOf("/") + 1);
-    var bytes = (await DioClient().dioWithResponseType(ResponseType.bytes, baseUrl: '${Environment.baseUrl}').get(url)).data;
+    var bytes = (await DioClient.dioWithResponseType(ResponseType.bytes, baseUrl: '${Environment.baseUrl}').get(url)).data;
     var dir = await getApplicationDocumentsDirectory();
     // print("Download files");
     // print("${dir.path}/$filename");

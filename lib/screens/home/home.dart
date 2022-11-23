@@ -102,6 +102,7 @@ class _HomeState extends State<Home> {
                   homeBloc.getAttendanceStatus(date: timeBloc.currentDate),
                   locationBloc.getValidLocation()
                 ]);
+                timeBloc.triggerReload();
               },
               child: SingleChildScrollView(
                 primary: false,

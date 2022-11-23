@@ -40,7 +40,7 @@ class RiwayatIzinDetailBloc {
 
   Future<PengajuanIzinModel?> _getDetail(int permission_id) async {
     try {
-      Response resp = await DioClient().dio.get(
+      Response resp = await DioClient.dio.get(
         "/permission/detail/$permission_id",
         options: Options(
           headers: {

@@ -10,11 +10,14 @@ class CredentialGetter {
   static final CredentialGetter _shared = CredentialGetter._sharedInstance();
   factory CredentialGetter() => _shared;
   static SharedPreferences? _sharedPref;
+
   static LoginResult? _inMemoryUserData;
   static Map<String, dynamic> _loginCredential = {};
 
   static Future<void> init() async {
-    _sharedPref = await SharedPreferences.getInstance();
+    if (_sharedPref == null) {
+      _sharedPref = await SharedPreferences.getInstance();
+    }
   }
 
   static get sharedPref => _sharedPref;

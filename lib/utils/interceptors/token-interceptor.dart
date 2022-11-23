@@ -4,7 +4,10 @@ import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
 import 'package:absensi_ypsim/utils/services/error-bloc.dart';
 import 'package:dio/dio.dart';
 
-class TokenInterceptor extends Interceptor {
+import 'dio-interceptor.dart';
+
+class TokenInterceptor extends QueuedInterceptorsWrapper {
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     if(options.headers.containsKey("RequireToken")) {
@@ -12,21 +15,31 @@ class TokenInterceptor extends Interceptor {
       String token = await CredentialGetter.userAccessToken;
       options.headers['Authorization'] = "Bearer $token";
     }
-    handler.next(options);
+    return handler.next(options);
   }
 
   @override
   void onError(DioError dioError, ErrorInterceptorHandler handler) async {
     const _statusCodes = [301, 302, 401];
-    if(dioError.response != null && _statusCodes.indexOf(dioError.response!.statusCode!) != -1) { // unauthenticated
+    if(!ErrorBloc.isTokenExpired && dioError.response != null && _statusCodes.indexOf(dioError.response!.statusCode!) != -1) { // unauthenticated
+      ErrorBloc.updateState(true);
+      RequestOptions options = dioError.response!.requestOptions;
+
       CredentialGetter.reset();
       bool status = await LoginBloc().relogin();
       if(!(status)) {
         navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (route) => false);
         navigatorKey.currentState?.pushNamed('/login');
-        ErrorBloc().updateState(false);
       }
+      await DioClient.dio.fetch(options).then(
+        (r) => handler.resolve(r),
+        onError: (e) {
+          handler.reject(e);
+        },
+      );
+      ErrorBloc.updateState(false);
+      return;
     }
-    super.onError(dioError, handler);
+    return handler.next(dioError);
   }
 }

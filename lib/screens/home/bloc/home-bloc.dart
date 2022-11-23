@@ -129,7 +129,7 @@ class HomeBloc {
       });
     }
 
-    return DioClient().dioWithResponseType(ResponseType.plain).post(
+    return DioClient.dioWithResponseType(ResponseType.plain).post(
       '/attendance/checkIn',
       data: formData,
       options: Options(
@@ -176,7 +176,7 @@ class HomeBloc {
       });
     }
 
-    return DioClient().dioWithResponseType(ResponseType.plain).post(
+    return DioClient.dioWithResponseType(ResponseType.plain).post(
       '/attendance/checkOut',
       data: formData,
       options: Options(
@@ -198,7 +198,7 @@ class HomeBloc {
     data['employee_id'] = await CredentialGetter().userId;
     data['date'] = date;
 
-    return DioClient().dio.post(
+    return DioClient.dio.post(
       '/attendance/status',
       data: data,
       options: Options(

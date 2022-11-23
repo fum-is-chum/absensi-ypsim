@@ -9,10 +9,10 @@ class DioClient {
   static final DioClient _shared = DioClient._sharedInstance();
   factory DioClient() => _shared;
 
-  Dio get dio => createDio();
-  Dio dioWithResponseType(ResponseType r, {String? baseUrl}) => createDio(responseType: r, baseUrl: baseUrl);
+  static Dio get dio => createDio();
+  static Dio dioWithResponseType(ResponseType r, {String? baseUrl}) => createDio(responseType: r, baseUrl: baseUrl);
 
-  Dio createDio({ResponseType responseType = ResponseType.json, String? baseUrl}) {
+  static Dio createDio({ResponseType responseType = ResponseType.json, String? baseUrl}) {
     Dio dio = Dio(
       BaseOptions(
         baseUrl: baseUrl != null ? baseUrl : "${Environment.baseUrl}/api",

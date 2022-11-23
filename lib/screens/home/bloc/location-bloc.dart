@@ -195,7 +195,7 @@ class LocationBloc {
   }
 
   Future<Response> _getValidLocation() {
-    return DioClient().dio.get('/get-validation-location',
+    return DioClient.dio.get('/get-validation-location',
       options: Options(
         headers: {
           'RequireToken': ''
