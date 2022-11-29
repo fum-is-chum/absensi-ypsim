@@ -28,10 +28,16 @@ Future<String> handleError(dynamic e) async {
       ErrorBloc.updateState(true);
     }
     if(e.response != null && e.response!.data != null) {
-      try {
-        error = "${ApiResponse.fromJson(e.response!.data is String ? jsonDecode(e.response!.data) : e.response!.data).Message}";
-      } catch (err) {
-        error = e.response!.toString();
+      if(e.response!.data is String ) {
+        error = e.response!.data;
+      } else {  
+        var parsed = ApiResponse.fromJson(e.response!.data);
+        if(!(parsed.Message is String)) {
+          String firstKey = parsed.Message.keys.toList()[0];
+          error = parsed.Message[firstKey].toString();
+        } else {
+          error = parsed.Message.toString();
+        }
       }
     } else if(e.error is SocketException) {
       error = "Tidak ada koneksi";

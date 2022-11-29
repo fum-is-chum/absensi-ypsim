@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:absensi_ypsim/screens/login-register-verification/screens/register/bloc/register-bloc.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/widgets/custom-button.dart';
+import 'package:flutter/material.dart';
 
 late RegisterBloc _bloc;
 
@@ -166,9 +166,7 @@ class _RegisterView extends State<RegisterView> {
 }
 
 class PasswordField extends StatefulWidget {
-  static final GlobalKey<_PasswordField> globalKey = GlobalKey();
-
-  PasswordField({Key? key}) : super(key: globalKey);
+  PasswordField({Key? key}) : super(key: key);
   @override
   _PasswordField createState() => _PasswordField();
 }

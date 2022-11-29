@@ -1,3 +1,4 @@
+import 'package:absensi_ypsim/env.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi_ypsim/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
@@ -76,7 +77,7 @@ class _LoginView extends State<LoginView> {
                       Padding(
                         padding: EdgeInsets.only(top: 12),
                         child: TextFormField(
-                          initialValue: 'alvinchrist',
+                          initialValue: Environment.flavor == BuildFlavor.staging ? 'alvinchrist' : '',
                           decoration: InputDecoration(
                             labelText: "Username",
                             isDense: true,
@@ -144,9 +145,8 @@ class _LoginView extends State<LoginView> {
 }
 
 class PasswordField extends StatefulWidget {
-  static final GlobalKey<_PasswordField> globalKey = GlobalKey();
-
-  PasswordField({Key? key}) : super(key: globalKey);
+  // bool initValue;
+  PasswordField({Key? key}) : super(key: key);
   @override
   _PasswordField createState() => _PasswordField();
 }
@@ -162,7 +162,7 @@ class _PasswordField extends State<PasswordField> {
         return Padding(
           padding: EdgeInsets.only(top: 12),
           child: TextFormField(
-            initialValue: '12345678',
+            initialValue: Environment.flavor == BuildFlavor.staging ? '12345678' : '',
             decoration: InputDecoration(
               labelText: "Kata Sandi",
               isDense: true,
