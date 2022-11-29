@@ -1,6 +1,6 @@
 class ApiResponse {
   int? StatusCode;
-  String? Message;
+  dynamic Message;
   dynamic Result;
   // lampiran
 
@@ -13,7 +13,7 @@ class ApiResponse {
         this.Result = Result ?? {};
 
 
-  ApiResponse.fromJson(Map<String, dynamic> json) {
+  ApiResponse.  fromJson(Map<String, dynamic> json) {
     StatusCode = json['StatusCode'];
     Message = json['Message'];
     Result = json['Result'];

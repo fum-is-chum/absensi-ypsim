@@ -6,6 +6,7 @@ import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:absensi_ypsim/widgets/drawer.dart';
 import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 late RiwayatPresensiBloc riwayatPresensiBloc;
@@ -58,8 +59,8 @@ class _RiwayatPresensi extends State<RiwayatPresensi> {
                   pinned: true,
                   // floating: true,
                   // snap: false,
-                  expandedHeight: 128,
-                  collapsedHeight: 128,
+                  expandedHeight: 128 + (kIsWeb ? 16 : 0),
+                  collapsedHeight: 128 + (kIsWeb ? 16 : 0),
                   flexibleSpace: FlexibleSpaceBar(
                     background: Container(
                         // duration: Duration(milliseconds: 500),

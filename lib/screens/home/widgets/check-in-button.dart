@@ -52,8 +52,10 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
   bool _isTimeValid(Map<String, dynamic>? data, String current) {
     if(data == null) return false;
     String date = data['personal_calender']['date'];
-    Map<String, dynamic> settings = data['time_settings'];
-
+    Map<String, dynamic>? settings = data['time_settings'];
+    // handle jika settings null
+    if(settings == null) return false;
+    
     late String start;
     late String end;
     if(_isCheckout(data)) {

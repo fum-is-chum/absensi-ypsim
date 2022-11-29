@@ -51,9 +51,16 @@ class HomeBloc {
     sp.show();
     try {
       Map<String, dynamic> data = ApiResponse.fromJson((await _getAttendanceStatus(date: date)).data!).Result;
-      this._attendanceStatus.sink.add(data);
-      sp.hide();
-      return true;
+      // khusus endpoint getAttendanceStatus, pastikan time_settings != null
+      if(data['time_settings'] == null) {
+        sp.hide();
+        await handleError('Time Settings untuk user ini belum ditentukan');
+        return false;
+      } else {
+        this._attendanceStatus.sink.add(data);
+        sp.hide();
+        return true;
+      }
     } catch (e) {
       sp.hide();
       await handleError(e);
@@ -110,7 +117,7 @@ class HomeBloc {
     checkInModel.time = dateTime.substring(11, 19);
     FormData formData;
 
-    if(kIsWeb) {
+    if(!kIsWeb) {
       formData = FormData.fromMap({
         ...checkInModel.toJson(),
         'photo': MultipartFile.fromBytes(
@@ -157,7 +164,7 @@ class HomeBloc {
     checkOutModel.time = dateTime.substring(11, 19);
     FormData formData;
 
-    if(kIsWeb) {
+    if(!kIsWeb) {
       formData = FormData.fromMap({
         ...checkOutModel.toJson(),
         'photo': MultipartFile.fromBytes(

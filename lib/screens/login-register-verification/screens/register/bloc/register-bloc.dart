@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:absensi_ypsim/utils/services/shared-service.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -53,28 +54,14 @@ class RegisterBloc {
       return true;
     } catch (e) {
       sp.hide();
-      DioError err = e as DioError;
-      String error = "";
-      if(err.response != null) {
-        error = "${err.message}\n${err.response != null ? err.response!.data['Message'] : err.response.toString()}";
-      } else if(err.error is SocketException) {
-        error = "Tidak ada koneksi";
-      } else if(err.error is TimeoutException) {
-        error = "${err.requestOptions.baseUrl}${err.requestOptions.path}\nRequest Timeout";
-      }
-      await ArtSweetAlert.show(
-        context: context,
-        artDialogArgs: ArtDialogArgs(
-          type: ArtSweetAlertType.danger,
-          title: "Gagal",
-          text: error
-        )
-      );
+      await handleError(e);
       return false;
     }
   }
 
   Future<Response> register() {
+    Map<String, dynamic> _model = model;
+    _model['username'] = _model['username'].toString().toLowerCase();
     return DioClient.dio.post('/register', data: model);
   }
 

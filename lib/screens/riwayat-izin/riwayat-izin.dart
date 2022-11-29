@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:absensi_ypsim/utils/constants/Theme.dart';
 import 'package:absensi_ypsim/screens/riwayat-izin/bloc/riwayat-izin-bloc.dart';
@@ -56,12 +57,12 @@ class _HistoryIzin extends State<RiwayatIzin> {
                 pinned: true,
                 // floating: true,
                 // snap: false,
-                expandedHeight: 128,
-                collapsedHeight: 128,
+                expandedHeight: 128 + (kIsWeb ? 16 : 0),
+                collapsedHeight: 128 + (kIsWeb ? 16 : 0),
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
                     // duration: Duration(milliseconds: 500),
-                    padding: EdgeInsets.only(top: 72),
+                    padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
