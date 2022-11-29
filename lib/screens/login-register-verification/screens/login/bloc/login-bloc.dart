@@ -72,7 +72,7 @@ class LoginBloc {
     try{
       // sp.show();
       // await logoutUser();
-      model = await CredentialGetter().loginCredential;
+      model = await CredentialGetter.loginCredential;
       if(model['username'] == null) {
         // sp.hide();
         return false;
@@ -88,7 +88,9 @@ class LoginBloc {
   }
 
   Future<Response> login() {
-    return DioClient.dio.post('/login', data: model);
+    Map<String, dynamic> _model = model;
+    _model['username'] = _model['username'].toString().toLowerCase();
+    return DioClient.dio.post('/login', data: _model);
   }
 
   Future<Response> logout() {

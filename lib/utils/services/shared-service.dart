@@ -39,6 +39,9 @@ Future<String> handleError(dynamic e) async {
       error = "${e.requestOptions.baseUrl}${e.requestOptions.path}\nRequest Timeout";
     }
   } else {
+    if(e.containsKey('Message')) {
+      error = e['Message'].toString();
+    }
     error = e.toString();
   }
   if(!ErrorBloc.isTokenExpired) {

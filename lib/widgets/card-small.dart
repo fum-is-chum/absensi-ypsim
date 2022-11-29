@@ -22,7 +22,10 @@ class CardSmall extends StatelessWidget {
     return Flexible(
       // fit: FlexFit.tight,
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.3,
+        constraints: BoxConstraints(
+          minHeight: 200
+        ),
+        height: MediaQuery.of(context).size.width * 0.5,
         margin: EdgeInsets.only(top: 10),
         child: GestureDetector(
           onTap: tap as void Function()?,
@@ -34,12 +37,16 @@ class CardSmall extends StatelessWidget {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
                     flex: 3,
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(4.0),
+                          topRight: Radius.circular(4.0)
+                        ),
                         image: DecorationImage(
                           image: (img! as String).substring(0,4) == 'http' ? NetworkImage(img!) : Image.asset(img!).image,
                           fit: BoxFit.cover,

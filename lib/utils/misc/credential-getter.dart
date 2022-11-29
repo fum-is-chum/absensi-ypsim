@@ -37,7 +37,7 @@ class CredentialGetter {
     return _inMemoryUserData!.Data!;
   }
 
-  Future<Map<String, dynamic>> get loginCredential async {
+  static Future<Map<String, dynamic>> get loginCredential async {
     if(_loginCredential['username'] != null) return _loginCredential;
     _loginCredential = await _loadLoginCredential();
     return _loginCredential;

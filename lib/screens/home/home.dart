@@ -159,8 +159,8 @@ class _ImageRow extends State<ImageRow> {
     if (data == null) return "00:00:00 WIB";
     if (data['personal_calender'] == null) return "00:00:00 WIB";
     return isCheckIn
-        ? data['personal_calender']['check_in'] ?? "00:00:00 WIB"
-        : data['personal_calender']['check_out'] ?? "00:00:00 WIB";
+        ? "${data['personal_calender']['check_in'] ?? "00:00:00"} WIB"
+        : "${data['personal_calender']['check_out']  ?? "00:00:00"} WIB";
   }
 
   String _img(Map<String, dynamic>? data, {bool isCheckIn = true}) {
