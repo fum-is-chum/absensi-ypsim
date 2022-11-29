@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:absensi_ypsim/env.dart';
 import 'package:absensi_ypsim/screens/home/bloc/camera-bloc.dart';
@@ -108,9 +107,6 @@ class _HomeState extends State<Home> {
                 primary: false,
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 30,
-                    ),
                     ImageRow(),
                     SizedBox(height: 20),
                     CheckInCard(),
@@ -192,18 +188,14 @@ class _ImageRow extends State<ImageRow> {
                 cta: _cta(snapshot.data),
                 title: "IN",
                 img: _img(snapshot.data),
-                // img: 'assets/img/no-image.jpg',
                 tap: () {
-                  // Navigator.pushReplacementNamed(context, '/pro');
                 }),
-            SizedBox(width: 8),
+            SizedBox(width: 16),
             CardSmall(
                 cta: _cta(snapshot.data, isCheckIn: false),
                 title: "OUT",
                 img: _img(snapshot.data, isCheckIn: false),
-                // img: 'assets/img/no-image.jpg',
                 tap: () {
-                  // Navigator.pushReplacementNamed(context, '/pro');
                 })
           ],
         );

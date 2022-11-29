@@ -29,7 +29,7 @@ class _LoginView extends State<LoginView> {
   @override
   void dispose() {
     super.dispose();
-    _bloc.dispose();
+    // _bloc.dispose();
   }
   
   @override
