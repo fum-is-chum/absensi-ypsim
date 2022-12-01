@@ -1,4 +1,4 @@
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:flutter/material.dart';
 
 class CardSmall extends StatelessWidget {

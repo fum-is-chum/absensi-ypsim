@@ -1,11 +1,11 @@
-import 'package:absensi_ypsim/screens/riwayat-presensi/bloc/riwayat-presensi-bloc.dart';
-import 'package:absensi_ypsim/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
-import 'package:absensi_ypsim/screens/riwayat-presensi/riwayat-presensi-detail.dart';
-import 'package:absensi_ypsim/screens/riwayat-presensi/widgets/riwayat-presensi-item.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/drawer.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/screens/riwayat-presensi/bloc/riwayat-presensi-bloc.dart';
+import 'package:SIMAt/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
+import 'package:SIMAt/screens/riwayat-presensi/riwayat-presensi-detail.dart';
+import 'package:SIMAt/screens/riwayat-presensi/widgets/riwayat-presensi-item.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/drawer.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

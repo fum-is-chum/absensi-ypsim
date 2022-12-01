@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 
 class CheckInOutModel {
   int? employee_id;

@@ -1,5 +1,5 @@
-import 'package:absensi_ypsim/env.dart';
-import 'package:absensi_ypsim/utils/interceptors/token-interceptor.dart';
+import 'package:SIMAt/env.dart';
+import 'package:SIMAt/utils/interceptors/token-interceptor.dart';
 import 'package:dio/dio.dart';
 
 import 'logging-interceptor.dart';

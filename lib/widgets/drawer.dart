@@ -1,9 +1,9 @@
-import 'package:absensi_ypsim/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
-import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login-result.dart';
-import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
+import 'package:SIMAt/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
+import 'package:SIMAt/screens/login-register-verification/screens/login/models/login-result.dart';
+import 'package:SIMAt/utils/misc/credential-getter.dart';
 // import 'package:url_launcher/url_launcher.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:absensi_ypsim/widgets/drawer-tile.dart';
+import 'package:SIMAt/widgets/drawer-tile.dart';
 import 'package:flutter/material.dart';
 
 class MaterialDrawer extends StatelessWidget {

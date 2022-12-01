@@ -1,7 +1,7 @@
-import 'package:absensi_ypsim/main.dart';
-import 'package:absensi_ypsim/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
-import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
-import 'package:absensi_ypsim/utils/services/error-bloc.dart';
+import 'package:SIMAt/main.dart';
+import 'package:SIMAt/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
+import 'package:SIMAt/utils/misc/credential-getter.dart';
+import 'package:SIMAt/utils/services/error-bloc.dart';
 import 'package:dio/dio.dart';
 
 import 'dio-interceptor.dart';
