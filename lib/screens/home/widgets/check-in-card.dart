@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:absensi_ypsim/screens/home/home.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:SIMAt/screens/home/home.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

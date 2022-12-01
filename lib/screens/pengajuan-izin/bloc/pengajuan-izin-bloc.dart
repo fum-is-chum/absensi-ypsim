@@ -3,10 +3,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
-import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/utils/misc/credential-getter.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';

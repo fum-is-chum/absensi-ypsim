@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:absensi_ypsim/env.dart';
+import 'package:SIMAt/env.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
-import 'package:absensi_ypsim/models/api-response.dart';
-import 'package:absensi_ypsim/screens/pengajuan-izin/models/pengajuan-izin-model.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/models/api-response.dart';
+import 'package:SIMAt/screens/pengajuan-izin/models/pengajuan-izin-model.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RiwayatIzinDetailBloc {

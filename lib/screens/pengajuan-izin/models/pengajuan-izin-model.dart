@@ -1,4 +1,4 @@
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 
 class PengajuanIzinModel {
   late int id;

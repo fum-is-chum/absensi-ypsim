@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
-import 'package:absensi_ypsim/utils//iframe/iframe.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
+import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
+import 'package:SIMAt/utils//iframe/iframe.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

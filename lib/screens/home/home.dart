@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:absensi_ypsim/env.dart';
-import 'package:absensi_ypsim/screens/home/bloc/camera-bloc.dart';
-import 'package:absensi_ypsim/screens/home/bloc/home-bloc.dart';
-import 'package:absensi_ypsim/screens/home/bloc/time-bloc.dart';
-import 'package:absensi_ypsim/screens/home/widgets/location-view.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/widgets/card-small.dart';
-import 'package:absensi_ypsim/widgets/drawer.dart';
+import 'package:SIMAt/env.dart';
+import 'package:SIMAt/screens/home/bloc/camera-bloc.dart';
+import 'package:SIMAt/screens/home/bloc/home-bloc.dart';
+import 'package:SIMAt/screens/home/bloc/time-bloc.dart';
+import 'package:SIMAt/screens/home/widgets/location-view.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/widgets/card-small.dart';
+import 'package:SIMAt/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';

@@ -1,13 +1,13 @@
 // screens
-import 'package:absensi_ypsim/env.dart';
-import 'package:absensi_ypsim/screens/home/home.dart';
-import 'package:absensi_ypsim/screens/login-register-verification/screen.dart';
-import 'package:absensi_ypsim/screens/pengajuan-izin/pengajuan-izin.dart';
-import 'package:absensi_ypsim/screens/riwayat-izin/riwayat-izin.dart';
-import 'package:absensi_ypsim/screens/riwayat-presensi/riwayat-presensi.dart';
-import 'package:absensi_ypsim/screens/verification.dart';
-import 'package:absensi_ypsim/utils/services/hide-keyboard.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/env.dart';
+import 'package:SIMAt/screens/home/home.dart';
+import 'package:SIMAt/screens/login-register-verification/screen.dart';
+import 'package:SIMAt/screens/pengajuan-izin/pengajuan-izin.dart';
+import 'package:SIMAt/screens/riwayat-izin/riwayat-izin.dart';
+import 'package:SIMAt/screens/riwayat-presensi/riwayat-presensi.dart';
+import 'package:SIMAt/screens/verification.dart';
+import 'package:SIMAt/utils/services/hide-keyboard.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 

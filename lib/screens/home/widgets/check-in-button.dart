@@ -1,11 +1,11 @@
 
 import 'dart:async';
 
-import 'package:absensi_ypsim/screens/home/bloc/check-in-bloc.dart';
-import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
-import 'package:absensi_ypsim/screens/home/camera.dart';
-import 'package:absensi_ypsim/screens/home/home.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
+import 'package:SIMAt/screens/home/bloc/check-in-bloc.dart';
+import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
+import 'package:SIMAt/screens/home/camera.dart';
+import 'package:SIMAt/screens/home/home.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

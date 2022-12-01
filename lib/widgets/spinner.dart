@@ -1,7 +1,7 @@
-import 'package:absensi_ypsim/main.dart';
+import 'package:SIMAt/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
 
 SpinKitCircle loadingSpinner() {
   return SpinKitCircle(

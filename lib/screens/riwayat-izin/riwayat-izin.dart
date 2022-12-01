@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/screens/riwayat-izin/bloc/riwayat-izin-bloc.dart';
-import 'package:absensi_ypsim/screens/riwayat-izin/models/riwayat-izin.dart';
-import 'package:absensi_ypsim/screens/riwayat-izin/riwayat-izin-detail.dart';
-import 'package:absensi_ypsim/screens/riwayat-izin/widgets/riwayat-izin-item.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/drawer.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/screens/riwayat-izin/bloc/riwayat-izin-bloc.dart';
+import 'package:SIMAt/screens/riwayat-izin/models/riwayat-izin.dart';
+import 'package:SIMAt/screens/riwayat-izin/riwayat-izin-detail.dart';
+import 'package:SIMAt/screens/riwayat-izin/widgets/riwayat-izin-item.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/drawer.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 
 late RiwayatIzinBloc riwayatIzinBloc;
 

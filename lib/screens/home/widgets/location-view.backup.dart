@@ -5,12 +5,12 @@
 // import 'package:flutter/gestures.dart';
 // import 'package:flutter/material.dart';
 // import 'package:geolocator/geolocator.dart';
-// import 'package:absensi_ypsim/utils//iframe/iframe.dart';
-// import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
+// import 'package:SIMAt/utils//iframe/iframe.dart';
+// import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
 // import 'package:rxdart/rxdart.dart';
 // import 'package:webview_flutter/webview_flutter.dart';
 
-// import 'package:absensi_ypsim/utils/constants/Theme.dart';
+// import 'package:SIMAt/utils/constants/Theme.dart';
 
 // final LocationBloc locationBloc = LocationBloc(); 
 // class LocationView extends StatefulWidget {
