@@ -51,8 +51,8 @@ class LocationBloc {
         //(Optional) Set foreground notification config to keep the app alive 
         //when going to the background
         foregroundNotificationConfig: const ForegroundNotificationConfig(
-            notificationText: "SimLog is running in background",
-            notificationTitle: "SimLog",
+            notificationText: "SIMAt is running in background",
+            notificationTitle: "SIMAt",
             enableWakeLock: true,
         )
       );

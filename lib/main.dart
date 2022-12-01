@@ -40,7 +40,7 @@ class AbsensiYPSIM extends StatelessWidget {
           hideKeyboard(context);
         },
         child: MaterialApp(
-            title: "SimLog",
+            title: "SIMAt",
             debugShowCheckedModeBanner: false,
             navigatorKey: navigatorKey,
             routes: <String, WidgetBuilder>{
