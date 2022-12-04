@@ -1,1 +1,0 @@
-flutter clean && flutter build apk --release --split-per-abi -v && copy /Y build\app\outputs\flutter-apk\app.apk .\
