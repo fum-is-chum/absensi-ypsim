@@ -28,11 +28,15 @@ Future<String> handleError(dynamic e) async {
       ErrorBloc.updateState(true);
     }
     if(e.response != null && e.response!.data != null) {
-      if(e.response!.data is String ) {
-        error = e.response!.data;
+      if(e.response!.data is String) {
+        try {
+          error = ApiResponse.fromJson(jsonDecode(e.response!.data)).Message;
+        } catch (_) {
+          error = e.response!.data;
+        }
       } else {  
         var parsed = ApiResponse.fromJson(e.response!.data);
-        if(!(parsed.Message is String)) {
+        if(parsed.Message != null && (parsed.Message is String) == false ) {
           String firstKey = parsed.Message.keys.toList()[0];
           error = parsed.Message[firstKey].toString();
         } else {
@@ -45,9 +49,6 @@ Future<String> handleError(dynamic e) async {
       error = "${e.requestOptions.baseUrl}${e.requestOptions.path}\nRequest Timeout";
     }
   } else {
-    if(e.containsKey('Message')) {
-      error = e['Message'].toString();
-    }
     error = e.toString();
   }
   if(!ErrorBloc.isTokenExpired) {
