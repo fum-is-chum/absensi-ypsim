@@ -83,15 +83,49 @@ class HistoryPresensiItem extends StatelessWidget {
                         boxShadow: [
                           BoxShadow(
                             color: (() {
-                              if(item.status == "Absen") return MaterialColors.error;
-                              return MaterialColors.bgSecondary;
+                              Color color;
+                              switch(item.status) {
+                                case "Absen": {
+                                  color = MaterialColors.error;
+                                } break;
+
+                                case "Izin": {
+                                  color = MaterialColors.warning;
+                                } break;
+
+                                case "Libur": {
+                                  color = MaterialColors.muted;
+                                } break;
+                                  
+                                default: {
+                                  color = MaterialColors.bgSecondary;
+                                } break;
+                              }
+                              return color;
                             }()),
                             blurRadius: 2.0
                           )
                         ],
                         color: (() {
-                          if (item.status == "Absen") return MaterialColors.error;
-                          return MaterialColors.bgSecondary;
+                          Color color;
+                          switch(item.status) {
+                            case "Absen": {
+                              color = MaterialColors.error;
+                            } break;
+
+                            case "Izin": {
+                              color = MaterialColors.warning;
+                            } break;
+
+                            case "Libur": {
+                              color = MaterialColors.muted;
+                            } break;
+                              
+                            default: {
+                              color = MaterialColors.bgSecondary;
+                            } break;
+                          }
+                          return color;
                         }()),
                       ),
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),

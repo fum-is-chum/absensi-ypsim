@@ -57,28 +57,28 @@ class _HistoryIzin extends State<RiwayatIzin> {
                 pinned: true,
                 // floating: true,
                 // snap: false,
-                expandedHeight: 128 + (kIsWeb ? 16 : 0),
-                collapsedHeight: 128 + (kIsWeb ? 16 : 0),
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Container(
-                    // duration: Duration(milliseconds: 500),
-                    padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          child: TanggalField(),
-                          width: MediaQuery.of(context).size.width / 2.3,
-                        ),
-                        SizedBox(width: 20),
-                        SizedBox(
-                          child: TanggalField(isAkhir: true),
-                          width: MediaQuery.of(context).size.width / 2.3,
-                        ),
-                      ],
-                    )
-                  ),
-                ),
+                // expandedHeight: 128 + (kIsWeb ? 16 : 0),
+                // collapsedHeight: 128 + (kIsWeb ? 16 : 0),
+                // flexibleSpace: FlexibleSpaceBar(
+                //   background: Container(
+                //     // duration: Duration(milliseconds: 500),
+                //     padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         SizedBox(
+                //           child: TanggalField(),
+                //           width: MediaQuery.of(context).size.width / 2.3,
+                //         ),
+                //         SizedBox(width: 20),
+                //         SizedBox(
+                //           child: TanggalField(isAkhir: true),
+                //           width: MediaQuery.of(context).size.width / 2.3,
+                //         ),
+                //       ],
+                //     )
+                //   ),
+                // ),
               ),
               SliverToBoxAdapter(
                 child: RiwayatIzinList()
@@ -178,6 +178,7 @@ class _ListWidget extends State<RiwayatIzinList> {
       width: double.infinity,
       height: MediaQuery.of(context).size.height - 128 - 36,
       child: RefreshIndicator(
+        triggerMode: RefreshIndicatorTriggerMode.onEdge,
         onRefresh: () {
           return _getData();
         },
@@ -203,7 +204,7 @@ class _ListWidget extends State<RiwayatIzinList> {
               );
             
             return CustomScrollView(
-              physics: const BouncingScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(parent: const BouncingScrollPhysics()),
               slivers: [
                 SliverAnimatedList(
                   key: _listKey,

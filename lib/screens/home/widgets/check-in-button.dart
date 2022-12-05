@@ -55,7 +55,8 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
     Map<String, dynamic>? settings = data['time_settings'];
     // handle jika settings null
     if(settings == null) return false;
-    
+    if(data['personal_calender']['check_in'] != null && data['personal_calender']['check_out'] != null) return false;
+
     late String start;
     late String end;
     if(_isCheckout(data)) {

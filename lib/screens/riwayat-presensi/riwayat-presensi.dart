@@ -208,7 +208,7 @@ class _ListWidget extends State<HistoryList> {
                     );
 
                   return CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
+                    physics: const AlwaysScrollableScrollPhysics(parent: const BouncingScrollPhysics()),
                     slivers: [
                       SliverAnimatedList(
                         key: _listKey,
