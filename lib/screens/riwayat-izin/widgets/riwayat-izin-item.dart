@@ -90,21 +90,41 @@ class RiwayatIzinItem extends StatelessWidget {
                           boxShadow: [
                             BoxShadow(
                               color: (() {
-                                if (item.status == "Ditolak") return MaterialColors.error;
-                                if (item.status == "Disetujui") return MaterialColors.bgSecondary;
-                                return MaterialColors.bgPrimary;
+                                Color color;
+                                switch(item.status) {
+                                  case "Menunggu": {
+                                    color = MaterialColors.warning;
+                                  } break;
+
+                                  case "Ditolak": {
+                                    color = MaterialColors.error;
+                                  } break;
+                                    
+                                  default: {
+                                    color = MaterialColors.bgSecondary;
+                                  } break;
+                                }
+                                return color;
                               }()),
                               blurRadius: 2.0
                             )
                           ],
                           color: (() {
-                            if (item.status == "Menunggu") {
-                              return MaterialColors.bgPrimary;
-                            } else if (item.status == "Ditolak") {
-                              return MaterialColors.error;
-                            } else if (item.status == "Disetujui") {
-                              return MaterialColors.bgSecondary;
+                            Color color;
+                            switch(item.status) {
+                              case "Menunggu": {
+                                color = MaterialColors.warning;
+                              } break;
+
+                              case "Ditolak": {
+                                color = MaterialColors.error;
+                              } break;
+                                
+                              default: {
+                                color = MaterialColors.bgSecondary;
+                              } break;
                             }
+                            return color;
                           }()),
                         ),
                         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
