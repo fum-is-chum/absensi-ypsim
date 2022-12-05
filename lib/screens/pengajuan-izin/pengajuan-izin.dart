@@ -195,7 +195,7 @@ class _TanggalField extends State<TanggalField> {
   void _showDatePicker() {
     showDatePicker(
       context: context,
-      initialDate: DateTime.parse(widget.isAkhir? _pengajuanIzinBloc.model.end_date: _pengajuanIzinBloc.model.start_date),
+      initialDate: DateTime.parse(_pengajuanIzinBloc.model.start_date),
       firstDate: widget.isAkhir? DateTime.parse(_pengajuanIzinBloc.model.start_date) : DateTime.fromMillisecondsSinceEpoch(0),
       lastDate: DateTime(DateTime.now().year + 10)
     ).then((DateTime? value) {

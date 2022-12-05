@@ -76,7 +76,7 @@ class PengajuanIzinBloc {
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(e);;
+      await handleError(e);
       return false;
     }
   }
