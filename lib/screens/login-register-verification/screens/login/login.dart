@@ -91,7 +91,7 @@ class _LoginView extends State<LoginView> {
                       Padding(
                         padding: EdgeInsets.only(top: 12),
                         child: TextFormField(
-                          initialValue: Environment.flavor == BuildFlavor.staging ? 'alvinchrist' : '',
+                          initialValue: Environment.flavor == BuildFlavor.staging ? 'alvin' : '',
                           decoration: InputDecoration(
                             labelText: "Username",
                             isDense: true,

@@ -42,7 +42,6 @@ class LoginBloc {
     sp.show();
     try {
       Response resp = await login();
-      
       saveCredentials(LoginResult.fromJson(resp.data['Result']));
       sp.hide();
       return true;
