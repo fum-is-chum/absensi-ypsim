@@ -62,23 +62,23 @@ class _LocationView extends State<LocationView> {
                   SizedBox(width: 8),
                   Expanded(
                     child: StreamBuilder(
-                    stream: locationBloc.targetLocation$,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<Map<String, dynamic>>
-                            targetLocation) {
-                      bool targetLocationIsValid =
-                          targetLocation.hasData && targetLocation.data!['latitude'] != null;
-                      return Text(
-                        targetLocationIsValid && locationBloc.getDistance == 0 ?
-                        "Anda berada di dalam jangkauan login" :
-                        "Anda berada di luar jangkauan login",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                        ),
-
-                      );
-                  }),
+                        stream: locationBloc.targetLocation$,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<Map<String, dynamic>>
+                                targetLocation) {
+                          bool targetLocationIsValid = targetLocation.hasData &&
+                              targetLocation.data!['latitude'] != null;
+                          return Text(
+                            targetLocationIsValid &&
+                                    locationBloc.getDistance == 0
+                                ? "Anda berada di dalam jangkauan absensi"
+                                : "Anda berada di luar jangkauan absensi",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
+                          );
+                        }),
                   ),
                   Material(
                     shape: CircleBorder(),
@@ -313,9 +313,7 @@ class _MyMapView extends State<MyMapView> {
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: Future.wait(
-          [locationBloc.isLocationOn,
-          locationBloc.getValidLocation()
-        ]),
+            [locationBloc.isLocationOn, locationBloc.getValidLocation()]),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           int status = _mapViewValid(snapshot.data);
           if (!snapshot.hasData || status != 1) {
