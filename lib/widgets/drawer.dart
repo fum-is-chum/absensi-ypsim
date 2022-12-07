@@ -35,7 +35,7 @@ class MaterialDrawer extends StatelessWidget {
                 DrawerTile(
                     icon: Icons.home,
                     onTap: () {
-                      if (currentPage != "Home")
+                      if (currentPage != "Home (Staging)")
                         Navigator.pushReplacementNamed(context, '/home');
                     },
                     iconColor: Colors.black,
