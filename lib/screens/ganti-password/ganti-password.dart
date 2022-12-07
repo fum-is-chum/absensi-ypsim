@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:SIMAt/env.dart';
 import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:SIMAt/utils/services/hide-keyboard.dart';
 import 'package:SIMAt/utils/services/shared-service.dart';
@@ -92,14 +93,21 @@ class _GantiPassword extends State<GantiPassword> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    PasswordLamaField(),
+                    PasswordField(type: 1, label: "Password Lama"),
                     const SizedBox(height: 16,),
                     const Text(
                       'Password Baru',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
-                    PasswordBaru(),
+                    PasswordField(type: 2, label: "Password Baru"),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Konfirmasi Password Baru',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    PasswordField(type: 3, label: "Konfirmasi Password Baru"),
                     const SizedBox(
                       height: 16,
                     ),
@@ -139,63 +147,63 @@ class _GantiPassword extends State<GantiPassword> {
   }
 }
 
-class PasswordLamaField extends StatefulWidget {
-  const PasswordLamaField({Key? key}): super(key: key);
+
+class PasswordField extends StatefulWidget {  
+  PasswordField({Key? key, this.type = 0, this.label = ''});
+
+  final int type;
+  final String label;
 
   @override
-  _PasswordLamaField createState() => _PasswordLamaField();
+  _PasswordField createState() => _PasswordField();
 }
 
-class _PasswordLamaField extends State<PasswordLamaField> {
+class _PasswordField extends State<PasswordField> {
+
+  bool isObsecure = true;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       keyboardType: TextInputType.multiline,
-      initialValue: _gantiPasswordBloc.model.password_lama,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (String? val) {
-        if(val == null || val.isEmpty) {
-          return 'Silahkan isi password lama';
-        }
-        return null;
-      },
-      onSaved: (String? value) {
-        _gantiPasswordBloc.model.password_lama = value ?? '';
-      },
-      decoration: InputDecoration(
-        hintText: 'Password Lama',
-        border: OutlineInputBorder()
-      ),
-    );
-  }
-}
-
-class PasswordBaru extends StatefulWidget {
-  const PasswordBaru({Key? key}) : super(key: key);
-
-  @override
-  _PasswordBaru createState() => _PasswordBaru();
-}
-
-class _PasswordBaru extends State<PasswordBaru> {
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      keyboardType: TextInputType.multiline,
-      initialValue: _gantiPasswordBloc.model.password_baru,
+      initialValue: widget.type == 1
+          ? _gantiPasswordBloc.model.password_lama
+          : widget.type == 2 ? _gantiPasswordBloc.model.password_baru : _gantiPasswordBloc.model.konfirmasi_password_baru,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (String? val) {
         if (val == null || val.isEmpty) {
-          return 'Silahkan isi password baru';
+          return 'Silahkan isi '+widget.label;
         }
         return null;
       },
       onSaved: (String? value) {
-        _gantiPasswordBloc.model.password_baru = value ?? '';
+        switch (widget.type) {
+          case 1:
+              _gantiPasswordBloc.model.password_lama = value ?? '';
+            break;
+          case 2:
+            _gantiPasswordBloc.model.password_baru = value ?? '';
+            break;
+          case 3:
+            _gantiPasswordBloc.model.konfirmasi_password_baru = value ?? '';
+            break;
+          default:
+        }
       },
+      obscureText: isObsecure,
       decoration: InputDecoration(
-          hintText: 'Password Baru', border: OutlineInputBorder()),
+          hintText: widget.label,
+          border: OutlineInputBorder(),
+          suffixIcon: IconButton(
+            padding: EdgeInsets.zero,
+            icon: isObsecure ? const Icon(Icons.visibility_outlined) : const Icon(Icons.visibility_off_outlined),
+            color: MaterialColors.muted,
+            onPressed: () {
+              setState(() {
+                this.isObsecure = !this.isObsecure;
+              });
+            },
+          )),
     );
   }
 }
