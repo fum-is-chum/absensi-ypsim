@@ -1,11 +1,12 @@
 import 'dart:async';
+
 import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/utils/misc/credential-getter.dart';
 import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:SIMAt/widgets/spinner.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../models/ganti-password-model.dart';
 
@@ -29,6 +30,8 @@ class GantiPasswordBloc {
     try{
       sp.show();
       await update();
+      await CredentialGetter.updatePassword(model.newPassword);
+      // update password ke sharedPreference
       sp.hide();
       await ArtSweetAlert.show(
         context: context,
@@ -41,27 +44,21 @@ class GantiPasswordBloc {
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(e);;
+      await handleError(e);
       return false;
     }
   }
 
   Future<Response> update() async {
-    int? permissionId = _GantiPasswordModel.id;
+    int? userId = await CredentialGetter.userId;
     
-    FormData formData = FormData.fromMap({..._GantiPasswordModel.toJson()});
-
-    return DioClient.dioWithResponseType(ResponseType.plain).post(
-      '/change-password/$permissionId',
-      data: formData,
+    return DioClient.dio.post("/changePassword/$userId",
       options: Options(
         headers: {
-          'Content-Type': 'multipart/form-data',
-          'Connection': 'keep-alive',
-          'Accept-Encoding': 'gzip, deflat, br',
           'RequireToken': ''
         }
-      )
+      ),
+      data: model
     );
   }
 }

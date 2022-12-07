@@ -110,7 +110,7 @@ class HomeBloc {
     required dynamic photo
   }) async {
     CheckInOutModel checkInModel = CheckInOutModel();
-    checkInModel.employee_id = await CredentialGetter().userId;
+    checkInModel.employee_id = await CredentialGetter.employeeId;
     checkInModel.latitude = pos.latitude;
     checkInModel.longitude = pos.longitude;
     checkInModel.date = dateTime.substring(0, 10);
@@ -157,7 +157,7 @@ class HomeBloc {
     required dynamic photo
   }) async {
     CheckInOutModel checkOutModel = CheckInOutModel();
-    checkOutModel.employee_id = await CredentialGetter().userId;
+    checkOutModel.employee_id = await CredentialGetter.employeeId;
     checkOutModel.latitude = pos.latitude;
     checkOutModel.longitude = pos.longitude;
     checkOutModel.date = dateTime.substring(0, 10);
@@ -202,7 +202,7 @@ class HomeBloc {
     required String date
   }) async {
     Map<String, dynamic> data = {};
-    data['employee_id'] = await CredentialGetter().userId;
+    data['employee_id'] = await CredentialGetter.employeeId;
     data['date'] = date;
 
     return DioClient.dio.post(

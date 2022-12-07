@@ -1,28 +1,28 @@
 class GantiPasswordModel {
   late int id;
-  late String password_lama;
-  late String password_baru;
-  late String konfirmasi_password_baru;
+  late String oldPassword;
+  late String newPassword;
+  late String confirmNewPassword;
 
-  GantiPasswordModel({int? id, String? password_lama, String? password_baru, String? konfirmasi_password_baru})
+  GantiPasswordModel({int? id, String? oldPassword, String? newPassword, String? confirmNewPassword})
       : this.id = id ?? 0,
-        this.password_lama = password_lama ?? '',
-        this.password_baru = password_baru ?? '',
-        this.konfirmasi_password_baru = konfirmasi_password_baru ?? '';
+        this.oldPassword = oldPassword ?? '',
+        this.newPassword = newPassword ?? '',
+        this.confirmNewPassword = confirmNewPassword ?? '';
 
   GantiPasswordModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];  
-    password_lama = json['password_lama'];
-    password_baru = json['password_baru'];
-    konfirmasi_password_baru = json['konfirmasi_password_baru'];
+    oldPassword = json['oldPassword'];
+    newPassword = json['newPassword'];
+    // confirmNewPassword = json['confirmNewPassword'];
   }
   
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['password_lama'] = this.password_lama;
-    data['password_baru'] = this.password_baru;
-    data['konfirmasi_password_baru'] = this.konfirmasi_password_baru;
+    data['oldPassword'] = this.oldPassword;
+    data['newPassword'] = this.newPassword;
+    data['confirmNewPassword'] = this.confirmNewPassword;
     return data;
   }
 }

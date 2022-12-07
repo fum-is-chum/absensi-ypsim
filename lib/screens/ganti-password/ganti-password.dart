@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:SIMAt/env.dart';
 import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:SIMAt/utils/services/hide-keyboard.dart';
 import 'package:SIMAt/utils/services/shared-service.dart';
@@ -118,13 +115,18 @@ class _GantiPassword extends State<GantiPassword> {
                             onPressed: () async {
                               if(_key.currentState!.validate()) {
                                 _key.currentState!.save();
+                                if(_gantiPasswordBloc.model.newPassword != _gantiPasswordBloc.model.confirmNewPassword) {
+                                  handleError('Konfirmasi Password Baru tidak sama dengan Password Baru');
+                                  return;
+                                }
                                 try {
                                   if(await _gantiPasswordBloc.gantiPassword(context)){
-                                    await Future.delayed(Duration(milliseconds: 500));
-                                    Navigator.popUntil(context,ModalRoute.withName('/ganti-password'));
+                                    _key.currentState!.reset();
+                                    // await Future.delayed(Duration(milliseconds: 500));
+                                    // Navigator.popUntil(context,ModalRoute.withName('/ganti-password'));
                                   }
                                 } catch (e) {
-                                  await handleError(e);;
+                                  await handleError(e);
                                 }
                               }
                             },
@@ -166,26 +168,24 @@ class _PasswordField extends State<PasswordField> {
   Widget build(BuildContext context) {
     return TextFormField(
       keyboardType: TextInputType.multiline,
-      initialValue: widget.type == 1
-          ? _gantiPasswordBloc.model.password_lama
-          : widget.type == 2 ? _gantiPasswordBloc.model.password_baru : _gantiPasswordBloc.model.konfirmasi_password_baru,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (String? val) {
         if (val == null || val.isEmpty) {
           return 'Silahkan isi '+widget.label;
         }
+        if (val.length < 8) return 'Password minimal 8 karakter';
         return null;
       },
       onSaved: (String? value) {
         switch (widget.type) {
           case 1:
-              _gantiPasswordBloc.model.password_lama = value ?? '';
+              _gantiPasswordBloc.model.oldPassword = value ?? '';
             break;
           case 2:
-            _gantiPasswordBloc.model.password_baru = value ?? '';
+            _gantiPasswordBloc.model.newPassword = value ?? '';
             break;
           case 3:
-            _gantiPasswordBloc.model.konfirmasi_password_baru = value ?? '';
+            _gantiPasswordBloc.model.confirmNewPassword = value ?? '';
             break;
           default:
         }

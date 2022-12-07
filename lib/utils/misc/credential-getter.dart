@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:SIMAt/screens/login-register-verification/screens/login/models/login-result.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'crypto.dart';
@@ -12,6 +13,7 @@ class CredentialGetter {
   static SharedPreferences? _sharedPref;
 
   static LoginResult? _inMemoryUserData;
+  static int? _userId;
   static Map<String, dynamic> _loginCredential = {};
 
   static Future<void> init() async {
@@ -43,11 +45,30 @@ class CredentialGetter {
     return _loginCredential;
   }
 
-  Future<int> get userId async {
+  static Future<bool> updatePassword(String newPassword) async {
+    try {
+      if(_sharedPref == null) await init();
+      Map<String, dynamic> newCredential = await CredentialGetter.loginCredential;
+      newCredential['password'] = newPassword;
+      sharedPref.setString('login', encryptAESCryptoJS(jsonEncode(newCredential),  '&*()'));
+      return true;
+    } catch (e) {
+      throw(e);
+    }
+  }
+
+  static Future<int> get employeeId async {
     if(_inMemoryUserData != null) return _inMemoryUserData!.Data!.id!;
 
     _inMemoryUserData = await _loadTokenFromSharedPreference();
     return _inMemoryUserData?.Data!.id ?? 0;
+  }
+
+  static Future<int> get userId async {
+    if(_inMemoryUserData != null) return _inMemoryUserData!.IdUser!;
+
+    _inMemoryUserData = await _loadTokenFromSharedPreference();
+    return _inMemoryUserData?.IdUser ?? -1;
   }
 
   static Future<LoginResult?> _loadTokenFromSharedPreference() async {
