@@ -9,8 +9,7 @@ class DioClient {
   DioClient._sharedInstance();
   static final DioClient _shared = DioClient._sharedInstance();
   factory DioClient() => _shared;
-
-  static bool refreshTokenInProgress = false;
+  
   static BehaviorSubject<dynamic> accessTokenSubject = new BehaviorSubject.seeded(null);
   static Stream<dynamic> get accessToken$ => accessTokenSubject.asBroadcastStream();
   
