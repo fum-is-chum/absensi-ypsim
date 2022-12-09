@@ -46,7 +46,7 @@ class RiwayatPresensiBloc {
   }
 
   Future<Response> get() async {
-    int id = await CredentialGetter().userId;
+    int id = await CredentialGetter.employeeId;
     return DioClient.dio.get("/attendance/$id?start_date=${_filter.startDate}&end_date=${_filter.endDate}",
       options:  Options(
         headers: {

@@ -1,5 +1,6 @@
 // screens
 import 'package:SIMAt/env.dart';
+import 'package:SIMAt/screens/ganti-password/ganti-password.dart';
 import 'package:SIMAt/screens/home/home.dart';
 import 'package:SIMAt/screens/login-register-verification/screen.dart';
 import 'package:SIMAt/screens/pengajuan-izin/pengajuan-izin.dart';
@@ -49,7 +50,8 @@ class AbsensiYPSIM extends StatelessWidget {
               "/home": (BuildContext context) => Home(),
               "/riwayat-presensi": (BuildContext context) => RiwayatPresensi(),
               "/riwayat-izin": (BuildContext context) => RiwayatIzin(),
-              "/pengajuan-izin": (BuildContext context) => PengajuanIzin()
+              "/pengajuan-izin": (BuildContext context) => PengajuanIzin(),
+              "/ganti-password": (BuildContext context) => GantiPassword()
             },
             home: FutureBuilder<String>(
               future: initialize(),

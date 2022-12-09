@@ -74,6 +74,17 @@ class MaterialDrawer extends StatelessWidget {
                     title: "Riwayat Izin",
                     isSelected: currentPage == "Riwayat Izin" ? true : false),
                 SizedBox(height: 8),
+                DrawerTile(
+                    icon: Icons.lock,
+                    onTap: () {
+                      if (currentPage != "Ganti Password")
+                        Navigator.pushReplacementNamed(
+                            context, '/ganti-password');
+                    },
+                    iconColor: Colors.black,
+                    title: "Ganti Password",
+                    isSelected: currentPage == "Ganti Password" ? true : false),
+                SizedBox(height: 8),
                 Divider(),
               ],
             ),

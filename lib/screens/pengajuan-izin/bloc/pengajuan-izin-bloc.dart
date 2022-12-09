@@ -82,7 +82,7 @@ class PengajuanIzinBloc {
   }
 
   Future<Response> create() async {
-    int userId = await CredentialGetter().userId;
+    int userId = await CredentialGetter.employeeId;
     // _pengajuanIzinModel.remove('file');
     // var formData = FormData.fromMap(_pengajuanIzinModel);
     var formData = FormData.fromMap({
