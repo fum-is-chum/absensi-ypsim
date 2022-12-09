@@ -24,6 +24,10 @@ String formatTimeOnly(dynamic date) {
 Future<String> handleError(dynamic e) async {
   String error = "";
   if(e is DioError) {
+    if(e.response == null) {
+      error = e.toString();
+      return error;
+    }
     if(e.response != null && e.response!.statusCode == 301 || e.response!.statusCode == 401) {
       ErrorBloc.updateState(true);
     }

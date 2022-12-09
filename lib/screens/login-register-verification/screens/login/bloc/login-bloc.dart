@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:SIMAt/env.dart';
 import 'package:SIMAt/screens/login-register-verification/screens/login/models/login.dart';
 import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
 import 'package:SIMAt/utils/misc/credential-getter.dart';
@@ -34,14 +35,16 @@ class LoginBloc {
 
   void saveCredentials(LoginResult cred) {
     SharedPreferences sharedPref = CredentialGetter.sharedPref;
+    CredentialGetter.reset();
+    DioClient.updateToken(cred.AccessToken);
     sharedPref.setString('user', encryptAESCryptoJS(jsonEncode(cred.toJson()),'1!1!'));
     sharedPref.setString('login', encryptAESCryptoJS(jsonEncode(model),  '&*()'));
   }
 
-  Future<bool> loginUser() async {
+  Future<bool> loginUser({bool relogin = false}) async {
     sp.show();
     try {
-      Response resp = await login();
+      Response resp = await login(relogin: true);
       saveCredentials(LoginResult.fromJson(resp.data['Result']));
       sp.hide();
       return true;
@@ -76,7 +79,7 @@ class LoginBloc {
         // sp.hide();
         return false;
       }
-      await loginUser();
+      await loginUser(relogin: true);
       // sp.hide();
       return true;
     } catch (e) {
@@ -86,9 +89,13 @@ class LoginBloc {
     }
   }
 
-  Future<Response> login() {
+  Future<Response> login({bool relogin = false}) {
     Map<String, dynamic> _model = model;
     _model['username'] = _model['username'].toString().toLowerCase();
+   
+    if(relogin) {
+      return DioClient.reloginDio.post('/login', data: _model);
+    }
     return DioClient.dio.post('/login', data: _model);
   }
 
