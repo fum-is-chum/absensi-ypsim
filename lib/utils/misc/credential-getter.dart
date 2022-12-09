@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:SIMAt/screens/login-register-verification/screens/login/models/login-result.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
 import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,6 +20,8 @@ class CredentialGetter {
   static Future<void> init() async {
     if (_sharedPref == null) {
       _sharedPref = await SharedPreferences.getInstance();
+      _inMemoryUserData = await _loadTokenFromSharedPreference();
+
     }
   }
 
@@ -78,6 +81,7 @@ class CredentialGetter {
     if(_sharedPref!.containsKey('user')) {
       LoginResult user = LoginResult.fromJson(jsonDecode(decryptAESCryptoJS(_sharedPref!.getString('user')!,'1!1!')));
       if(user.AccessToken != null) {
+        DioClient.updateToken(user.AccessToken);
         return user;
       }
     }
