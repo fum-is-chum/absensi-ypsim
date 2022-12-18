@@ -131,7 +131,7 @@ class _UserInfo extends State<UserInfo> {
           ),
         ),
         FutureBuilder<LoginData>(
-            future: CredentialGetter().userData,
+            future: CredentialGetter.userData,
             builder: (BuildContext context, AsyncSnapshot<LoginData> snapshot) {
               if (!snapshot.hasData) {
                 return Container();
@@ -142,13 +142,17 @@ class _UserInfo extends State<UserInfo> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
                     child: Text(snapshot.data!.nama!,
-                        style: TextStyle(color: Colors.black87, fontSize: 21)),
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 18,
+                          overflow: TextOverflow.ellipsis
+                        )),
                   ),
                   Row(
                     children: [
                       Text(
                         snapshot.data!.nik!,
-                        style: TextStyle(color: Colors.black54, fontSize: 16),
+                        style: TextStyle(color: Colors.black54, fontSize: 14),
                       ),
                     ],
                   )

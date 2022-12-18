@@ -36,7 +36,7 @@ class CredentialGetter {
     return _inMemoryUserData?.AccessToken! ?? '';
   }
 
-  Future<LoginData> get userData async {
+  static Future<LoginData> get userData async {
     if(_inMemoryUserData != null) return _inMemoryUserData!.Data!;
     _inMemoryUserData = await _loadTokenFromSharedPreference();
     return _inMemoryUserData!.Data!;

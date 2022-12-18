@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:SIMAt/models/api-response.dart';
@@ -52,15 +51,18 @@ class HomeBloc {
     try {
       Map<String, dynamic> data = ApiResponse.fromJson((await _getAttendanceStatus(date: date)).data!).Result;
       // khusus endpoint getAttendanceStatus, pastikan time_settings != null
-      if(data['time_settings'] == null) {
-        sp.hide();
-        await handleError('Time Settings untuk user ini belum ditentukan');
-        return false;
-      } else {
-        this._attendanceStatus.sink.add(data);
-        sp.hide();
-        return true;
-      }
+      this._attendanceStatus.sink.add(data);
+      sp.hide();
+      return true;
+      // if(data['time_settings'] == null) {
+      //   sp.hide();
+      //   await handleError('Time Settings untuk user ini belum ditentukan');
+      //   return false;
+      // } else {
+      //   this._attendanceStatus.sink.add(data);
+      //   sp.hide();
+      //   return true;
+      // }
     } catch (e) {
       sp.hide();
       await handleError(e);
