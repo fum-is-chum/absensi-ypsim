@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/utils/services/hide_keyboard.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/services/hide-keyboard.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -195,7 +195,7 @@ class _TanggalField extends State<TanggalField> {
   void _showDatePicker() {
     showDatePicker(
       context: context,
-      initialDate: DateTime.parse(widget.isAkhir? _pengajuanIzinBloc.model.end_date: _pengajuanIzinBloc.model.start_date),
+      initialDate: DateTime.parse(_pengajuanIzinBloc.model.start_date),
       firstDate: widget.isAkhir? DateTime.parse(_pengajuanIzinBloc.model.start_date) : DateTime.fromMillisecondsSinceEpoch(0),
       lastDate: DateTime(DateTime.now().year + 10)
     ).then((DateTime? value) {

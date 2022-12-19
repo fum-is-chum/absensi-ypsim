@@ -1,6 +1,6 @@
 {
-  "name": "absensi_ypsim",
-  "short_name": "absensi_ypsim",
+  "name": "SIMAt",
+  "short_name": "SIMAt",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0175C2",

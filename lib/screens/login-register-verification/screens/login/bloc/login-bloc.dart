@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login.dart';
-import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
-import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
-import 'package:absensi_ypsim/utils/misc/crypto.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/env.dart';
+import 'package:SIMAt/screens/login-register-verification/screens/login/models/login.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/utils/misc/credential-getter.dart';
+import 'package:SIMAt/utils/misc/crypto.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 import 'package:dio/dio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,15 +35,16 @@ class LoginBloc {
 
   void saveCredentials(LoginResult cred) {
     SharedPreferences sharedPref = CredentialGetter.sharedPref;
+    CredentialGetter.reset();
+    DioClient.updateToken(cred.AccessToken);
     sharedPref.setString('user', encryptAESCryptoJS(jsonEncode(cred.toJson()),'1!1!'));
     sharedPref.setString('login', encryptAESCryptoJS(jsonEncode(model),  '&*()'));
   }
 
-  Future<bool> loginUser() async {
+  Future<bool> loginUser({bool relogin = false}) async {
     sp.show();
     try {
-      Response resp = await login();
-      
+      Response resp = await login(relogin: true);
       saveCredentials(LoginResult.fromJson(resp.data['Result']));
       sp.hide();
       return true;
@@ -72,12 +74,12 @@ class LoginBloc {
     try{
       // sp.show();
       // await logoutUser();
-      model = await CredentialGetter().loginCredential;
+      model = await CredentialGetter.loginCredential;
       if(model['username'] == null) {
         // sp.hide();
         return false;
       }
-      await loginUser();
+      await loginUser(relogin: true);
       // sp.hide();
       return true;
     } catch (e) {
@@ -87,12 +89,18 @@ class LoginBloc {
     }
   }
 
-  Future<Response> login() {
-    return DioClient().dio.post('/login', data: model);
+  Future<Response> login({bool relogin = false}) {
+    Map<String, dynamic> _model = model;
+    _model['username'] = _model['username'].toString().toLowerCase();
+   
+    if(relogin) {
+      return DioClient.reloginDio.post('/login', data: _model);
+    }
+    return DioClient.dio.post('/login', data: _model);
   }
 
   Future<Response> logout() {
-    return DioClient().dio.post(
+    return DioClient.dio.post(
       '/logout',
       data: null,
       options: Options(

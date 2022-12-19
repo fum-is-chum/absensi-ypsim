@@ -3,10 +3,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
-import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/utils/misc/credential-getter.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -55,7 +55,7 @@ class PengajuanIzinBloc {
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(e);;
+      await handleError(e);
       return false;
     }
   }
@@ -76,13 +76,13 @@ class PengajuanIzinBloc {
       return true;
     } catch (e) {
       sp.hide();
-      await handleError(e);;
+      await handleError(e);
       return false;
     }
   }
 
   Future<Response> create() async {
-    int userId = await CredentialGetter().userId;
+    int userId = await CredentialGetter.employeeId;
     // _pengajuanIzinModel.remove('file');
     // var formData = FormData.fromMap(_pengajuanIzinModel);
     var formData = FormData.fromMap({
@@ -94,7 +94,7 @@ class PengajuanIzinBloc {
               : null
     });
     
-    return DioClient().dioWithResponseType(ResponseType.plain).post(
+    return DioClient.dioWithResponseType(ResponseType.plain).post(
       '/permission/$userId',
       data: formData,
       options: Options(
@@ -121,7 +121,7 @@ class PengajuanIzinBloc {
               : null
     });
 
-    return DioClient().dioWithResponseType(ResponseType.plain).post(
+    return DioClient.dioWithResponseType(ResponseType.plain).post(
       '/permission/update/$permissionId',
       data: formData,
       options: Options(

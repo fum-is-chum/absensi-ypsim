@@ -1,7 +1,8 @@
+import 'package:SIMAt/env.dart';
 import 'package:flutter/material.dart';
-import 'package:absensi_ypsim/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/widgets/custom-button.dart';
+import 'package:SIMAt/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/widgets/custom-button.dart';
 
 late LoginBloc _bloc;
 void onSaved(String? val, String field) {
@@ -29,7 +30,7 @@ class _LoginView extends State<LoginView> {
   @override
   void dispose() {
     super.dispose();
-    _bloc.dispose();
+    // _bloc.dispose();
   }
   
   @override
@@ -71,12 +72,26 @@ class _LoginView extends State<LoginView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.asset("assets/img/logo-ypsim.jpeg",
-                          width: 150, fit: BoxFit.fitWidth),
+                      Image.asset(
+                        "assets/img/logo-ypsim.jpeg",
+                        width: 150, 
+                        fit: BoxFit.fitWidth,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top:12),
+                        child: Text(
+                          "SIMAt" , 
+                          style: TextStyle(
+                            fontSize: 20.0, 
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 5.0,
+                          ),
+                        )
+                      ),
                       Padding(
                         padding: EdgeInsets.only(top: 12),
                         child: TextFormField(
-                          initialValue: 'alvinchrist',
+                          initialValue: Environment.flavor == BuildFlavor.staging ? 'alvin' : '',
                           decoration: InputDecoration(
                             labelText: "Username",
                             isDense: true,
@@ -144,9 +159,8 @@ class _LoginView extends State<LoginView> {
 }
 
 class PasswordField extends StatefulWidget {
-  static final GlobalKey<_PasswordField> globalKey = GlobalKey();
-
-  PasswordField({Key? key}) : super(key: globalKey);
+  // bool initValue;
+  PasswordField({Key? key}) : super(key: key);
   @override
   _PasswordField createState() => _PasswordField();
 }
@@ -162,7 +176,7 @@ class _PasswordField extends State<PasswordField> {
         return Padding(
           padding: EdgeInsets.only(top: 12),
           child: TextFormField(
-            initialValue: '12345678',
+            initialValue: Environment.flavor == BuildFlavor.staging ? '12345678' : '',
             decoration: InputDecoration(
               labelText: "Kata Sandi",
               isDense: true,

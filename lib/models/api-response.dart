@@ -1,6 +1,6 @@
 class ApiResponse {
   int? StatusCode;
-  String? Message;
+  dynamic Message;
   dynamic Result;
   // lampiran
 

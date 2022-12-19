@@ -1,7 +1,7 @@
-import 'package:absensi_ypsim/models/api-response.dart';
-import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/models/api-response.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -51,8 +51,8 @@ class LocationBloc {
         //(Optional) Set foreground notification config to keep the app alive 
         //when going to the background
         foregroundNotificationConfig: const ForegroundNotificationConfig(
-            notificationText: "SimLog is running in background",
-            notificationTitle: "SimLog",
+            notificationText: "SIMAt is running in background",
+            notificationTitle: "SIMAt",
             enableWakeLock: true,
         )
       );
@@ -195,7 +195,7 @@ class LocationBloc {
   }
 
   Future<Response> _getValidLocation() {
-    return DioClient().dio.get('/get-validation-location',
+    return DioClient.dio.get('/get-validation-location',
       options: Options(
         headers: {
           'RequireToken': ''

@@ -1,11 +1,11 @@
 
 import 'dart:async';
 
-import 'package:absensi_ypsim/screens/home/bloc/check-in-bloc.dart';
-import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
-import 'package:absensi_ypsim/screens/home/camera.dart';
-import 'package:absensi_ypsim/screens/home/home.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
+import 'package:SIMAt/screens/home/bloc/check-in-bloc.dart';
+import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
+import 'package:SIMAt/screens/home/camera.dart';
+import 'package:SIMAt/screens/home/home.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +52,10 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
   bool _isTimeValid(Map<String, dynamic>? data, String current) {
     if(data == null) return false;
     String date = data['personal_calender']['date'];
-    Map<String, dynamic> settings = data['time_settings'];
+    Map<String, dynamic>? settings = data['time_settings'];
+    // handle jika settings null
+    if(settings == null) return false;
+    if(data['personal_calender']['check_in'] != null && data['personal_calender']['check_out'] != null) return false;
 
     late String start;
     late String end;

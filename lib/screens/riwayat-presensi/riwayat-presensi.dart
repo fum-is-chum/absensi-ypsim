@@ -1,11 +1,12 @@
-import 'package:absensi_ypsim/screens/riwayat-presensi/bloc/riwayat-presensi-bloc.dart';
-import 'package:absensi_ypsim/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
-import 'package:absensi_ypsim/screens/riwayat-presensi/riwayat-presensi-detail.dart';
-import 'package:absensi_ypsim/screens/riwayat-presensi/widgets/riwayat-presensi-item.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/drawer.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/screens/riwayat-presensi/bloc/riwayat-presensi-bloc.dart';
+import 'package:SIMAt/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
+import 'package:SIMAt/screens/riwayat-presensi/riwayat-presensi-detail.dart';
+import 'package:SIMAt/screens/riwayat-presensi/widgets/riwayat-presensi-item.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/drawer.dart';
+import 'package:SIMAt/widgets/spinner.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 late RiwayatPresensiBloc riwayatPresensiBloc;
@@ -50,6 +51,7 @@ class _RiwayatPresensi extends State<RiwayatPresensi> {
               slivers: <Widget>[
                 SliverAppBar(
                   forceElevated: true,
+                  elevation: 2,
                   title: Text("Riwayat Presensi",
                       style: TextStyle(color: Colors.black)),
                   backgroundColor: MaterialColors.bgColorScreen,
@@ -57,12 +59,12 @@ class _RiwayatPresensi extends State<RiwayatPresensi> {
                   pinned: true,
                   // floating: true,
                   // snap: false,
-                  expandedHeight: 144,
-                  collapsedHeight: 144,
+                  expandedHeight: 128 + (kIsWeb ? 16 : 0),
+                  collapsedHeight: 128 + (kIsWeb ? 16 : 0),
                   flexibleSpace: FlexibleSpaceBar(
                     background: Container(
                         // duration: Duration(milliseconds: 500),
-                        padding: EdgeInsets.only(top: 56),
+                        padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -79,9 +81,9 @@ class _RiwayatPresensi extends State<RiwayatPresensi> {
                         )),
                   ),
                 ),
-                SliverPadding(
-                    padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    sliver: SliverToBoxAdapter(child: HistoryList()))
+                SliverToBoxAdapter(
+                  child: HistoryList()
+                )
               ],
             ),
           )),
@@ -177,9 +179,9 @@ class _ListWidget extends State<HistoryList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        // padding: EdgeInsets.only(bottom: 24),
+        // padding: const EdgeInsets.only(bottom: 16),
         width: double.infinity,
-        height: MediaQuery.of(context).size.height - 144 - 56,
+        height: MediaQuery.of(context).size.height - 128 - 36,
         child: RefreshIndicator(
             onRefresh: () {
               return _getData();
@@ -193,8 +195,9 @@ class _ListWidget extends State<HistoryList> {
                   if (err != null)
                     return CustomScrollView(
                       slivers: [
-                        SliverToBoxAdapter(
-                          child: Center(
+                       SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 12),
                             child: Text(
                               err!,
                               textAlign: TextAlign.center,
@@ -205,6 +208,7 @@ class _ListWidget extends State<HistoryList> {
                     );
 
                   return CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(parent: const BouncingScrollPhysics()),
                     slivers: [
                       SliverAnimatedList(
                         key: _listKey,

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:absensi_ypsim/screens/home/preview_page.dart';
+import 'package:SIMAt/screens/home/preview_page.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -62,7 +62,7 @@ class _CameraPageState extends State<CameraPage> {
               builder: (context) => PreviewPage(
                     picture: fixedFile,
                   )));
-        Navigator.pop(context, true);
+        if(result) Navigator.pop(context, true);
         return result;
       } 
       bool result = await Navigator.push(
@@ -71,7 +71,7 @@ class _CameraPageState extends State<CameraPage> {
           builder: (context) => PreviewPage(
                 picture: picture,
               )));
-      Navigator.pop(context, true);
+      if(result) Navigator.pop(context, true);
       return result;
     } on CameraException catch (e) {
       debugPrint('Error occured while taking picture: $e');

@@ -1,10 +1,10 @@
-import 'package:absensi_ypsim/env.dart';
-import 'package:absensi_ypsim/screens/home/home.dart';
-import 'package:absensi_ypsim/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/utils/iframe/iframe.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/card-small.dart';
+import 'package:SIMAt/env.dart';
+import 'package:SIMAt/screens/home/home.dart';
+import 'package:SIMAt/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/iframe/iframe.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/card-small.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

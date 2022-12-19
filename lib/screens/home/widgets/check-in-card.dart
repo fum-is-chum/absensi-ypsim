@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:absensi_ypsim/screens/home/home.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:SIMAt/screens/home/home.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -111,13 +111,23 @@ class TimerDisplay extends StatefulWidget {
 
 class _TimerDisplay extends State<TimerDisplay> {
   Timer _timer = Timer(Duration(seconds: 10), () {});
+  late StreamSubscription<bool> _sub;
   List<int> counts = [];
   // var time = 0;
 
   @override
   void initState() {
-    getTime(context);
+    _sub = timeBloc.reloadStream.listen((event) {
+      getTime(context);
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _sub.cancel();
+    super.dispose();
   }
 
   Future<void> getTime(BuildContext context) async {
@@ -126,6 +136,7 @@ class _TimerDisplay extends State<TimerDisplay> {
       DateTime dateString = DateTime.parse(result).add(Duration(hours: 7));
       DateFormat formatter = DateFormat('H:mm:ss');
       timeBloc.updateDate(DateFormat("yyyy-MM-dd").format(dateString));
+      _timer.cancel();
       startTimer(formatter.format(dateString));
     } catch (e) {
       handleError(e);
@@ -157,12 +168,6 @@ class _TimerDisplay extends State<TimerDisplay> {
           timeBloc.updateCount("${counts[0] < 10 ? "0" : ""}${counts[0]}:${counts[1] < 10 ? "0" : ""}${counts[1]}:${counts[2] < 10 ? "0" : ""}${counts[2]}");
       },
     );
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
   }
 
   @override

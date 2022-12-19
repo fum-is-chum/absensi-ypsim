@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'dart:developer';
 
-import 'package:absensi_ypsim/env.dart';
-import 'package:absensi_ypsim/screens/home/bloc/camera-bloc.dart';
-import 'package:absensi_ypsim/screens/home/bloc/home-bloc.dart';
-import 'package:absensi_ypsim/screens/home/bloc/time-bloc.dart';
-import 'package:absensi_ypsim/screens/home/widgets/location-view.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/widgets/card-small.dart';
-import 'package:absensi_ypsim/widgets/drawer.dart';
+import 'package:SIMAt/env.dart';
+import 'package:SIMAt/screens/home/bloc/camera-bloc.dart';
+import 'package:SIMAt/screens/home/bloc/home-bloc.dart';
+import 'package:SIMAt/screens/home/bloc/time-bloc.dart';
+import 'package:SIMAt/screens/home/widgets/location-view.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/widgets/card-small.dart';
+import 'package:SIMAt/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
@@ -102,14 +101,12 @@ class _HomeState extends State<Home> {
                   homeBloc.getAttendanceStatus(date: timeBloc.currentDate),
                   locationBloc.getValidLocation()
                 ]);
+                timeBloc.triggerReload();
               },
               child: SingleChildScrollView(
                 primary: false,
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 30,
-                    ),
                     ImageRow(),
                     SizedBox(height: 20),
                     CheckInCard(),
@@ -162,8 +159,8 @@ class _ImageRow extends State<ImageRow> {
     if (data == null) return "00:00:00 WIB";
     if (data['personal_calender'] == null) return "00:00:00 WIB";
     return isCheckIn
-        ? data['personal_calender']['check_in'] ?? "00:00:00 WIB"
-        : data['personal_calender']['check_out'] ?? "00:00:00 WIB";
+        ? "${data['personal_calender']['check_in'] ?? "00:00:00"} WIB"
+        : "${data['personal_calender']['check_out']  ?? "00:00:00"} WIB";
   }
 
   String _img(Map<String, dynamic>? data, {bool isCheckIn = true}) {
@@ -191,18 +188,14 @@ class _ImageRow extends State<ImageRow> {
                 cta: _cta(snapshot.data),
                 title: "IN",
                 img: _img(snapshot.data),
-                // img: 'assets/img/no-image.jpg',
                 tap: () {
-                  // Navigator.pushReplacementNamed(context, '/pro');
                 }),
-            SizedBox(width: 8),
+            SizedBox(width: 16),
             CardSmall(
                 cta: _cta(snapshot.data, isCheckIn: false),
                 title: "OUT",
                 img: _img(snapshot.data, isCheckIn: false),
-                // img: 'assets/img/no-image.jpg',
                 tap: () {
-                  // Navigator.pushReplacementNamed(context, '/pro');
                 })
           ],
         );

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:absensi_ypsim/screens/home/bloc/location-bloc.dart';
-import 'package:absensi_ypsim/utils//iframe/iframe.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
+import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
+import 'package:SIMAt/utils//iframe/iframe.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +41,7 @@ class _LocationView extends State<LocationView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: MediaQuery.of(context).size.width,
+            // width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
               color: MaterialColors.newPrimary,
               borderRadius: BorderRadius.only(
@@ -53,32 +53,32 @@ class _LocationView extends State<LocationView> {
               padding: EdgeInsets.all(12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        color: Colors.white,
-                      ),
-                      SizedBox(width: 8),
-                      StreamBuilder(
-                          stream: locationBloc.targetLocation$,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<Map<String, dynamic>>
-                                  targetLocation) {
-                            bool targetLocationIsValid =
-                                targetLocation.hasData &&
-                                    targetLocation.data != null &&
-                                    targetLocation.data!['latitude'] != null;
-                            return Text(
-                              "Lokasi Anda ${targetLocationIsValid ? locationBloc.getDistance : 0}m",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            );
-                          })
-                    ],
+                  Icon(
+                    Icons.location_on,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: StreamBuilder(
+                        stream: locationBloc.targetLocation$,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<Map<String, dynamic>>
+                                targetLocation) {
+                          bool targetLocationIsValid = targetLocation.hasData &&
+                              targetLocation.data!['latitude'] != null;
+                          return Text(
+                            targetLocationIsValid &&
+                                    locationBloc.getDistance == 0
+                                ? "Anda berada di dalam jangkauan absensi"
+                                : "Anda berada di luar jangkauan absensi",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
+                          );
+                        }),
                   ),
                   Material(
                     shape: CircleBorder(),
