@@ -47,6 +47,26 @@ class _HomeState extends State<Home> {
     timeBloc.dispose();
   }
 
+  Future<List> _getAttendanceStatus() async {
+    List items = [];
+    List<Future> futures = [
+      homeBloc.getAttendanceStatus(date: timeBloc.currentDate),
+      locationBloc.getValidLocation()
+    ];
+
+    await Future.wait(futures.map((e) {
+      return e.then((value) {
+        items.add(value);
+      });
+    }).toList());
+    // await Future.wait(futures.map((item) {
+    //   finalItem = await item;
+    //   finalItems.add(finalItem)
+    // }).toList())
+
+    return items;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -96,10 +116,7 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: RefreshIndicator(
               onRefresh: () async {
-                await Future.wait([
-                  homeBloc.getAttendanceStatus(date: timeBloc.currentDate),
-                  locationBloc.getValidLocation()
-                ]);
+                await _getAttendanceStatus();
                 timeBloc.triggerReload();
               },
               child: SingleChildScrollView(
@@ -159,7 +176,7 @@ class _ImageRow extends State<ImageRow> {
     if (data['personal_calender'] == null) return "00:00:00 WIB";
     return isCheckIn
         ? "${data['personal_calender']['check_in'] ?? "00:00:00"} WIB"
-        : "${data['personal_calender']['check_out']  ?? "00:00:00"} WIB";
+        : "${data['personal_calender']['check_out'] ?? "00:00:00"} WIB";
   }
 
   String _img(Map<String, dynamic>? data, {bool isCheckIn = true}) {
@@ -187,15 +204,13 @@ class _ImageRow extends State<ImageRow> {
                 cta: _cta(snapshot.data),
                 title: "IN",
                 img: _img(snapshot.data),
-                tap: () {
-                }),
+                tap: () {}),
             SizedBox(width: 16),
             CardSmall(
                 cta: _cta(snapshot.data, isCheckIn: false),
                 title: "OUT",
                 img: _img(snapshot.data, isCheckIn: false),
-                tap: () {
-                })
+                tap: () {})
           ],
         );
       },
