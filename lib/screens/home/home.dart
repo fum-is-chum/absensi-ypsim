@@ -38,7 +38,6 @@ class _HomeState extends State<Home> {
     });
     homeBloc.init();
     timeBloc.init();
-    locationBloc.initLocation();
   }
 
   @override
