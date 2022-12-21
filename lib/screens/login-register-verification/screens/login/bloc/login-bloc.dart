@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:SIMAt/env.dart';
+import 'package:SIMAt/main.dart';
 import 'package:SIMAt/screens/login-register-verification/screens/login/models/login.dart';
 import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
 import 'package:SIMAt/utils/misc/credential-getter.dart';
@@ -9,6 +10,7 @@ import 'package:SIMAt/utils/misc/crypto.dart';
 import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:SIMAt/widgets/spinner.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,6 +53,12 @@ class LoginBloc {
     } catch (e) {
       sp.hide();
       await handleError(e);
+      if(relogin) {
+        CredentialGetter.reset();
+        Navigator.pushNamedAndRemoveUntil(
+            navigatorKey.currentContext!, '/login', (Route<dynamic> route) => false);
+      }
+      
       return false;
     }
   }
