@@ -180,7 +180,7 @@ class _ListWidget extends State<RiwayatIzinList> {
     return Container(
         // padding: EdgeInsets.only(bottom: 24),
         width: double.infinity,
-        height: MediaQuery.of(context).size.height - 36,
+        height: MediaQuery.of(context).size.height - 54,
         child: RefreshIndicator(
             triggerMode: RefreshIndicatorTriggerMode.onEdge,
             onRefresh: () {

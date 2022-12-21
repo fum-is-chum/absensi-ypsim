@@ -8,6 +8,7 @@ import 'package:SIMAt/screens/home/widgets/location-view.dart';
 import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:SIMAt/widgets/card-small.dart';
 import 'package:SIMAt/widgets/drawer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
@@ -38,6 +39,7 @@ class _HomeState extends State<Home> {
     });
     homeBloc.init();
     timeBloc.init();
+    if(kIsWeb) LocationBloc.init();
   }
 
   @override
@@ -51,7 +53,7 @@ class _HomeState extends State<Home> {
     List items = [];
     List<Future> futures = [
       homeBloc.getAttendanceStatus(date: timeBloc.currentDate),
-      locationBloc.getValidLocation()
+      LocationBloc.getValidLocation()
     ];
 
     await Future.wait(futures.map((e) {

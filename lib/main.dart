@@ -1,6 +1,7 @@
 // screens
 import 'package:SIMAt/env.dart';
 import 'package:SIMAt/screens/ganti-password/ganti-password.dart';
+import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
 import 'package:SIMAt/screens/home/home.dart';
 import 'package:SIMAt/screens/login-register-verification/screen.dart';
 import 'package:SIMAt/screens/pengajuan-izin/pengajuan-izin.dart';
@@ -20,7 +21,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Environment.init(
-    flavor: BuildFlavor.production,
+    flavor: BuildFlavor.staging,
   );
   registerWebViewWebImplementation();
   initializeDateFormatting('id_ID', null).then((_) => runApp(AbsensiYPSIM()));
@@ -30,7 +31,7 @@ Future<String> initialize() async {
   await CredentialGetter.init();
   String token = await CredentialGetter.userAccessToken;
   // await new Future.delayed(Duration(seconds: 3));
-  await locationBloc.initLocation();
+  await LocationBloc.init();
   return token;
 }
 
@@ -54,6 +55,7 @@ class AbsensiYPSIM extends StatelessWidget {
               "/pengajuan-izin": (BuildContext context) => PengajuanIzin(),
               "/ganti-password": (BuildContext context) => GantiPassword()
             },
+            // home: TestPage()
             home: FutureBuilder<String>(
               future: initialize(),
               builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
