@@ -224,11 +224,17 @@ class _MyMapView extends State<MyMapView> {
   }
 
   Widget _androidWidgets(Map<String, dynamic> targetLocation) {
-    return StreamBuilder(
-      stream: locationBloc.positionStream$,
-      initialData: locationBloc.getCurrentPosition,
-      builder: (BuildContext context, AsyncSnapshot<Position> pos) {
-        if (!pos.hasData || pos.data == null) {
+    return StreamBuilder<List>(
+      stream: CombineLatestStream.list([
+        locationBloc.positionStream$,
+        locationBloc.serviceStatusStream$,
+      ]),
+      initialData: [
+        locationBloc.getCurrentPosition,
+        ServiceStatus.disabled
+      ],
+      builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+        if (!snapshot.hasData || snapshot.data == null || snapshot.data?[0] == null) {
           return Center(
               child: Column(
             mainAxisSize: MainAxisSize.max,
@@ -239,6 +245,7 @@ class _MyMapView extends State<MyMapView> {
             ],
           ));
         }
+        Position pos = snapshot.data![0];
         return Stack(children: [
           WebView(
             gestureRecognizers: [
@@ -250,7 +257,7 @@ class _MyMapView extends State<MyMapView> {
               webView = wv;
             },
             initialUrl: Uri.dataFromString(
-                    homeMap(pos.data!, targetLocation['latitude'],
+                    homeMap(pos, targetLocation['latitude'],
                         targetLocation['longitude'], targetLocation['radius']),
                     mimeType: 'text/html')
                 .toString(),
