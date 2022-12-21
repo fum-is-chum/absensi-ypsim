@@ -30,6 +30,7 @@ Future<String> initialize() async {
   await CredentialGetter.init();
   String token = await CredentialGetter.userAccessToken;
   // await new Future.delayed(Duration(seconds: 3));
+  await locationBloc.initLocation();
   return token;
 }
 

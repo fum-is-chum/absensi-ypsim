@@ -61,18 +61,24 @@ class _LocationView extends State<LocationView> {
                   ),
                   SizedBox(width: 8),
                   Expanded(
-                    child: StreamBuilder(
-                        stream: locationBloc.targetLocation$,
+                    child: StreamBuilder<List<dynamic>>(
+                        stream: CombineLatestStream.list([
+                          locationBloc.targetLocation$,
+                          locationBloc.positionStream$
+                        ]),
                         builder: (BuildContext context,
-                            AsyncSnapshot<Map<String, dynamic>>
-                                targetLocation) {
-                          bool targetLocationIsValid = targetLocation.hasData &&
-                              targetLocation.data!['latitude'] != null;
+                            AsyncSnapshot<List<dynamic>> locationList) {
+                          if (!locationList.hasData ||
+                              locationBloc.getDistance != 0) {
+                            return Text('Anda berada di luar jangkauan absensi',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ));
+                          }
+
                           return Text(
-                            targetLocationIsValid &&
-                                    locationBloc.getDistance == 0
-                                ? "Anda berada di dalam jangkauan absensi"
-                                : "Anda berada di luar jangkauan absensi",
+                            "Anda berada di dalam jangkauan absensi",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 15,
@@ -141,8 +147,7 @@ class _MyMapView extends State<MyMapView> {
     if (webView != null) {
       if (!kIsWeb) {
         locationBloc.updateLoadingStatus(true);
-        Future.wait([locationBloc.getPosition, locationBloc.getValidLocation()])
-            .then((value) async {
+        _getLocationStatus().then((value) async {
           Map<String, dynamic> targetLocation =
               value[1] as Map<String, dynamic>;
           await webView!.loadUrl(Uri.dataFromString(
@@ -309,11 +314,30 @@ class _MyMapView extends State<MyMapView> {
     );
   }
 
+  Future<List> _getLocationStatus() async {
+    List items = [];
+    List<Future> futures = [
+      locationBloc.isLocationOn,
+      locationBloc.getValidLocation()
+    ];
+
+    await Future.wait(futures.map((e) {
+      return e.then((value) {
+        items.add(value);
+      });
+    }).toList());
+    // await Future.wait(futures.map((item) {
+    //   finalItem = await item;
+    //   finalItems.add(finalItem)
+    // }).toList())
+
+    return items;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: Future.wait(
-            [locationBloc.isLocationOn, locationBloc.getValidLocation()]),
+        future: _getLocationStatus(),
         builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
           int status = _mapViewValid(snapshot.data);
           if (!snapshot.hasData || status != 1) {
