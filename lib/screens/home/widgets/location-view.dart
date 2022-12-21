@@ -61,18 +61,24 @@ class _LocationView extends State<LocationView> {
                   ),
                   SizedBox(width: 8),
                   Expanded(
-                    child: StreamBuilder(
-                        stream: locationBloc.targetLocation$,
+                    child: StreamBuilder<List<dynamic>>(
+                        stream: CombineLatestStream.list([
+                          locationBloc.targetLocation$,
+                          locationBloc.positionStream$
+                        ]),
                         builder: (BuildContext context,
-                            AsyncSnapshot<Map<String, dynamic>>
-                                targetLocation) {
-                          bool targetLocationIsValid = targetLocation.hasData &&
-                              targetLocation.data!['latitude'] != null;
+                            AsyncSnapshot<List<dynamic>> locationList) {
+                          if (!locationList.hasData ||
+                              locationBloc.getDistance != 0) {
+                            return Text('Anda berada di luar jangkauan absensi',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ));
+                          }
+
                           return Text(
-                            targetLocationIsValid &&
-                                    locationBloc.getDistance == 0
-                                ? "Anda berada di dalam jangkauan absensi"
-                                : "Anda berada di luar jangkauan absensi",
+                            "Anda berada di dalam jangkauan absensi",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 15,
@@ -310,15 +316,16 @@ class _MyMapView extends State<MyMapView> {
 
   Future<List> _getLocationStatus() async {
     List items = [];
-    List<Future> futures = [locationBloc.isLocationOn, locationBloc.getValidLocation()];
-    
-    await Future.wait(
-      futures.map((e) {
-        return e.then((value) {
-          items.add(value);
-        });
-      }).toList()
-    );
+    List<Future> futures = [
+      locationBloc.isLocationOn,
+      locationBloc.getValidLocation()
+    ];
+
+    await Future.wait(futures.map((e) {
+      return e.then((value) {
+        items.add(value);
+      });
+    }).toList());
     // await Future.wait(futures.map((item) {
     //   finalItem = await item;
     //   finalItems.add(finalItem)
