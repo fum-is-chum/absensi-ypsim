@@ -1,94 +1,40 @@
 import 'dart:async';
 
-import 'package:SIMAt/models/api-response.dart';
-import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
-import 'package:SIMAt/utils/services/shared-service.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:SIMAt/screens/test.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
 
-class LocationBloc {
+class TestBloc {
   static StreamSubscription<Position>? positionStreamSubscription;
   static StreamSubscription<ServiceStatus>? serviceStatusStreamSubscription;
 
   static late BehaviorSubject<dynamic> _positionSubject;
-  static BehaviorSubject<Map<String, dynamic>> _targetLocation = BehaviorSubject.seeded({});
   static BehaviorSubject<ServiceStatus> _serviceStatusSubject = new BehaviorSubject.seeded(ServiceStatus.disabled);
-  static LocationSettings? _locationSettings;
   static bool positionStreamStarted = false;
 
-  LocationBloc._();
-  static final _instance = LocationBloc._();
-  factory LocationBloc() {
+  TestBloc._();
+  static final _instance = TestBloc._();
+  factory TestBloc() {
     return _instance; // singleton service
   }
 
-  static Future<void> init() async {
-    _positionSubject = new BehaviorSubject.seeded(null);
-    if(_locationSettings == null) setLocationSettings();
-    if(!kIsWeb) {
-      await getCurrentPosition().then((value) {
-        try { 
-          if(value == null) throw 'Null';
-          _updateServiceStatus(ServiceStatus.enabled);
-        } catch (e) {
-          _updateServiceStatus(ServiceStatus.disabled);
-        }
-        toggleServiceStatusStream(openSettings: value == null);
-      });
-    } else {
-      getCurrentPosition().then((value) {
-        try { 
-          if(value == null) throw 'Null';
-          _updateServiceStatus(ServiceStatus.enabled);
-        } catch (e) {
-          _updateServiceStatus(ServiceStatus.disabled);
-        }
-        toggleServiceStatusStream(openSettings: value == null);
-      });
-    }
-  }
 
-  static LocationSettings setLocationSettings() {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      _locationSettings = AndroidSettings(
-        accuracy: LocationAccuracy.best,
-        distanceFilter: 10,
-        // forceLocationManager: true,
-        intervalDuration: const Duration(seconds: 10),
-        //(Optional) Set foreground notification config to keep the app alive 
-        //when going to the background
-        foregroundNotificationConfig: const ForegroundNotificationConfig(
-            notificationText: "SIMAt is running in background",
-            notificationTitle: "SIMAt",
-            enableWakeLock: true,
-        )
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
-      _locationSettings = AppleSettings(
-        accuracy: LocationAccuracy.bestForNavigation,
-        activityType: ActivityType.fitness,
-        distanceFilter: 10,
-        pauseLocationUpdatesAutomatically: true,
-        // Only set to true if our app will be started up in the background.
-        showBackgroundLocationIndicator: false,
-      );
-    } else {
-        _locationSettings = LocationSettings(
-        accuracy: LocationAccuracy.best,
-        distanceFilter: 10,
-      );
-    }
-    return _locationSettings!;
+  static void init() {
+    _positionSubject = new BehaviorSubject.seeded(null);
+    getCurrentPosition().then((value) {
+      try { 
+        if(value == null) throw 'Null';
+        _updateServiceStatus(ServiceStatus.enabled);
+      } catch (e) {
+        _updateServiceStatus(ServiceStatus.disabled);
+      }
+      toggleServiceStatusStream();
+    });
   }
 
   static Stream<ServiceStatus> get serviceStatus$ => _serviceStatusSubject.asBroadcastStream();
   static Stream<dynamic> get positionStatus$ => _positionSubject.asBroadcastStream();
-  static Position? get position => _positionSubject.value;
-  static Map<String, dynamic> get getTargetLocation => _targetLocation.value;
-  static Stream<Map<String, dynamic>> get targetLocation$ => _targetLocation.asBroadcastStream();
-
   static Future<Position?> getCurrentPosition() async {
     final hasPermission = await _handlePermission();
 
@@ -173,9 +119,13 @@ class LocationBloc {
   static bool _isListening() => !(positionStreamSubscription == null ||
       positionStreamSubscription!.isPaused);
 
-  static void toggleServiceStatusStream({bool openSettings = true}) {
+  static Color determineButtonColor() {
+    return _isListening() ? Colors.green : Colors.red;
+  }
+
+  static void toggleServiceStatusStream() {
     if (serviceStatusStreamSubscription == null) {
-      if(openSettings) _openLocationSettings();
+      _openLocationSettings();
       final serviceStatusStream = Geolocator.getServiceStatusStream();
       serviceStatusStreamSubscription =
           serviceStatusStream.handleError((error) {
@@ -208,7 +158,7 @@ class LocationBloc {
   static void toggleListening() {
     if (positionStreamSubscription == null) {
       _updatePosition(-1);
-      final positionStream = Geolocator.getPositionStream(locationSettings: _locationSettings);
+      final positionStream = Geolocator.getPositionStream();
       positionStreamSubscription = positionStream.handleError((error) {
         positionStreamSubscription?.cancel();
         positionStreamSubscription = null;
@@ -247,7 +197,6 @@ class LocationBloc {
   }
 
   static void getLastKnownPosition() async {
-    if(kIsWeb) return;
     final position = await Geolocator.getLastKnownPosition();
     if (position != null) {
       _updatePosition(
@@ -288,7 +237,6 @@ class LocationBloc {
   }
 
   void _openAppSettings() async {
-    if(kIsWeb) return;
     final opened = await Geolocator.openAppSettings();
     String displayValue;
 
@@ -305,7 +253,6 @@ class LocationBloc {
   }
 
   static void _openLocationSettings() async {
-    if(kIsWeb) return;
     final opened = await Geolocator.openLocationSettings();
     String displayValue;
 
@@ -319,58 +266,5 @@ class LocationBloc {
     //   _PositionItemType.log,
     //   displayValue,
     // );
-  }
-  // end - Location Service
-
-  static int get getDistance {
-    if(_positionSubject.value == null || _positionSubject.value == -1 || getTargetLocation['latitude'] == null)
-      return -1;
-    double x1 = _positionSubject.value.latitude; 
-    double y1 = _positionSubject.value.longitude;
-    double x2 = getTargetLocation['latitude'];
-    double y2 = getTargetLocation['longitude'];
-    int radius = getTargetLocation['radius'];
-    
-    int distance = Geolocator.distanceBetween(x1, y1, x2, y2).round() - radius;
-    return distance >= 0 ? distance : 0;
-  } 
-
-  static bool isInValidLocation() { // 
-    if(_positionSubject.value == null || _positionSubject.value == -1 || getTargetLocation['latitude'] == null)
-      return false;
-    double x1 = _positionSubject.value.latitude;
-    double y1 = _positionSubject.value.longitude;
-    double x2 = getTargetLocation['latitude'];
-    double y2 = getTargetLocation['longitude'];
-    int radius = getTargetLocation['radius'];
-
-    return Geolocator.distanceBetween(x1, y1, x2, y2).round() <= radius; // return distance in meter
-  }
-
-  static Future<Map<String, dynamic>> getValidLocation() async {
-    // sp.show();
-    try {
-      _targetLocation.sink.add({});
-      ApiResponse response = ApiResponse.fromJson((await _getValidLocation()).data);
-      Map<String, dynamic> result = response.Result;
-
-      _targetLocation.sink.add(result);
-      // sp.hide();
-      return result;
-    } catch (e) {
-      // sp.hide();
-      handleError(e);
-      return {};
-    }
-  }
-
-  static Future<Response> _getValidLocation() {
-    return DioClient.dio.get('/get-validation-location',
-      options: Options(
-        headers: {
-          'RequireToken': ''
-        }
-      )
-    );
   }
 }

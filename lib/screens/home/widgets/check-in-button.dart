@@ -13,7 +13,6 @@ import 'package:rxdart/rxdart.dart';
 
 import '../bloc/home-bloc.dart';
 
-final LocationBloc locationBloc = LocationBloc();
 final CheckInBloc checkInBloc = CheckInBloc();
 final HomeBloc homeBloc = HomeBloc();
 
@@ -77,132 +76,106 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
         status == ServiceStatus.disabled;
   }
 
-  Widget _webWidgets() {
-    return FutureBuilder(
-      future: Future.wait([locationBloc.isLocationOn]),
-      builder: (BuildContext context, AsyncSnapshot<List<dynamic>> location) {
-        if (!location.hasData) {
-          return CheckInButton(
-            disabled: true,
-            isCheckout: false,
-          );
-        }
+  // Widget _webWidgets() {
+  //   return FutureBuilder(
+  //     future: Future.wait([locationBloc.isLocationOn]),
+  //     builder: (BuildContext context, AsyncSnapshot<List<dynamic>> location) {
+  //       if (!location.hasData) {
+  //         return CheckInButton(
+  //           disabled: true,
+  //           isCheckout: false,
+  //         );
+  //       }
 
-        // return CheckInButton(disabled: false, isCheckout: false,);
+  //       // return CheckInButton(disabled: false, isCheckout: false,);
 
-        return StreamBuilder<List<dynamic>>(
-          stream: CombineLatestStream.list([locationBloc.positionStream$]),
-          builder: (BuildContext context,
-              AsyncSnapshot<List<dynamic>> locationStream) {
-            if (!locationStream.hasData ||
-                _disabled(locationStream.data?[0], null)) {
-              return CheckInButton(disabled: true, isCheckout: false);
-            }
+  //       return StreamBuilder<List<dynamic>>(
+  //         stream: CombineLatestStream.list([locationBloc.positionStream$]),
+  //         builder: (BuildContext context,
+  //             AsyncSnapshot<List<dynamic>> locationStream) {
+  //           if (!locationStream.hasData ||
+  //               _disabled(locationStream.data?[0], null)) {
+  //             return CheckInButton(disabled: true, isCheckout: false);
+  //           }
 
-            return StreamBuilder(
-              stream: CombineLatestStream.list(
-                  [homeBloc.attendanceStatus$, locationBloc.targetLocation$]),
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<dynamic>> snapshot) {
-                bool attendanceIsValid =
-                    snapshot.data?[0]['personal_calender'] != null;
-                bool targetLocationIsValid = snapshot.data?[1] != null;
+  //           return StreamBuilder(
+  //             stream: CombineLatestStream.list(
+  //                 [homeBloc.attendanceStatus$, locationBloc.targetLocation$]),
+  //             builder: (BuildContext context,
+  //                 AsyncSnapshot<List<dynamic>> snapshot) {
+  //               bool attendanceIsValid =
+  //                   snapshot.data?[0]['personal_calender'] != null;
+  //               bool targetLocationIsValid = snapshot.data?[1] != null;
 
-                if (!snapshot.hasData ||
-                    !attendanceIsValid ||
-                    !targetLocationIsValid) {
-                  return CheckInButton(
-                      disabled: true,
-                      isCheckout: _isCheckout(snapshot.data?[0]));
-                }
+  //               if (!snapshot.hasData ||
+  //                   !attendanceIsValid ||
+  //                   !targetLocationIsValid) {
+  //                 return CheckInButton(
+  //                     disabled: true,
+  //                     isCheckout: _isCheckout(snapshot.data?[0]));
+  //               }
 
-                return StreamBuilder(
-                  stream: timeBloc.count$,
-                  builder: (BuildContext context, AsyncSnapshot<String> time) {
-                    if (!time.hasData || time.data == null) {
-                      return CheckInButton(disabled: true, isCheckout: false);
-                    }
-                    // return CheckInButton(disabled: false, isCheckout: false,);
-                    return CheckInButton(
-                        disabled:
-                            !_isTimeValid(snapshot.data![0], time.data!) ||
-                                !locationBloc.isInValidLocation() ||
-                                _isHoliday(snapshot.data![0]),
-                        isCheckout: _isCheckout(snapshot.data?[0]));
-                  },
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Future<List> _getLocationStatus() async {
-    List items = [];
-    List<Future> futures = [
-      locationBloc.isLocationOn,
-      locationBloc.lastKnownPosition
-    ];
-
-    await Future.wait(futures.map((e) {
-      return e.then((value) {
-        items.add(value);
-      });
-    }).toList());
-    // await Future.wait(futures.map((item) {
-    //   finalItem = await item;
-    //   finalItems.add(finalItem)
-    // }).toList())
-
-    return items;
-  }
+  //               return StreamBuilder(
+  //                 stream: timeBloc.count$,
+  //                 builder: (BuildContext context, AsyncSnapshot<String> time) {
+  //                   if (!time.hasData || time.data == null) {
+  //                     return CheckInButton(disabled: true, isCheckout: false);
+  //                   }
+  //                   // return CheckInButton(disabled: false, isCheckout: false,);
+  //                   return CheckInButton(
+  //                       disabled:
+  //                           !_isTimeValid(snapshot.data![0], time.data!) ||
+  //                               !locationBloc.isInValidLocation() ||
+  //                               _isHoliday(snapshot.data![0]),
+  //                       isCheckout: _isCheckout(snapshot.data?[0]));
+  //                 },
+  //               );
+  //             },
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget _androidWidgets() {
-    return FutureBuilder(
-      future: _getLocationStatus(),
-      builder: (BuildContext context, AsyncSnapshot<List<dynamic>> location) {
-        if (!location.hasData || (location.hasData && !location.data?[0])) {
-          return CheckInButton(
+    return StreamBuilder(
+      stream: LocationBloc.serviceStatus$,
+      builder: (BuildContext context, AsyncSnapshot<ServiceStatus> serviceStatusSnapshot) {
+        if(!serviceStatusSnapshot.hasData || serviceStatusSnapshot.data == ServiceStatus.disabled) {
+           return CheckInButton(
             disabled: true,
             isCheckout: false,
           );
         }
-
-        return StreamBuilder<List<dynamic>>(
-          stream: CombineLatestStream.list([
-            locationBloc.serviceStatusStream$,
-            locationBloc.positionStream$
-          ]),
-          initialData: [
-            location.data![0] ? ServiceStatus.enabled : ServiceStatus.disabled,
-            location.data?[1]
-          ],
-          builder: (BuildContext context,
-              AsyncSnapshot<List<dynamic>> locationStream) {
-            if (!locationStream.hasData ||
-                _disabled(locationStream.data?[0], locationStream.data?[1])) {
-              return CheckInButton(disabled: true, isCheckout: false);
+        
+        return StreamBuilder(
+          stream: LocationBloc.positionStatus$,
+          builder: (BuildContext context, AsyncSnapshot<dynamic> positionSnapshot) {
+            if(!positionSnapshot.hasData || positionSnapshot.data == null) {
+              return CheckInButton(
+                disabled: true,
+                isCheckout: false,
+              );
             }
 
             return StreamBuilder(
               stream: CombineLatestStream.list([
                 homeBloc.attendanceStatus$,
-                locationBloc.targetLocation$,
+                LocationBloc.targetLocation$,
               ]),
               builder: (BuildContext context,
-                  AsyncSnapshot<List<dynamic>> snapshot) {
+                  AsyncSnapshot<List<dynamic>> locationSnapshot) {
                 bool attendanceIsValid =
-                    snapshot.data?[0]['personal_calender'] != null;
-                bool targetLocationIsValid = snapshot.data?[1] != null;
+                    locationSnapshot.data?[0]['personal_calender'] != null;
+                bool targetLocationIsValid = locationSnapshot.data?[1] != null;
 
-                if (!snapshot.hasData ||
+                if (!locationSnapshot.hasData ||
                     !attendanceIsValid ||
                     !targetLocationIsValid) {
                   return CheckInButton(
                       disabled: true,
-                      isCheckout: _isCheckout(snapshot.data?[0]));
+                      isCheckout: _isCheckout(locationSnapshot.data?[0]));
                 }
 
                 return StreamBuilder(
@@ -213,10 +186,10 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
                     }
                     return CheckInButton(
                         disabled:
-                            !_isTimeValid(snapshot.data![0], time.data!) ||
-                                !locationBloc.isInValidLocation() ||
-                                _isHoliday(snapshot.data![0]),
-                        isCheckout: _isCheckout(snapshot.data?[0]));
+                            !_isTimeValid(locationSnapshot.data![0], time.data!) ||
+                                !LocationBloc.isInValidLocation() ||
+                                _isHoliday(locationSnapshot.data![0]),
+                        isCheckout: _isCheckout(locationSnapshot.data?[0]));
                   },
                 );
               },
@@ -229,7 +202,7 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return kIsWeb ? _webWidgets() : _androidWidgets();
+    return kIsWeb ? _androidWidgets() : _androidWidgets();
   }
 }
 
@@ -276,13 +249,13 @@ class _CheckInButton extends State<CheckInButton> {
               widget.isCheckout
                   ? await homeBloc.checkOut(
                       context: context,
-                      pos: locationBloc.getCurrentPosition!,
+                      pos: LocationBloc.position!,
                       dateTime:
                           "${timeBloc.currentDate} ${timeBloc.currentTime}",
                       photo: cameraBloc.imageFile!)
                   : await homeBloc.checkIn(
                       context: context,
-                      pos: locationBloc.getCurrentPosition!,
+                      pos: LocationBloc.position!,
                       dateTime:
                           "${timeBloc.currentDate} ${timeBloc.currentTime}",
                       photo: cameraBloc.imageFile!);
