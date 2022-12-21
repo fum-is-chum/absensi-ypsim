@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login-result.dart';
+import 'package:SIMAt/screens/login-register-verification/screens/login/models/login-result.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'crypto.dart';
@@ -10,11 +12,17 @@ class CredentialGetter {
   static final CredentialGetter _shared = CredentialGetter._sharedInstance();
   factory CredentialGetter() => _shared;
   static SharedPreferences? _sharedPref;
+
   static LoginResult? _inMemoryUserData;
+  static int? _userId;
   static Map<String, dynamic> _loginCredential = {};
 
   static Future<void> init() async {
-    _sharedPref = await SharedPreferences.getInstance();
+    if (_sharedPref == null) {
+      _sharedPref = await SharedPreferences.getInstance();
+      _inMemoryUserData = await _loadTokenFromSharedPreference();
+
+    }
   }
 
   static get sharedPref => _sharedPref;
@@ -28,23 +36,42 @@ class CredentialGetter {
     return _inMemoryUserData?.AccessToken! ?? '';
   }
 
-  Future<LoginData> get userData async {
+  static Future<LoginData> get userData async {
     if(_inMemoryUserData != null) return _inMemoryUserData!.Data!;
     _inMemoryUserData = await _loadTokenFromSharedPreference();
     return _inMemoryUserData!.Data!;
   }
 
-  Future<Map<String, dynamic>> get loginCredential async {
+  static Future<Map<String, dynamic>> get loginCredential async {
     if(_loginCredential['username'] != null) return _loginCredential;
     _loginCredential = await _loadLoginCredential();
     return _loginCredential;
   }
 
-  Future<int> get userId async {
+  static Future<bool> updatePassword(String newPassword) async {
+    try {
+      if(_sharedPref == null) await init();
+      Map<String, dynamic> newCredential = await CredentialGetter.loginCredential;
+      newCredential['password'] = newPassword;
+      sharedPref.setString('login', encryptAESCryptoJS(jsonEncode(newCredential),  '&*()'));
+      return true;
+    } catch (e) {
+      throw(e);
+    }
+  }
+
+  static Future<int> get employeeId async {
     if(_inMemoryUserData != null) return _inMemoryUserData!.Data!.id!;
 
     _inMemoryUserData = await _loadTokenFromSharedPreference();
     return _inMemoryUserData?.Data!.id ?? 0;
+  }
+
+  static Future<int> get userId async {
+    if(_inMemoryUserData != null) return _inMemoryUserData!.IdUser!;
+
+    _inMemoryUserData = await _loadTokenFromSharedPreference();
+    return _inMemoryUserData?.IdUser ?? -1;
   }
 
   static Future<LoginResult?> _loadTokenFromSharedPreference() async {
@@ -54,6 +81,7 @@ class CredentialGetter {
     if(_sharedPref!.containsKey('user')) {
       LoginResult user = LoginResult.fromJson(jsonDecode(decryptAESCryptoJS(_sharedPref!.getString('user')!,'1!1!')));
       if(user.AccessToken != null) {
+        DioClient.updateToken(user.AccessToken);
         return user;
       }
     }

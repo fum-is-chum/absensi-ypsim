@@ -1,12 +1,11 @@
-import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:absensi_ypsim/models/api-response.dart';
-import 'package:absensi_ypsim/screens/home/models/check-in.dart';
-import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
-import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/models/api-response.dart';
+import 'package:SIMAt/screens/home/models/check-in.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/utils/misc/credential-getter.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,9 +50,19 @@ class HomeBloc {
     sp.show();
     try {
       Map<String, dynamic> data = ApiResponse.fromJson((await _getAttendanceStatus(date: date)).data!).Result;
+      // khusus endpoint getAttendanceStatus, pastikan time_settings != null
       this._attendanceStatus.sink.add(data);
       sp.hide();
       return true;
+      // if(data['time_settings'] == null) {
+      //   sp.hide();
+      //   await handleError('Time Settings untuk user ini belum ditentukan');
+      //   return false;
+      // } else {
+      //   this._attendanceStatus.sink.add(data);
+      //   sp.hide();
+      //   return true;
+      // }
     } catch (e) {
       sp.hide();
       await handleError(e);
@@ -103,7 +112,7 @@ class HomeBloc {
     required dynamic photo
   }) async {
     CheckInOutModel checkInModel = CheckInOutModel();
-    checkInModel.employee_id = await CredentialGetter().userId;
+    checkInModel.employee_id = await CredentialGetter.employeeId;
     checkInModel.latitude = pos.latitude;
     checkInModel.longitude = pos.longitude;
     checkInModel.date = dateTime.substring(0, 10);
@@ -129,7 +138,7 @@ class HomeBloc {
       });
     }
 
-    return DioClient().dioWithResponseType(ResponseType.plain).post(
+    return DioClient.dioWithResponseType(ResponseType.plain).post(
       '/attendance/checkIn',
       data: formData,
       options: Options(
@@ -150,7 +159,7 @@ class HomeBloc {
     required dynamic photo
   }) async {
     CheckInOutModel checkOutModel = CheckInOutModel();
-    checkOutModel.employee_id = await CredentialGetter().userId;
+    checkOutModel.employee_id = await CredentialGetter.employeeId;
     checkOutModel.latitude = pos.latitude;
     checkOutModel.longitude = pos.longitude;
     checkOutModel.date = dateTime.substring(0, 10);
@@ -176,7 +185,7 @@ class HomeBloc {
       });
     }
 
-    return DioClient().dioWithResponseType(ResponseType.plain).post(
+    return DioClient.dioWithResponseType(ResponseType.plain).post(
       '/attendance/checkOut',
       data: formData,
       options: Options(
@@ -195,10 +204,10 @@ class HomeBloc {
     required String date
   }) async {
     Map<String, dynamic> data = {};
-    data['employee_id'] = await CredentialGetter().userId;
+    data['employee_id'] = await CredentialGetter.employeeId;
     data['date'] = date;
 
-    return DioClient().dio.post(
+    return DioClient.dio.post(
       '/attendance/status',
       data: data,
       options: Options(

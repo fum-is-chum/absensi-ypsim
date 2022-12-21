@@ -1,9 +1,9 @@
-import 'package:absensi_ypsim/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
-import 'package:absensi_ypsim/screens/login-register-verification/screens/login/models/login-result.dart';
-import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
+import 'package:SIMAt/screens/login-register-verification/screens/login/bloc/login-bloc.dart';
+import 'package:SIMAt/screens/login-register-verification/screens/login/models/login-result.dart';
+import 'package:SIMAt/utils/misc/credential-getter.dart';
 // import 'package:url_launcher/url_launcher.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:absensi_ypsim/widgets/drawer-tile.dart';
+import 'package:SIMAt/widgets/drawer-tile.dart';
 import 'package:flutter/material.dart';
 
 class MaterialDrawer extends StatelessWidget {
@@ -74,6 +74,17 @@ class MaterialDrawer extends StatelessWidget {
                     title: "Riwayat Izin",
                     isSelected: currentPage == "Riwayat Izin" ? true : false),
                 SizedBox(height: 8),
+                DrawerTile(
+                    icon: Icons.lock,
+                    onTap: () {
+                      if (currentPage != "Ganti Password")
+                        Navigator.pushReplacementNamed(
+                            context, '/ganti-password');
+                    },
+                    iconColor: Colors.black,
+                    title: "Ganti Password",
+                    isSelected: currentPage == "Ganti Password" ? true : false),
+                SizedBox(height: 8),
                 Divider(),
               ],
             ),
@@ -120,7 +131,7 @@ class _UserInfo extends State<UserInfo> {
           ),
         ),
         FutureBuilder<LoginData>(
-            future: CredentialGetter().userData,
+            future: CredentialGetter.userData,
             builder: (BuildContext context, AsyncSnapshot<LoginData> snapshot) {
               if (!snapshot.hasData) {
                 return Container();
@@ -131,13 +142,17 @@ class _UserInfo extends State<UserInfo> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
                     child: Text(snapshot.data!.nama!,
-                        style: TextStyle(color: Colors.black87, fontSize: 21)),
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 18,
+                          overflow: TextOverflow.ellipsis
+                        )),
                   ),
                   Row(
                     children: [
                       Text(
                         snapshot.data!.nik!,
-                        style: TextStyle(color: Colors.black54, fontSize: 16),
+                        style: TextStyle(color: Colors.black54, fontSize: 14),
                       ),
                     ],
                   )

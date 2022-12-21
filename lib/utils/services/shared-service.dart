@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:absensi_ypsim/env.dart';
-import 'package:absensi_ypsim/main.dart';
-import 'package:absensi_ypsim/models/api-response.dart';
-import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
-import 'package:absensi_ypsim/utils/services/error-bloc.dart';
+import 'package:SIMAt/env.dart';
+import 'package:SIMAt/main.dart';
+import 'package:SIMAt/models/api-response.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/utils/services/error-bloc.dart';
 import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,14 +24,28 @@ String formatTimeOnly(dynamic date) {
 Future<String> handleError(dynamic e) async {
   String error = "";
   if(e is DioError) {
+    if(e.response == null) {
+      error = e.toString();
+      return error;
+    }
     if(e.response != null && e.response!.statusCode == 301 || e.response!.statusCode == 401) {
-      ErrorBloc().updateState(true);
+      ErrorBloc.updateState(true);
     }
     if(e.response != null && e.response!.data != null) {
-      try {
-        error = "${ApiResponse.fromJson(e.response!.data is String ? jsonDecode(e.response!.data) : e.response!.data).Message}";
-      } catch (err) {
-        error = e.response!.toString();
+      if(e.response!.data is String) {
+        try {
+          error = ApiResponse.fromJson(jsonDecode(e.response!.data)).Message;
+        } catch (_) {
+          error = e.response!.data;
+        }
+      } else {  
+        var parsed = ApiResponse.fromJson(e.response!.data);
+        if(parsed.Message != null && (parsed.Message is String) == false ) {
+          String firstKey = parsed.Message.keys.toList()[0];
+          error = parsed.Message[firstKey].toString();
+        } else {
+          error = parsed.Message.toString();
+        }
       }
     } else if(e.error is SocketException) {
       error = "Tidak ada koneksi";
@@ -41,7 +55,7 @@ Future<String> handleError(dynamic e) async {
   } else {
     error = e.toString();
   }
-  if(!ErrorBloc().isTokenExpired) {
+  if(!ErrorBloc.isTokenExpired) {
     await ArtSweetAlert.show(
       context: navigatorKey.currentContext!,
       artDialogArgs: ArtDialogArgs(
@@ -59,7 +73,7 @@ Future<File> createFileOfPdfUrl(BuildContext? context, String url) async {
   // print("Start download file from internet!");
   try {
     final filename = url.substring(url.lastIndexOf("/") + 1);
-    var bytes = (await DioClient().dioWithResponseType(ResponseType.bytes, baseUrl: '${Environment.baseUrl}').get(url)).data;
+    var bytes = (await DioClient.dioWithResponseType(ResponseType.bytes, baseUrl: '${Environment.baseUrl}').get(url)).data;
     var dir = await getApplicationDocumentsDirectory();
     // print("Download files");
     // print("${dir.path}/$filename");

@@ -1,7 +1,7 @@
-import 'package:absensi_ypsim/models/api-response.dart';
-import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
-import 'package:absensi_ypsim/widgets/spinner.dart';
+import 'package:SIMAt/models/api-response.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -51,8 +51,8 @@ class LocationBloc {
         //(Optional) Set foreground notification config to keep the app alive 
         //when going to the background
         foregroundNotificationConfig: const ForegroundNotificationConfig(
-            notificationText: "SimLog is running in background",
-            notificationTitle: "SimLog",
+            notificationText: "SIMAt is running in background",
+            notificationTitle: "SIMAt",
             enableWakeLock: true,
         )
       );
@@ -74,11 +74,10 @@ class LocationBloc {
     return _locationSettings!;
   }
   /// start - Location Service
-  void initLocation() async {
+  Future<void> initLocation() async {
     setLocationSettings();
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled!) {
-      permission = await Geolocator.requestPermission();
       await Geolocator.openLocationSettings();
       // Location services are not enabled don't continue
       // accessing the position and request users of the 
@@ -97,7 +96,7 @@ class LocationBloc {
       // return Future.error(
       //   'Location permissions are permanently denied, we cannot request permissions.');
     } 
-
+    return;
   }
 
   void updateLoadingStatus(bool value) {
@@ -154,7 +153,7 @@ class LocationBloc {
 
   int get getDistance {
     if(_currentPos == null || getTargetLocation['latitude'] == null) 
-      return 0;
+      return -1;
     double x1 = _currentPos!.latitude; 
     double y1 = _currentPos!.longitude;
     double x2 = getTargetLocation['latitude'];
@@ -195,7 +194,7 @@ class LocationBloc {
   }
 
   Future<Response> _getValidLocation() {
-    return DioClient().dio.get('/get-validation-location',
+    return DioClient.dio.get('/get-validation-location',
       options: Options(
         headers: {
           'RequireToken': ''

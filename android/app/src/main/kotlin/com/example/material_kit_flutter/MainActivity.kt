@@ -1,4 +1,4 @@
-package com.example.absensi_ypsim
+package com.ypsim.SIMAt
 import io.flutter.embedding.android.FlutterActivity
  
 class MainActivity: FlutterActivity() {

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:absensi_ypsim/screens/home/bloc/camera-bloc.dart';
+import 'package:SIMAt/screens/home/bloc/camera-bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';

@@ -1,7 +1,7 @@
+import 'package:SIMAt/screens/login-register-verification/screens/register/bloc/register-bloc.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/widgets/custom-button.dart';
 import 'package:flutter/material.dart';
-import 'package:absensi_ypsim/screens/login-register-verification/screens/register/bloc/register-bloc.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/widgets/custom-button.dart';
 
 late RegisterBloc _bloc;
 
@@ -91,6 +91,18 @@ class _RegisterView extends State<RegisterView> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 12),
+                        child: Text(
+                          "SIMAt",
+                          style: TextStyle(
+                            fontFamily: 'Fira Code',
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 5.0,
+                          ),
+                        )
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 12),
                         child: TextFormField(
                           decoration: InputDecoration(
                             labelText: "NIK",
@@ -166,9 +178,7 @@ class _RegisterView extends State<RegisterView> {
 }
 
 class PasswordField extends StatefulWidget {
-  static final GlobalKey<_PasswordField> globalKey = GlobalKey();
-
-  PasswordField({Key? key}) : super(key: globalKey);
+  PasswordField({Key? key}) : super(key: key);
   @override
   _PasswordField createState() => _PasswordField();
 }

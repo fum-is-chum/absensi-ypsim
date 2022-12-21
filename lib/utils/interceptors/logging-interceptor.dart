@@ -1,8 +1,6 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 
-class LoggingInterceptors extends Interceptor {
+class LoggingInterceptors extends InterceptorsWrapper {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     print("--> ${options.method.toUpperCase()}");

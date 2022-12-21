@@ -2,11 +2,11 @@
 
 import 'dart:async';
 
-import 'package:absensi_ypsim/utils/interceptors/dio-interceptor.dart';
+import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
 import 'package:dio/dio.dart';
-import 'package:absensi_ypsim/utils/misc/credential-getter.dart';
-import 'package:absensi_ypsim/models/api-response.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:SIMAt/utils/misc/credential-getter.dart';
+import 'package:SIMAt/models/api-response.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../models/riwayat-izin.dart';
@@ -48,8 +48,9 @@ class RiwayatIzinBloc {
   }
 
   Future<Response> get() async {
-    int id = await CredentialGetter().userId;
-    return DioClient().dio.get("/permission/$id?start_date=${_filter.startDate}&end_date=${_filter.endDate}",
+    int id = await CredentialGetter.employeeId;
+    // return DioClient.dio.get("/permission/$id?start_date=${_filter.startDate}&end_date=${_filter.endDate}",
+    return DioClient.dio.get("/permission/all/$id",
       options:  Options(
         headers: {
           'RequireToken': ''

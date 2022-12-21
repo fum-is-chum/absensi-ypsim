@@ -1,8 +1,8 @@
-import 'package:absensi_ypsim/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:SIMAt/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:flutter/material.dart';
 
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
 
 class HistoryPresensiItem extends StatelessWidget {
 
@@ -18,7 +18,7 @@ class HistoryPresensiItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: InkWell(
         onTap: () => tap(),
         child: Card(
@@ -83,15 +83,49 @@ class HistoryPresensiItem extends StatelessWidget {
                         boxShadow: [
                           BoxShadow(
                             color: (() {
-                              if(item.status == "Absen") return MaterialColors.error;
-                              return MaterialColors.bgSecondary;
+                              Color color;
+                              switch(item.status) {
+                                case "Absen": {
+                                  color = MaterialColors.error;
+                                } break;
+
+                                case "Izin": {
+                                  color = MaterialColors.warning;
+                                } break;
+
+                                case "Libur": {
+                                  color = MaterialColors.muted;
+                                } break;
+                                  
+                                default: {
+                                  color = MaterialColors.bgSecondary;
+                                } break;
+                              }
+                              return color;
                             }()),
                             blurRadius: 2.0
                           )
                         ],
                         color: (() {
-                          if (item.status == "Absen") return MaterialColors.error;
-                          return MaterialColors.bgSecondary;
+                          Color color;
+                          switch(item.status) {
+                            case "Absen": {
+                              color = MaterialColors.error;
+                            } break;
+
+                            case "Izin": {
+                              color = MaterialColors.warning;
+                            } break;
+
+                            case "Libur": {
+                              color = MaterialColors.muted;
+                            } break;
+                              
+                            default: {
+                              color = MaterialColors.bgSecondary;
+                            } break;
+                          }
+                          return color;
                         }()),
                       ),
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),

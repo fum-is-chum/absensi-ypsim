@@ -1,4 +1,4 @@
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:flutter/material.dart';
 
 class CardSmall extends StatelessWidget {
@@ -20,27 +20,47 @@ class CardSmall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Flexible(
+      // fit: FlexFit.tight,
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.255,
+        constraints: BoxConstraints(
+          minHeight: 200
+        ),
+        height: MediaQuery.of(context).size.width * 0.5,
         margin: EdgeInsets.only(top: 10),
         child: GestureDetector(
           onTap: tap as void Function()?,
           child: Stack(clipBehavior: Clip.antiAlias, children: [
             Card(
-              elevation: 2,
+              elevation: 1.5,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
                 children: [
-                  Flexible(flex: 2, child: Container()),
-                  Flexible(
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(4.0),
+                          topRight: Radius.circular(4.0)
+                        ),
+                        image: DecorationImage(
+                          image: (img! as String).substring(0,4) == 'http' ? NetworkImage(img!) : Image.asset(img!).image,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    )
+                  ),
+                  Expanded(
                     flex: 1,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        SizedBox(height: 8),
+                        // SizedBox(height: 8),
                         Text(
                           title!,
                           style: TextStyle(
@@ -49,7 +69,7 @@ class CardSmall extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        SizedBox(height: 4),
                         Text(
                           cta,
                           style: TextStyle(
@@ -57,37 +77,38 @@ class CardSmall extends StatelessWidget {
                             fontSize: 14,
                           ),
                         ),
+                        SizedBox(height: 8),
                       ],
                     ),
                   )
                 ],
               ),
             ),
-            FractionalTranslation(
-              translation: Offset(0, -0.15),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.19,
-                  width: MediaQuery.of(context).size.width / 2.5,
-                  padding: EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
-                          spreadRadius: 2,
-                          blurRadius: 1,
-                          offset: Offset(0, 0))
-                    ],
-                    borderRadius: BorderRadius.all(Radius.circular(4.0)),
-                    image: DecorationImage(
-                      image: (img! as String).substring(0,4) == 'http' ? NetworkImage(img!) : Image.asset(img!).image,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // FractionalTranslation(
+            //   translation: Offset(0, -0.3),
+            //   child: Align(
+            //     alignment: Alignment.topCenter,
+            //     child: Container(
+            //       height: 360,
+            //       width: MediaQuery.of(context).size.width / 2.8,
+            //       // padding: EdgeInsets.all(16.0),
+            //       decoration: BoxDecoration(
+            //         boxShadow: [
+            //           BoxShadow(
+            //               color: Colors.black.withOpacity(0.06),
+            //               spreadRadius: 2,
+            //               blurRadius: 1,
+            //               offset: Offset(0, 0))
+            //         ],
+            //         borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            //         image: DecorationImage(
+            //           image: (img! as String).substring(0,4) == 'http' ? NetworkImage(img!) : Image.asset(img!).image,
+            //           fit: BoxFit.fitHeight,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ]),
         ),
       ),

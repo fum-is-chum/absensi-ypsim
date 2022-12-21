@@ -3,11 +3,13 @@ import 'dart:convert';
 class LoginResult {
   String? AccessToken;
   String? TokenType;
+  int? IdUser;
   LoginData? Data;
 
   LoginResult.fromJson(Map<String, dynamic> json) {
     AccessToken = json['AccessToken'];
     TokenType = json['TokenType'];
+    IdUser = json['IdUser'];
     Data = json['Data'].runtimeType == String ? LoginData.fromJson(jsonDecode(json['Data'])) : LoginData.fromJson(json['Data']);
   }
 
@@ -15,6 +17,7 @@ class LoginResult {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['AccessToken'] = this.AccessToken;
     data['TokenType'] = this.TokenType;
+    data['IdUser'] = this.IdUser;
     data['Data'] = jsonEncode(this.Data);
     return data;
   }

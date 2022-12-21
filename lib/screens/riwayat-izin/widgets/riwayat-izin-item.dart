@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:absensi_ypsim/utils/constants/Theme.dart';
-import 'package:absensi_ypsim/screens/riwayat-izin/models/riwayat-izin.dart';
-import 'package:absensi_ypsim/utils/services/shared-service.dart';
+import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/screens/riwayat-izin/models/riwayat-izin.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 
 class RiwayatIzinItem extends StatelessWidget {
 
@@ -22,7 +22,7 @@ class RiwayatIzinItem extends StatelessWidget {
     return InkWell(
       onTap: () => tap(),
       child: Card(
-        margin: EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -90,21 +90,41 @@ class RiwayatIzinItem extends StatelessWidget {
                           boxShadow: [
                             BoxShadow(
                               color: (() {
-                                if (item.status == "Ditolak") return MaterialColors.error;
-                                if (item.status == "Disetujui") return MaterialColors.bgSecondary;
-                                return MaterialColors.bgPrimary;
+                                Color color;
+                                switch(item.status) {
+                                  case "Menunggu": {
+                                    color = MaterialColors.warning;
+                                  } break;
+
+                                  case "Ditolak": {
+                                    color = MaterialColors.error;
+                                  } break;
+                                    
+                                  default: {
+                                    color = MaterialColors.bgSecondary;
+                                  } break;
+                                }
+                                return color;
                               }()),
                               blurRadius: 2.0
                             )
                           ],
                           color: (() {
-                            if (item.status == "Menunggu") {
-                              return MaterialColors.bgPrimary;
-                            } else if (item.status == "Ditolak") {
-                              return MaterialColors.error;
-                            } else if (item.status == "Disetujui") {
-                              return MaterialColors.bgSecondary;
+                            Color color;
+                            switch(item.status) {
+                              case "Menunggu": {
+                                color = MaterialColors.warning;
+                              } break;
+
+                              case "Ditolak": {
+                                color = MaterialColors.error;
+                              } break;
+                                
+                              default: {
+                                color = MaterialColors.bgSecondary;
+                              } break;
                             }
+                            return color;
                           }()),
                         ),
                         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
