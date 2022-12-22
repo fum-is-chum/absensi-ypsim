@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:SIMAt/screens/test.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';

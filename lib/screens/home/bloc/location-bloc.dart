@@ -90,14 +90,17 @@ class LocationBloc {
       return null;
     }
 
-    final position = await Geolocator.getCurrentPosition();
-    _updatePosition(position);
-    return position;
+    try {
+      final position = await Geolocator.getCurrentPosition();
+      _updatePosition(position);
+      return position;
+    } catch (e) {
+      return null;
+    }
   }
 
   static Future<bool> _handlePermission() async {
     bool serviceEnabled;
-    LocationPermission permission;
 
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -109,10 +112,25 @@ class LocationBloc {
       //   _PositionItemType.log,
       //   _kLocationServicesDisabledMessage,
       // );
-
+      _openLocationSettings();
       return false;
+    } else {
+      bool permission;
+      permission = await requestPermission();
+      if(!permission) return false;
+      // When we reach here, permissions are granted and we can
+      // continue accessing the position of the device.
+      // _updatePosition(
+      //   _PositionItemType.log,
+      //   _kPermissionGrantedMessage,
+      // );
     }
 
+    return true;
+  }
+
+  static Future<bool> requestPermission() async {
+    LocationPermission permission;
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -126,7 +144,6 @@ class LocationBloc {
         //   _PositionItemType.log,
         //   _kPermissionDeniedMessage,
         // );
-
         return false;
       }
     }
@@ -137,16 +154,10 @@ class LocationBloc {
       //   _PositionItemType.log,
       //   _kPermissionDeniedForeverMessage,
       // );
-
+      _openAppSettings();
       return false;
     }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    // _updatePosition(
-    //   _PositionItemType.log,
-    //   _kPermissionGrantedMessage,
-    // );
+    getCurrentPosition();
     return true;
   }
 
@@ -167,12 +178,13 @@ class LocationBloc {
 
   static void toggleServiceStatusStream({bool openSettings = true}) {
     if (serviceStatusStreamSubscription == null) {
-      if (openSettings) _openLocationSettings();
       final serviceStatusStream = Geolocator.getServiceStatusStream();
       serviceStatusStreamSubscription =
           serviceStatusStream.handleError((error) {
         serviceStatusStreamSubscription?.cancel();
         serviceStatusStreamSubscription = null;
+        Future.delayed(const Duration(seconds: 1))
+            .then((value) => toggleServiceStatusStream());
       }).listen((serviceStatus) {
         if (serviceStatus == ServiceStatus.enabled) {
           positionStreamStarted = positionStreamSubscription == null;
@@ -203,7 +215,7 @@ class LocationBloc {
       positionStreamSubscription = positionStream.handleError((error) {
         positionStreamSubscription?.cancel();
         positionStreamSubscription = null;
-        Future.delayed(const Duration(seconds: 2))
+        Future.delayed(const Duration(seconds: 1))
             .then((value) => toggleListening());
       }).listen((pos) {
         _updatePosition(pos);
@@ -278,16 +290,9 @@ class LocationBloc {
     // );
   }
 
-  void _openAppSettings() async {
+  static void _openAppSettings() async {
     if (kIsWeb) return;
     final opened = await Geolocator.openAppSettings();
-    String displayValue;
-
-    if (opened) {
-      displayValue = 'Opened Application Settings.';
-    } else {
-      displayValue = 'Error opening Application Settings.';
-    }
 
     // _updatePosition(
     //   _PositionItemType.log,
@@ -295,21 +300,15 @@ class LocationBloc {
     // );
   }
 
-  static void _openLocationSettings() async {
+  static Future<void> _openLocationSettings() async {
     if (kIsWeb) return;
-    final opened = await Geolocator.openLocationSettings();
-    String displayValue;
-
-    if (opened) {
-      displayValue = 'Opened Location Settings';
-    } else {
-      displayValue = 'Error opening Location Settings';
-    }
+    await Geolocator.openLocationSettings();
 
     // _updatePosition(
     //   _PositionItemType.log,
     //   displayValue,
     // );
+    return;
   }
   // end - Location Service
 
@@ -355,7 +354,7 @@ class LocationBloc {
       return result;
     } catch (e) {
       // sp.hide();
-      handleError(e);
+        handleError(e);
       return {};
     }
   }

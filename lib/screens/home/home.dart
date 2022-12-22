@@ -51,9 +51,10 @@ class _HomeState extends State<Home> {
 
   Future<List> _getAttendanceStatus() async {
     List items = [];
+    await LocationBloc.requestPermission();
     List<Future> futures = [
       homeBloc.getAttendanceStatus(date: timeBloc.currentDate),
-      LocationBloc.getValidLocation()
+      LocationBloc.getValidLocation(),
     ];
 
     await Future.wait(futures.map((e) {
