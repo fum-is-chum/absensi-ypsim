@@ -27,27 +27,15 @@ class LocationBloc {
   static Future<void> init() async {
     _positionSubject = new BehaviorSubject.seeded(null);
     if(_locationSettings == null) setLocationSettings();
-    if(!kIsWeb) {
-      await getCurrentPosition().then((value) {
-        try { 
-          if(value == null) throw 'Null';
-          _updateServiceStatus(ServiceStatus.enabled);
-        } catch (e) {
-          _updateServiceStatus(ServiceStatus.disabled);
-        }
-        toggleServiceStatusStream(openSettings: value == null);
-      });
-    } else {
-      getCurrentPosition().then((value) {
-        try { 
-          if(value == null) throw 'Null';
-          _updateServiceStatus(ServiceStatus.enabled);
-        } catch (e) {
-          _updateServiceStatus(ServiceStatus.disabled);
-        }
-        toggleServiceStatusStream(openSettings: value == null);
-      });
-    }
+    getCurrentPosition().then((value) {
+      try { 
+        if(value == null) throw 'Null';
+        _updateServiceStatus(ServiceStatus.enabled);
+      } catch (e) {
+        _updateServiceStatus(ServiceStatus.disabled);
+      }
+      toggleServiceStatusStream(openSettings: value == null);
+    });
   }
 
   static LocationSettings setLocationSettings() {
