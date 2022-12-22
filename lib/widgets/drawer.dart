@@ -86,6 +86,19 @@ class MaterialDrawer extends StatelessWidget {
                     isSelected: currentPage == "Ganti Password" ? true : false),
                 SizedBox(height: 8),
                 Divider(),
+                DrawerTile(
+                    icon: Icons.logout,
+                    onTap: () async {
+                      if (currentPage != "logout") {
+                        await LoginBloc().logoutUser();
+                        CredentialGetter.reset();
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, '/login', (Route<dynamic> route) => false);
+                      }
+                    },
+                    iconColor: Colors.black,
+                    title: "Keluar",
+                    isSelected: currentPage == "logout" ? true : false),
               ],
             ),
           ),
@@ -143,10 +156,9 @@ class _UserInfo extends State<UserInfo> {
                     padding: const EdgeInsets.only(bottom: 8.0, top: 16.0),
                     child: Text(snapshot.data!.nama!,
                         style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 18,
-                          overflow: TextOverflow.ellipsis
-                        )),
+                            color: Colors.black87,
+                            fontSize: 18,
+                            overflow: TextOverflow.ellipsis)),
                   ),
                   Row(
                     children: [

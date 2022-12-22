@@ -128,8 +128,8 @@ class _MyMapView extends State<MyMapView> {
   Future<void> loadMaps(List<dynamic> data) async {
     // LocationBloc.updateLoadingStatus(true);
     Position? pos = data[0];
-    Map<String, dynamic> target = data[1];
-    if (pos != null) {
+    Map<String, dynamic>? target = data[1];
+    if (pos != null && target != null) {
       // LocationBloc.updatePosition(pos);
       if (webView != null) {
         await webView!.runJavascript(updatePosition(pos, target));
@@ -255,12 +255,8 @@ class _MyMapView extends State<MyMapView> {
           ),
         ].toSet(),
         initialUrl: Uri.dataFromString(
-                webMap(
-                  LocationBloc.position!,
-                  targetLocation['latitude'],
-                  targetLocation['longitude'],
-                  targetLocation['radius']
-                ),
+                webMap(LocationBloc.position!, targetLocation['latitude'],
+                    targetLocation['longitude'], targetLocation['radius']),
                 mimeType: 'text/html')
             .toString(),
         onWebViewCreated: (WebViewController wv) {

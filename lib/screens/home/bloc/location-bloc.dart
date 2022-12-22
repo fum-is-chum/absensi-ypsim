@@ -12,9 +12,12 @@ class LocationBloc {
   static StreamSubscription<Position>? positionStreamSubscription;
   static StreamSubscription<ServiceStatus>? serviceStatusStreamSubscription;
 
-  static late BehaviorSubject<dynamic> _positionSubject;
-  static BehaviorSubject<Map<String, dynamic>> _targetLocation = BehaviorSubject.seeded({});
-  static BehaviorSubject<ServiceStatus> _serviceStatusSubject = new BehaviorSubject.seeded(ServiceStatus.disabled);
+  static BehaviorSubject<dynamic> _positionSubject =
+      new BehaviorSubject.seeded(null);
+  static BehaviorSubject<Map<String, dynamic>> _targetLocation =
+      BehaviorSubject.seeded({});
+  static BehaviorSubject<ServiceStatus> _serviceStatusSubject =
+      new BehaviorSubject.seeded(ServiceStatus.disabled);
   static LocationSettings? _locationSettings;
   static bool positionStreamStarted = false;
 
@@ -26,10 +29,10 @@ class LocationBloc {
 
   static Future<void> init() async {
     _positionSubject = new BehaviorSubject.seeded(null);
-    if(_locationSettings == null) setLocationSettings();
+    if (_locationSettings == null) setLocationSettings();
     getCurrentPosition().then((value) {
-      try { 
-        if(value == null) throw 'Null';
+      try {
+        if (value == null) throw 'Null';
         _updateServiceStatus(ServiceStatus.enabled);
       } catch (e) {
         _updateServiceStatus(ServiceStatus.disabled);
@@ -41,19 +44,19 @@ class LocationBloc {
   static LocationSettings setLocationSettings() {
     if (defaultTargetPlatform == TargetPlatform.android) {
       _locationSettings = AndroidSettings(
-        accuracy: LocationAccuracy.best,
-        distanceFilter: 10,
-        // forceLocationManager: true,
-        intervalDuration: const Duration(seconds: 10),
-        //(Optional) Set foreground notification config to keep the app alive 
-        //when going to the background
-        foregroundNotificationConfig: const ForegroundNotificationConfig(
+          accuracy: LocationAccuracy.best,
+          distanceFilter: 10,
+          // forceLocationManager: true,
+          intervalDuration: const Duration(seconds: 10),
+          //(Optional) Set foreground notification config to keep the app alive
+          //when going to the background
+          foregroundNotificationConfig: const ForegroundNotificationConfig(
             notificationText: "SIMAt is running in background",
             notificationTitle: "SIMAt",
             enableWakeLock: true,
-        )
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+          ));
+    } else if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
       _locationSettings = AppleSettings(
         accuracy: LocationAccuracy.bestForNavigation,
         activityType: ActivityType.fitness,
@@ -63,7 +66,7 @@ class LocationBloc {
         showBackgroundLocationIndicator: false,
       );
     } else {
-        _locationSettings = LocationSettings(
+      _locationSettings = LocationSettings(
         accuracy: LocationAccuracy.best,
         distanceFilter: 10,
       );
@@ -71,11 +74,14 @@ class LocationBloc {
     return _locationSettings!;
   }
 
-  static Stream<ServiceStatus> get serviceStatus$ => _serviceStatusSubject.asBroadcastStream();
-  static Stream<dynamic> get positionStatus$ => _positionSubject.asBroadcastStream();
+  static Stream<ServiceStatus> get serviceStatus$ =>
+      _serviceStatusSubject.asBroadcastStream();
+  static Stream<dynamic> get positionStatus$ =>
+      _positionSubject.asBroadcastStream();
   static Position? get position => _positionSubject.value;
   static Map<String, dynamic> get getTargetLocation => _targetLocation.value;
-  static Stream<Map<String, dynamic>> get targetLocation$ => _targetLocation.asBroadcastStream();
+  static Stream<Map<String, dynamic>> get targetLocation$ =>
+      _targetLocation.asBroadcastStream();
 
   static Future<Position?> getCurrentPosition() async {
     final hasPermission = await _handlePermission();
@@ -85,9 +91,7 @@ class LocationBloc {
     }
 
     final position = await Geolocator.getCurrentPosition();
-    _updatePosition(
-      position
-    );
+    _updatePosition(position);
     return position;
   }
 
@@ -163,7 +167,7 @@ class LocationBloc {
 
   static void toggleServiceStatusStream({bool openSettings = true}) {
     if (serviceStatusStreamSubscription == null) {
-      if(openSettings) _openLocationSettings();
+      if (openSettings) _openLocationSettings();
       final serviceStatusStream = Geolocator.getServiceStatusStream();
       serviceStatusStreamSubscription =
           serviceStatusStream.handleError((error) {
@@ -180,15 +184,13 @@ class LocationBloc {
           }
         } else {
           if (positionStreamSubscription != null) {
-              positionStreamSubscription?.cancel();
-              positionStreamSubscription = null;
+            positionStreamSubscription?.cancel();
+            positionStreamSubscription = null;
           }
           _updatePosition(null);
           // if(serviceStatusStreamSubscription == null) _openLocationSettings();
         }
-        _updateServiceStatus(
-          serviceStatus
-        );
+        _updateServiceStatus(serviceStatus);
       });
     }
   }
@@ -196,11 +198,16 @@ class LocationBloc {
   static void toggleListening() {
     if (positionStreamSubscription == null) {
       _updatePosition(-1);
-      final positionStream = Geolocator.getPositionStream(locationSettings: _locationSettings);
+      final positionStream =
+          Geolocator.getPositionStream(locationSettings: _locationSettings);
       positionStreamSubscription = positionStream.handleError((error) {
         positionStreamSubscription?.cancel();
         positionStreamSubscription = null;
-      }).listen((pos) => _updatePosition(pos));
+        Future.delayed(const Duration(seconds: 2))
+            .then((value) => toggleListening());
+      }).listen((pos) {
+        _updatePosition(pos);
+      });
       // positionStreamSubscription?.pause();
     } else {
       getCurrentPosition();
@@ -235,16 +242,12 @@ class LocationBloc {
   }
 
   static void getLastKnownPosition() async {
-    if(kIsWeb) return;
+    if (kIsWeb) return;
     final position = await Geolocator.getLastKnownPosition();
     if (position != null) {
-      _updatePosition(
-        position
-      );
+      _updatePosition(position);
     } else {
-      _updatePosition(
-        null
-      );
+      _updatePosition(null);
     }
   }
 
@@ -276,7 +279,7 @@ class LocationBloc {
   }
 
   void _openAppSettings() async {
-    if(kIsWeb) return;
+    if (kIsWeb) return;
     final opened = await Geolocator.openAppSettings();
     String displayValue;
 
@@ -293,7 +296,7 @@ class LocationBloc {
   }
 
   static void _openLocationSettings() async {
-    if(kIsWeb) return;
+    if (kIsWeb) return;
     final opened = await Geolocator.openLocationSettings();
     String displayValue;
 
@@ -311,35 +314,40 @@ class LocationBloc {
   // end - Location Service
 
   static int get getDistance {
-    if(_positionSubject.value == null || _positionSubject.value == -1 || getTargetLocation['latitude'] == null)
-      return -1;
-    double x1 = _positionSubject.value.latitude; 
-    double y1 = _positionSubject.value.longitude;
-    double x2 = getTargetLocation['latitude'];
-    double y2 = getTargetLocation['longitude'];
-    int radius = getTargetLocation['radius'];
-    
-    int distance = Geolocator.distanceBetween(x1, y1, x2, y2).round() - radius;
-    return distance >= 0 ? distance : 0;
-  } 
-
-  static bool isInValidLocation() { // 
-    if(_positionSubject.value == null || _positionSubject.value == -1 || getTargetLocation['latitude'] == null)
-      return false;
+    if (_positionSubject.value == null ||
+        _positionSubject.value == -1 ||
+        getTargetLocation['latitude'] == null) return -1;
     double x1 = _positionSubject.value.latitude;
     double y1 = _positionSubject.value.longitude;
     double x2 = getTargetLocation['latitude'];
     double y2 = getTargetLocation['longitude'];
     int radius = getTargetLocation['radius'];
 
-    return Geolocator.distanceBetween(x1, y1, x2, y2).round() <= radius; // return distance in meter
+    int distance = Geolocator.distanceBetween(x1, y1, x2, y2).round() - radius;
+    return distance >= 0 ? distance : 0;
+  }
+
+  static bool isInValidLocation() {
+    //
+    if (_positionSubject.value == null ||
+        _positionSubject.value == -1 ||
+        getTargetLocation['latitude'] == null) return false;
+    double x1 = _positionSubject.value.latitude;
+    double y1 = _positionSubject.value.longitude;
+    double x2 = getTargetLocation['latitude'];
+    double y2 = getTargetLocation['longitude'];
+    int radius = getTargetLocation['radius'];
+
+    return Geolocator.distanceBetween(x1, y1, x2, y2).round() <=
+        radius; // return distance in meter
   }
 
   static Future<Map<String, dynamic>> getValidLocation() async {
     // sp.show();
     try {
       _targetLocation.sink.add({});
-      ApiResponse response = ApiResponse.fromJson((await _getValidLocation()).data);
+      ApiResponse response =
+          ApiResponse.fromJson((await _getValidLocation()).data);
       Map<String, dynamic> result = response.Result;
 
       _targetLocation.sink.add(result);
@@ -354,11 +362,6 @@ class LocationBloc {
 
   static Future<Response> _getValidLocation() {
     return DioClient.dio.get('/get-validation-location',
-      options: Options(
-        headers: {
-          'RequireToken': ''
-        }
-      )
-    );
+        options: Options(headers: {'RequireToken': ''}));
   }
 }
