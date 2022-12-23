@@ -31,11 +31,10 @@ class LocationBloc {
     _positionSubject = new BehaviorSubject.seeded(null);
     if (_locationSettings == null) setLocationSettings();
     getCurrentPosition().then((value) {
-      try {
-        if (value == null) throw 'Null';
-        _updateServiceStatus(ServiceStatus.enabled);
-      } catch (e) {
+      if (value == null) {
         _updateServiceStatus(ServiceStatus.disabled);
+      } else {
+        _updateServiceStatus(ServiceStatus.enabled);
       }
       toggleServiceStatusStream(openSettings: value == null);
     });
@@ -117,7 +116,7 @@ class LocationBloc {
     } else {
       bool permission;
       permission = await requestPermission();
-      if(!permission) return false;
+      return permission;
       // When we reach here, permissions are granted and we can
       // continue accessing the position of the device.
       // _updatePosition(
@@ -125,8 +124,6 @@ class LocationBloc {
       //   _kPermissionGrantedMessage,
       // );
     }
-
-    return true;
   }
 
   static Future<bool> requestPermission() async {
@@ -157,7 +154,6 @@ class LocationBloc {
       _openAppSettings();
       return false;
     }
-    getCurrentPosition();
     return true;
   }
 
@@ -354,7 +350,7 @@ class LocationBloc {
       return result;
     } catch (e) {
       // sp.hide();
-        handleError(e);
+      handleError(e);
       return {};
     }
   }

@@ -132,7 +132,11 @@ class _MyMapView extends State<MyMapView> {
     if (pos != null && target != null) {
       // LocationBloc.updatePosition(pos);
       if (webView != null) {
-        await webView!.runJavascript(updatePosition(pos, target));
+        try {
+          await webView!.runJavascript(updatePosition(pos, target));
+        } catch (e) {
+          var a = e;
+        }
       }
     }
     // LocationBloc.updateLoadingStatus(false);
@@ -318,23 +322,24 @@ class _MyMapView extends State<MyMapView> {
                   return _MapStatusWidget('Sedang mengambil lokasi',
                       loading: true);
                 }
-              return StreamBuilder(
-                stream: LocationBloc.targetLocation$,
-                initialData: LocationBloc.getTargetLocation,
-                builder: (BuildContext context,
-                    AsyncSnapshot<Map<String, dynamic>> snapshot) {
-                  if (!snapshot.hasData || snapshot.data == null || snapshot.data?['latitude'] == null) {
-                    return _MapStatusWidget(
-                        'Sedang mengambil radius absensi',
-                        loading: true);
-                  }
+                return StreamBuilder(
+                    stream: LocationBloc.targetLocation$,
+                    initialData: LocationBloc.getTargetLocation,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                      if (!snapshot.hasData ||
+                          snapshot.data == null ||
+                          snapshot.data?['latitude'] == null) {
+                        return _MapStatusWidget(
+                            'Sedang mengambil radius absensi',
+                            loading: true);
+                      }
 
-                  return kIsWeb
-                      ? _webWidgets(snapshot.data!)
-                      : _androidWidgets(snapshot.data!);
-                  
+                      return kIsWeb
+                          ? _webWidgets(snapshot.data!)
+                          : _androidWidgets(snapshot.data!);
+                    });
               });
         });
-    });
   }
 }

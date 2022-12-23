@@ -86,19 +86,19 @@ class MaterialDrawer extends StatelessWidget {
                     isSelected: currentPage == "Ganti Password" ? true : false),
                 SizedBox(height: 8),
                 Divider(),
-              //   DrawerTile(
-              //       icon: Icons.logout,
-              //       onTap: () async {
-              //         if (currentPage != "logout") {
-              //           await LoginBloc().logoutUser();
-              //           CredentialGetter.reset();
-              //           Navigator.pushNamedAndRemoveUntil(
-              //               context, '/login', (Route<dynamic> route) => false);
-              //         }
-              //       },
-              //       iconColor: Colors.black,
-              //       title: "Keluar",
-              //       isSelected: currentPage == "logout" ? true : false),
+                DrawerTile(
+                    icon: Icons.logout,
+                    onTap: () async {
+                      if (currentPage != "logout") {
+                        await LoginBloc().logoutUser();
+                        CredentialGetter.reset();
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, '/login', (Route<dynamic> route) => false);
+                      }
+                    },
+                    iconColor: Colors.black,
+                    title: "Keluar",
+                    isSelected: currentPage == "logout" ? true : false),
               ],
             ),
           ),
