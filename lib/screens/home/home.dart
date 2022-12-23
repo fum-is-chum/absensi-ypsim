@@ -20,7 +20,6 @@ import 'widgets/check-in-card.dart';
 TimeBloc timeBloc = TimeBloc();
 HomeBloc homeBloc = HomeBloc();
 CameraBloc cameraBloc = CameraBloc();
-LocationBloc locationBloc = LocationBloc();
 
 class Home extends StatefulWidget {
   @override
@@ -39,7 +38,8 @@ class _HomeState extends State<Home> {
     });
     homeBloc.init();
     timeBloc.init();
-    if(kIsWeb) LocationBloc.init();
+    if (kIsWeb) LocationBloc.init();
+    LocationBloc.requestPermission();
   }
 
   @override
@@ -51,9 +51,10 @@ class _HomeState extends State<Home> {
 
   Future<List> _getAttendanceStatus() async {
     List items = [];
+    await LocationBloc.requestPermission();
     List<Future> futures = [
       homeBloc.getAttendanceStatus(date: timeBloc.currentDate),
-      LocationBloc.getValidLocation()
+      LocationBloc.getValidLocation(),
     ];
 
     await Future.wait(futures.map((e) {

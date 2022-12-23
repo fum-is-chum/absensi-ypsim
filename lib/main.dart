@@ -7,6 +7,7 @@ import 'package:SIMAt/screens/login-register-verification/screen.dart';
 import 'package:SIMAt/screens/pengajuan-izin/pengajuan-izin.dart';
 import 'package:SIMAt/screens/riwayat-izin/riwayat-izin.dart';
 import 'package:SIMAt/screens/riwayat-presensi/riwayat-presensi.dart';
+import 'package:SIMAt/screens/test.dart';
 import 'package:SIMAt/screens/verification.dart';
 import 'package:SIMAt/utils/services/hide-keyboard.dart';
 import 'package:SIMAt/widgets/spinner.dart';
@@ -14,8 +15,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import '/utils/misc/credential-getter.dart';
-import 'register_web_webview_stub.dart' 
-  if (dart.library.html) 'register_web_webview.dart';
+import 'register_web_webview_stub.dart'
+    if (dart.library.html) 'register_web_webview.dart';
+
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
@@ -31,7 +33,7 @@ Future<String> initialize() async {
   await CredentialGetter.init();
   String token = await CredentialGetter.userAccessToken;
   // await new Future.delayed(Duration(seconds: 3));
-  await LocationBloc.init();
+  LocationBloc.init();
   return token;
 }
 
@@ -46,6 +48,7 @@ class AbsensiYPSIM extends StatelessWidget {
             title: "SIMAt",
             debugShowCheckedModeBanner: false,
             navigatorKey: navigatorKey,
+            // home: TestPage()
             routes: <String, WidgetBuilder>{
               "/login": (BuildContext context) => LoginAnimation(),
               "/verification": (BuildContext context) => Verification(),
@@ -55,18 +58,15 @@ class AbsensiYPSIM extends StatelessWidget {
               "/pengajuan-izin": (BuildContext context) => PengajuanIzin(),
               "/ganti-password": (BuildContext context) => GantiPassword()
             },
-            // home: TestPage()
             home: FutureBuilder<String>(
-              future: initialize(),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                if(snapshot.hasData) {
-                  if(snapshot.data!.isNotEmpty) 
-                    return Home();
-                  return LoginAnimation();
-                }
-                return splashScreen(context);
-              }
-            ) 
-          ));
+                future: initialize(),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data!.isNotEmpty) return Home();
+                    return LoginAnimation();
+                  }
+                  return splashScreen(context);
+                })));
   }
 }
