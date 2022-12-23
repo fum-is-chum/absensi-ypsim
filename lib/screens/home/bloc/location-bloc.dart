@@ -104,25 +104,12 @@ class LocationBloc {
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      // _updatePosition(
-      //   _PositionItemType.log,
-      //   _kLocationServicesDisabledMessage,
-      // );
       _openLocationSettings();
       return false;
     } else {
       bool permission;
       permission = await requestPermission();
       return permission;
-      // When we reach here, permissions are granted and we can
-      // continue accessing the position of the device.
-      // _updatePosition(
-      //   _PositionItemType.log,
-      //   _kPermissionGrantedMessage,
-      // );
     }
   }
 
@@ -132,25 +119,11 @@ class LocationBloc {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        // _updatePosition(
-        //   _PositionItemType.log,
-        //   _kPermissionDeniedMessage,
-        // );
         return false;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      // _updatePosition(
-      //   _PositionItemType.log,
-      //   _kPermissionDeniedForeverMessage,
-      // );
       _openAppSettings();
       return false;
     }
@@ -159,14 +132,10 @@ class LocationBloc {
 
   static void _updatePosition(dynamic pos) {
     _positionSubject.sink.add(pos);
-    // _positionItems.add(_PositionItem(type, displayValue));
-    // setState(() {});
   }
 
   static void _updateServiceStatus(ServiceStatus status) {
     _serviceStatusSubject.sink.add(status);
-    // _positionItems.add(_PositionItem(type, displayValue));
-    // setState(() {});
   }
 
   static bool _isListening() => !(positionStreamSubscription == null ||
@@ -196,7 +165,6 @@ class LocationBloc {
             positionStreamSubscription = null;
           }
           _updatePosition(null);
-          // if(serviceStatusStreamSubscription == null) _openLocationSettings();
         }
         _updateServiceStatus(serviceStatus);
       });
@@ -220,25 +188,6 @@ class LocationBloc {
     } else {
       getCurrentPosition();
     }
-    // setState(() {
-    //   if (_positionStreamSubscription == null) {
-    //     return;
-    //   }
-
-    //   String statusDisplayValue;
-    //   if (_positionStreamSubscription!.isPaused) {
-    //     _positionStreamSubscription!.resume();
-    //     statusDisplayValue = 'resumed';
-    //   } else {
-    //     _positionStreamSubscription!.pause();
-    //     statusDisplayValue = 'paused';
-    //   }
-
-    //   _updatePosition(
-    //     _PositionItemType.log,
-    //     'Listening for position updates $statusDisplayValue',
-    //   );
-    // });
   }
 
   static void dispose() {
@@ -280,30 +229,16 @@ class LocationBloc {
     } else {
       locationAccuracyStatusValue = 'Unknown';
     }
-    // _updatePosition(
-    //   _PositionItemType.log,
-    //   '$locationAccuracyStatusValue location accuracy granted.',
-    // );
   }
 
   static void _openAppSettings() async {
     if (kIsWeb) return;
     final opened = await Geolocator.openAppSettings();
-
-    // _updatePosition(
-    //   _PositionItemType.log,
-    //   displayValue,
-    // );
   }
 
   static Future<void> _openLocationSettings() async {
     if (kIsWeb) return;
     await Geolocator.openLocationSettings();
-
-    // _updatePosition(
-    //   _PositionItemType.log,
-    //   displayValue,
-    // );
     return;
   }
   // end - Location Service
