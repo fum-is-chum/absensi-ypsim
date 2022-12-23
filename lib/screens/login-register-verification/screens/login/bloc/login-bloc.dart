@@ -55,6 +55,7 @@ class LoginBloc {
       await handleError(e);
       if(relogin) {
         CredentialGetter.reset();
+        CredentialGetter.logout();
         Navigator.pushNamedAndRemoveUntil(
             navigatorKey.currentContext!, '/login', (Route<dynamic> route) => false);
       }

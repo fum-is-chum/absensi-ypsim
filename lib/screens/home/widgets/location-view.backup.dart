@@ -146,7 +146,7 @@
 //       locationBloc.updateLoadingStatus(true);
 //       await Future.wait([
 //         locationBloc.getPosition,
-//         locationBloc.getValidLocation()
+//         locationBloc.()
 //       ]).then(loadMaps);
 //     }
 //   }
@@ -178,7 +178,7 @@
 //       future: Future.wait([
 //         locationBloc.isLocationOn,
 //         locationBloc.getPosition,
-//         locationBloc.getValidLocation()
+//         locationBloc.()
 //       ]),
 //       builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
 //         int status = locationBloc.mapViewValid(snapshot.data);

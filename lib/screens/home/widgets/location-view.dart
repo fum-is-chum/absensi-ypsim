@@ -128,11 +128,15 @@ class _MyMapView extends State<MyMapView> {
   Future<void> loadMaps(List<dynamic> data) async {
     // LocationBloc.updateLoadingStatus(true);
     Position? pos = data[0];
-    Map<String, dynamic> target = data[1];
-    if (pos != null) {
+    Map<String, dynamic>? target = data[1];
+    if (pos != null && target != null) {
       // LocationBloc.updatePosition(pos);
       if (webView != null) {
-        await webView!.runJavascript(updatePosition(pos, target));
+        try {
+          await webView!.runJavascript(updatePosition(pos, target));
+        } catch (e) {
+          var a = e;
+        }
       }
     }
     // LocationBloc.updateLoadingStatus(false);
@@ -145,11 +149,9 @@ class _MyMapView extends State<MyMapView> {
     if (webView != null) {
       if (!kIsWeb) {
         // LocationBloc.updateLoadingStatus(true);
-        await _getLocationStatus().then((value) async {
-          Map<String, dynamic> targetLocation =
-              value[1] as Map<String, dynamic>;
+        await LocationBloc.getValidLocation().then((targetLocation) async {
           await webView!.loadUrl(Uri.dataFromString(
-                  homeMap(value[0] as Position, targetLocation['latitude'],
+                  homeMap(LocationBloc.position!, targetLocation['latitude'],
                       targetLocation['longitude'], targetLocation['radius']),
                   mimeType: 'text/html')
               .toString());
@@ -255,12 +257,8 @@ class _MyMapView extends State<MyMapView> {
           ),
         ].toSet(),
         initialUrl: Uri.dataFromString(
-                webMap(
-                  LocationBloc.position!,
-                  targetLocation['latitude'],
-                  targetLocation['longitude'],
-                  targetLocation['radius']
-                ),
+                webMap(LocationBloc.position!, targetLocation['latitude'],
+                    targetLocation['longitude'], targetLocation['radius']),
                 mimeType: 'text/html')
             .toString(),
         onWebViewCreated: (WebViewController wv) {
@@ -304,6 +302,7 @@ class _MyMapView extends State<MyMapView> {
 
   @override
   Widget build(BuildContext context) {
+    LocationBloc.getValidLocation();
     return StreamBuilder(
         stream: LocationBloc.serviceStatus$,
         builder: (BuildContext context,
@@ -323,15 +322,19 @@ class _MyMapView extends State<MyMapView> {
                   return _MapStatusWidget('Sedang mengambil lokasi',
                       loading: true);
                 }
-                return FutureBuilder(
-                    future: LocationBloc.getValidLocation(),
+                return StreamBuilder(
+                    stream: LocationBloc.targetLocation$,
+                    initialData: LocationBloc.getTargetLocation,
                     builder: (BuildContext context,
                         AsyncSnapshot<Map<String, dynamic>> snapshot) {
-                      if (!snapshot.hasData || snapshot.data == null) {
+                      if (!snapshot.hasData ||
+                          snapshot.data == null ||
+                          snapshot.data?['latitude'] == null) {
                         return _MapStatusWidget(
                             'Sedang mengambil radius absensi',
                             loading: true);
                       }
+
                       return kIsWeb
                           ? _webWidgets(snapshot.data!)
                           : _androidWidgets(snapshot.data!);
