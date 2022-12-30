@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:SIMAt/main.dart';
 import 'package:SIMAt/models/api-response.dart';
 import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
 import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -49,11 +53,12 @@ class LocationBloc {
           intervalDuration: const Duration(seconds: 10),
           //(Optional) Set foreground notification config to keep the app alive
           //when going to the background
-          foregroundNotificationConfig: const ForegroundNotificationConfig(
-            notificationText: "SIMAt is running in background",
-            notificationTitle: "SIMAt",
-            enableWakeLock: true,
-          ));
+          // foregroundNotificationConfig: const ForegroundNotificationConfig(
+          //   notificationText: "SIMAt is running in background",
+          //   notificationTitle: "SIMAt",
+          //   enableWakeLock: true,
+          // )
+        );
     } else if (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS) {
       _locationSettings = AppleSettings(
@@ -113,19 +118,52 @@ class LocationBloc {
     }
   }
 
+  static Future<bool> _disclosure() async {
+    final allowPermission = await showDialog<bool>(
+      context: navigatorKey.currentContext!,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Location Access'),
+          content: const Text(
+              "This app collects location data to enable Check In / Check Out feature. Location data is collected only when app is running on foreground"),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+              child: const Text('Deny'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text('Accept'),
+            ),
+          ],
+        );
+      }
+    );
+    return allowPermission!;
+  }
+
   static Future<bool> requestPermission() async {
     LocationPermission permission;
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return false;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      _openAppSettings();
-      return false;
+      bool disclosure = await _disclosure();
+      if(disclosure) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return false;
+        } else if (permission == LocationPermission.deniedForever) {
+          _openAppSettings();
+          return false;
+        } else {
+          init();
+           return true;
+        }
+      } return false;
     }
     return true;
   }
