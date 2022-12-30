@@ -8,6 +8,7 @@ import 'package:SIMAt/screens/home/widgets/location-view.dart';
 import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:SIMAt/widgets/card-small.dart';
 import 'package:SIMAt/widgets/drawer.dart';
+import 'package:SIMAt/widgets/spinner.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +29,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   // final GlobalKey _scaffoldKey = new GlobalKey();
-
   @override
   void initState() {
     super.initState();
@@ -36,10 +36,8 @@ class _HomeState extends State<Home> {
     Future.delayed(Duration(seconds: 1)).then((value) {
       SystemChrome.restoreSystemUIOverlays();
     });
-    homeBloc.init();
-    timeBloc.init();
     if (kIsWeb) LocationBloc.init();
-    LocationBloc.requestPermission();
+    
   }
 
   @override
@@ -49,6 +47,13 @@ class _HomeState extends State<Home> {
     timeBloc.dispose();
   }
 
+  Future<bool> _requestPermission() async {
+    await LocationBloc.requestPermission();
+    homeBloc.init();
+    timeBloc.init();
+    return true;
+  }
+  
   Future<List> _getAttendanceStatus() async {
     List items = [];
     await LocationBloc.requestPermission();
@@ -117,34 +122,42 @@ class _HomeState extends State<Home> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.symmetric(horizontal: 16),
-            child: RefreshIndicator(
-              onRefresh: () async {
-                await _getAttendanceStatus();
-                timeBloc.triggerReload();
-              },
-              child: SingleChildScrollView(
-                primary: false,
-                child: Column(
-                  children: [
-                    ImageRow(),
-                    SizedBox(height: 20),
-                    CheckInCard(),
-                    FractionalTranslation(
-                      translation: Offset(0, -0.5),
-                      child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: CheckInButtonContainer()),
+            child: FutureBuilder(
+              future: _requestPermission(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if(!snapshot.hasData) {
+                  return loadingSpinner();
+                }
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    await _getAttendanceStatus();
+                    timeBloc.triggerReload();
+                  },
+                  child: SingleChildScrollView(
+                    primary: false,
+                    child: Column(
+                      children: [
+                        ImageRow(),
+                        SizedBox(height: 20),
+                        CheckInCard(),
+                        FractionalTranslation(
+                          translation: Offset(0, -0.5),
+                          child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: CheckInButtonContainer()),
+                        ),
+                        FractionalTranslation(
+                          translation: Offset(0, -0.1),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: LocationView(),
+                          ),
+                        ),
+                      ],
                     ),
-                    FractionalTranslation(
-                      translation: Offset(0, -0.1),
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: LocationView(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  )
+                );
+              }
             ),
           )),
     );
