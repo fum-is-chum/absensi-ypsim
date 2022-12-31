@@ -28,8 +28,8 @@ class DioClient {
         'Accept': 'application/json',
       }
     )
-  )..interceptors.add(TokenInterceptor())
-  ..interceptors.add(LoggingInterceptors());
+  )..interceptors.add(TokenInterceptor());
+  // ..interceptors.add(LoggingInterceptors());
   
    static Dio _reloginDio = Dio(
       BaseOptions(

@@ -178,7 +178,7 @@ class _ListWidget extends State<RiwayatIzinList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        // padding: EdgeInsets.only(bottom: 24),
+        padding: EdgeInsets.only(bottom: 24),
         width: double.infinity,
         height: MediaQuery.of(context).size.height - 54,
         child: RefreshIndicator(
