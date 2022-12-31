@@ -165,6 +165,7 @@ class LocationBloc {
         }
       } return false;
     }
+    init();
     return true;
   }
 
