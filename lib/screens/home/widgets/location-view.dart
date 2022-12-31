@@ -129,13 +129,13 @@ class _MyMapView extends State<MyMapView> {
     // LocationBloc.updateLoadingStatus(true);
     Position? pos = data[0];
     Map<String, dynamic>? target = data[1];
-    if (pos != null && target != null) {
+    if (pos != null && (target?.isNotEmpty ?? false)) {
       // LocationBloc.updatePosition(pos);
       if (webView != null) {
         try {
-          await webView!.runJavascript(updatePosition(pos, target));
+          await webView!.runJavascript(updatePosition(pos, target!));
         } catch (e) {
-          var a = e;
+          
         }
       }
     }

@@ -1,13 +1,11 @@
 // screens
 import 'package:SIMAt/env.dart';
 import 'package:SIMAt/screens/ganti-password/ganti-password.dart';
-import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
 import 'package:SIMAt/screens/home/home.dart';
 import 'package:SIMAt/screens/login-register-verification/screen.dart';
 import 'package:SIMAt/screens/pengajuan-izin/pengajuan-izin.dart';
 import 'package:SIMAt/screens/riwayat-izin/riwayat-izin.dart';
 import 'package:SIMAt/screens/riwayat-presensi/riwayat-presensi.dart';
-import 'package:SIMAt/screens/test.dart';
 import 'package:SIMAt/screens/verification.dart';
 import 'package:SIMAt/utils/services/hide-keyboard.dart';
 import 'package:SIMAt/widgets/spinner.dart';
@@ -23,7 +21,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Environment.init(
-    flavor: BuildFlavor.staging,
+    flavor: BuildFlavor.production,
   );
   registerWebViewWebImplementation();
   initializeDateFormatting('id_ID', null).then((_) => runApp(AbsensiYPSIM()));
