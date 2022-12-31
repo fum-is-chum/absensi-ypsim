@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:SIMAt/main.dart';
 import 'package:SIMAt/models/api-response.dart';
@@ -160,12 +159,10 @@ class LocationBloc {
           _openAppSettings();
           return false;
         } else {
-          init();
            return true;
         }
       } return false;
     }
-    init();
     return true;
   }
 

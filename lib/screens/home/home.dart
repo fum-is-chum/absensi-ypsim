@@ -48,10 +48,13 @@ class _HomeState extends State<Home> {
   }
 
   Future<bool> _requestPermission() async {
-    await LocationBloc.requestPermission();
-    homeBloc.init();
-    timeBloc.init();
-    return true;
+    bool result = await LocationBloc.requestPermission();
+    if(result) {
+      homeBloc.init();
+      timeBloc.init();
+      LocationBloc.init();
+    }
+    return result;
   }
   
   Future<List> _getAttendanceStatus() async {
