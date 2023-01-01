@@ -76,67 +76,55 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
         status == ServiceStatus.disabled;
   }
 
-  // Widget _webWidgets() {
-  //   return FutureBuilder(
-  //     future: Future.wait([locationBloc.isLocationOn]),
-  //     builder: (BuildContext context, AsyncSnapshot<List<dynamic>> location) {
-  //       if (!location.hasData) {
-  //         return CheckInButton(
-  //           disabled: true,
-  //           isCheckout: false,
-  //         );
-  //       }
+  Widget _webWidget() {
+    return StreamBuilder(
+      stream: LocationBloc.positionStatus$,
+      builder: (BuildContext context, AsyncSnapshot<dynamic> positionSnapshot) {
+        if(!positionSnapshot.hasData || positionSnapshot.data == null) {
+          return CheckInButton(
+            disabled: true,
+            isCheckout: false,
+          );
+        }
 
-  //       // return CheckInButton(disabled: false, isCheckout: false,);
+        return StreamBuilder(
+          stream: CombineLatestStream.list([
+            homeBloc.attendanceStatus$,
+            LocationBloc.targetLocation$,
+          ]),
+          builder: (BuildContext context,
+              AsyncSnapshot<List<dynamic>> locationSnapshot) {
+            bool attendanceIsValid =
+                locationSnapshot.data?[0]['personal_calender'] != null;
+            bool targetLocationIsValid = locationSnapshot.data?[1] != null;
 
-  //       return StreamBuilder<List<dynamic>>(
-  //         stream: CombineLatestStream.list([locationBloc.positionStream$]),
-  //         builder: (BuildContext context,
-  //             AsyncSnapshot<List<dynamic>> locationStream) {
-  //           if (!locationStream.hasData ||
-  //               _disabled(locationStream.data?[0], null)) {
-  //             return CheckInButton(disabled: true, isCheckout: false);
-  //           }
+            if (!locationSnapshot.hasData ||
+                !attendanceIsValid ||
+                !targetLocationIsValid) {
+              return CheckInButton(
+                  disabled: true,
+                  isCheckout: _isCheckout(locationSnapshot.data?[0]));
+            }
 
-  //           return StreamBuilder(
-  //             stream: CombineLatestStream.list(
-  //                 [homeBloc.attendanceStatus$, locationBloc.targetLocation$]),
-  //             builder: (BuildContext context,
-  //                 AsyncSnapshot<List<dynamic>> snapshot) {
-  //               bool attendanceIsValid =
-  //                   snapshot.data?[0]['personal_calender'] != null;
-  //               bool targetLocationIsValid = snapshot.data?[1] != null;
-
-  //               if (!snapshot.hasData ||
-  //                   !attendanceIsValid ||
-  //                   !targetLocationIsValid) {
-  //                 return CheckInButton(
-  //                     disabled: true,
-  //                     isCheckout: _isCheckout(snapshot.data?[0]));
-  //               }
-
-  //               return StreamBuilder(
-  //                 stream: timeBloc.count$,
-  //                 builder: (BuildContext context, AsyncSnapshot<String> time) {
-  //                   if (!time.hasData || time.data == null) {
-  //                     return CheckInButton(disabled: true, isCheckout: false);
-  //                   }
-  //                   // return CheckInButton(disabled: false, isCheckout: false,);
-  //                   return CheckInButton(
-  //                       disabled:
-  //                           !_isTimeValid(snapshot.data![0], time.data!) ||
-  //                               !locationBloc.isInValidLocation() ||
-  //                               _isHoliday(snapshot.data![0]),
-  //                       isCheckout: _isCheckout(snapshot.data?[0]));
-  //                 },
-  //               );
-  //             },
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
+            return StreamBuilder(
+              stream: timeBloc.count$,
+              builder: (BuildContext context, AsyncSnapshot<String> time) {
+                if (!time.hasData || time.data == null) {
+                  return CheckInButton(disabled: true, isCheckout: false);
+                }
+                return CheckInButton(
+                    disabled:
+                        !_isTimeValid(locationSnapshot.data![0], time.data!) ||
+                            !LocationBloc.isInValidLocation() ||
+                            _isHoliday(locationSnapshot.data![0]),
+                    isCheckout: _isCheckout(locationSnapshot.data?[0]));
+              },
+            );
+          },
+        );
+      },
+    );
+  }
 
   Widget _androidWidgets() {
     return StreamBuilder(
@@ -202,7 +190,7 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return kIsWeb ? _androidWidgets() : _androidWidgets();
+    return kIsWeb ? _webWidget() : _androidWidgets();
   }
 }
 

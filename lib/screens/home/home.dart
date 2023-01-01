@@ -36,7 +36,11 @@ class _HomeState extends State<Home> {
     Future.delayed(Duration(seconds: 1)).then((value) {
       SystemChrome.restoreSystemUIOverlays();
     });
-    if (kIsWeb) LocationBloc.init();
+    if (kIsWeb) { 
+      homeBloc.init();
+      timeBloc.init();
+      LocationBloc.init_web();
+    }
     
   }
 
@@ -52,7 +56,7 @@ class _HomeState extends State<Home> {
     if(result) {
       homeBloc.init();
       timeBloc.init();
-      LocationBloc.init();
+      !kIsWeb ? LocationBloc.init() : LocationBloc.init_web();
     }
     return result;
   }
@@ -76,6 +80,38 @@ class _HomeState extends State<Home> {
     // }).toList())
 
     return items;
+  }
+
+  Widget _widget() {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await _getAttendanceStatus();
+        timeBloc.triggerReload();
+      },
+      child: SingleChildScrollView(
+        primary: false,
+        child: Column(
+          children: [
+            ImageRow(),
+            SizedBox(height: 20),
+            CheckInCard(),
+            FractionalTranslation(
+              translation: Offset(0, -0.5),
+              child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: CheckInButtonContainer()),
+            ),
+            FractionalTranslation(
+              translation: Offset(0, -0.1),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: LocationView(),
+              ),
+            ),
+          ],
+        ),
+      )
+    );
   }
 
   @override
@@ -125,41 +161,13 @@ class _HomeState extends State<Home> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.symmetric(horizontal: 16),
-            child: FutureBuilder(
+            child: kIsWeb ? _widget() : FutureBuilder(
               future: _requestPermission(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if(!snapshot.hasData) {
                   return loadingSpinner();
                 }
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    await _getAttendanceStatus();
-                    timeBloc.triggerReload();
-                  },
-                  child: SingleChildScrollView(
-                    primary: false,
-                    child: Column(
-                      children: [
-                        ImageRow(),
-                        SizedBox(height: 20),
-                        CheckInCard(),
-                        FractionalTranslation(
-                          translation: Offset(0, -0.5),
-                          child: Align(
-                              alignment: Alignment.bottomCenter,
-                              child: CheckInButtonContainer()),
-                        ),
-                        FractionalTranslation(
-                          translation: Offset(0, -0.1),
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: LocationView(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                );
+                return _widget();
               }
             ),
           )),

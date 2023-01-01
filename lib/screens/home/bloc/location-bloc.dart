@@ -43,6 +43,13 @@ class LocationBloc {
     });
   }
 
+  static Future<void> init_web() async {
+    _positionSubject = new BehaviorSubject.seeded(null);
+    if(_locationSettings == null) setLocationSettings();
+    await getCurrentPosition();
+    toggleListening();
+  }
+
   static LocationSettings setLocationSettings() {
     if (defaultTargetPlatform == TargetPlatform.android) {
       _locationSettings = AndroidSettings(
@@ -87,14 +94,18 @@ class LocationBloc {
       _targetLocation.asBroadcastStream();
 
   static Future<Position?> getCurrentPosition() async {
-    final hasPermission = await _handlePermission();
+    if(!kIsWeb) {
+      final hasPermission = await _handlePermission();
 
-    if (!hasPermission) {
-      return null;
+      if (!hasPermission) {
+        return null;
+      }
     }
 
+    // print("Test");
     try {
       final position = await Geolocator.getCurrentPosition();
+      // print(position.toString());
       _updatePosition(position);
       return position;
     } catch (e) {
