@@ -45,7 +45,7 @@ class LocationBloc {
 
   static Future<void> init_web() async {
     _positionSubject = new BehaviorSubject.seeded(null);
-    if(_locationSettings == null) setLocationSettings();
+    if (_locationSettings == null) setLocationSettings();
     await getCurrentPosition();
     toggleListening();
   }
@@ -53,24 +53,24 @@ class LocationBloc {
   static LocationSettings setLocationSettings() {
     if (defaultTargetPlatform == TargetPlatform.android) {
       _locationSettings = AndroidSettings(
-          accuracy: LocationAccuracy.best,
-          distanceFilter: 10,
-          // forceLocationManager: true,
-          intervalDuration: const Duration(seconds: 10),
-          //(Optional) Set foreground notification config to keep the app alive
-          //when going to the background
-          // foregroundNotificationConfig: const ForegroundNotificationConfig(
-          //   notificationText: "SIMAt is running in background",
-          //   notificationTitle: "SIMAt",
-          //   enableWakeLock: true,
-          // )
-        );
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 5,
+        // forceLocationManager: true,
+        intervalDuration: const Duration(seconds: 5),
+        //(Optional) Set foreground notification config to keep the app alive
+        //when going to the background
+        // foregroundNotificationConfig: const ForegroundNotificationConfig(
+        //   notificationText: "SIMAt is running in background",
+        //   notificationTitle: "SIMAt",
+        //   enableWakeLock: true,
+        // )
+      );
     } else if (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS) {
       _locationSettings = AppleSettings(
         accuracy: LocationAccuracy.bestForNavigation,
         activityType: ActivityType.fitness,
-        distanceFilter: 10,
+        distanceFilter: 5,
         pauseLocationUpdatesAutomatically: true,
         // Only set to true if our app will be started up in the background.
         showBackgroundLocationIndicator: false,
@@ -78,7 +78,7 @@ class LocationBloc {
     } else {
       _locationSettings = LocationSettings(
         accuracy: LocationAccuracy.best,
-        distanceFilter: 10,
+        distanceFilter: 5,
       );
     }
     return _locationSettings!;
@@ -94,7 +94,7 @@ class LocationBloc {
       _targetLocation.asBroadcastStream();
 
   static Future<Position?> getCurrentPosition() async {
-    if(!kIsWeb) {
+    if (!kIsWeb) {
       final hasPermission = await _handlePermission();
 
       if (!hasPermission) {
@@ -130,30 +130,29 @@ class LocationBloc {
 
   static Future<bool> _disclosure() async {
     final allowPermission = await showDialog<bool>(
-      context: navigatorKey.currentContext!,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Location Access'),
-          content: const Text(
-              "This app collects location data to enable Check In / Check Out feature. Location data is collected only when app is running on foreground"),
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, false);
-              },
-              child: const Text('Deny'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-              child: const Text('Accept'),
-            ),
-          ],
-        );
-      }
-    );
+        context: navigatorKey.currentContext!,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Location Access'),
+            content: const Text(
+                "This app collects location data to enable Check In / Check Out feature. Location data is collected only when app is running on foreground"),
+            actionsAlignment: MainAxisAlignment.spaceBetween,
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+                child: const Text('Deny'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+                child: const Text('Accept'),
+              ),
+            ],
+          );
+        });
     return allowPermission!;
   }
 
@@ -162,7 +161,7 @@ class LocationBloc {
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       bool disclosure = await _disclosure();
-      if(disclosure) {
+      if (disclosure) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           return false;
@@ -170,9 +169,10 @@ class LocationBloc {
           _openAppSettings();
           return false;
         } else {
-           return true;
+          return true;
         }
-      } return false;
+      }
+      return false;
     }
     return true;
   }
