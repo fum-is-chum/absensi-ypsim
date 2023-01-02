@@ -36,8 +36,15 @@ class _HomeState extends State<Home> {
     Future.delayed(Duration(seconds: 1)).then((value) {
       SystemChrome.restoreSystemUIOverlays();
     });
-    if (kIsWeb) LocationBloc.init();
-    
+    homeBloc.init();
+    timeBloc.init();
+    if (kIsWeb) {
+      LocationBloc.init_web();
+    }
+
+    homeBloc.reloadAttendance$.listen((event) {
+      _getAttendanceStatus();
+    });
   }
 
   @override
@@ -49,14 +56,14 @@ class _HomeState extends State<Home> {
 
   Future<bool> _requestPermission() async {
     bool result = await LocationBloc.requestPermission();
-    if(result) {
-      homeBloc.init();
-      timeBloc.init();
-      LocationBloc.init();
+    if (result) {
+      // homeBloc.init();
+      // timeBloc.init();
+      !kIsWeb ? LocationBloc.init() : LocationBloc.init_web();
     }
     return result;
   }
-  
+
   Future<List> _getAttendanceStatus() async {
     List items = [];
     await LocationBloc.requestPermission();
@@ -76,6 +83,37 @@ class _HomeState extends State<Home> {
     // }).toList())
 
     return items;
+  }
+
+  Widget _widget() {
+    return RefreshIndicator(
+        onRefresh: () async {
+          await _getAttendanceStatus();
+          timeBloc.triggerReload();
+        },
+        child: SingleChildScrollView(
+          primary: false,
+          child: Column(
+            children: [
+              ImageRow(),
+              SizedBox(height: 20),
+              CheckInCard(),
+              FractionalTranslation(
+                translation: Offset(0, -0.5),
+                child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: CheckInButtonContainer()),
+              ),
+              FractionalTranslation(
+                translation: Offset(0, -0.1),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: LocationView(),
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 
   @override
@@ -125,43 +163,16 @@ class _HomeState extends State<Home> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.symmetric(horizontal: 16),
-            child: FutureBuilder(
-              future: _requestPermission(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if(!snapshot.hasData) {
-                  return loadingSpinner();
-                }
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    await _getAttendanceStatus();
-                    timeBloc.triggerReload();
-                  },
-                  child: SingleChildScrollView(
-                    primary: false,
-                    child: Column(
-                      children: [
-                        ImageRow(),
-                        SizedBox(height: 20),
-                        CheckInCard(),
-                        FractionalTranslation(
-                          translation: Offset(0, -0.5),
-                          child: Align(
-                              alignment: Alignment.bottomCenter,
-                              child: CheckInButtonContainer()),
-                        ),
-                        FractionalTranslation(
-                          translation: Offset(0, -0.1),
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: LocationView(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                );
-              }
-            ),
+            child: kIsWeb
+                ? _widget()
+                : FutureBuilder(
+                    future: _requestPermission(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (!snapshot.hasData) {
+                        return loadingSpinner();
+                      }
+                      return _widget();
+                    }),
           )),
     );
   }
@@ -176,11 +187,11 @@ class ImageRow extends StatefulWidget {
 class _ImageRow extends State<ImageRow> {
   @override
   void initState() {
-    Rx.combineLatestList(
-            [timeBloc.dateStream$.distinct(), homeBloc.reloadAttendance$])
-        .listen((event) {
-      homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
-    });
+    // Rx.combineLatestList(
+    //         [timeBloc.dateStream$.distinct(), homeBloc.reloadAttendance$])
+    //     .listen((event) {
+    //   homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
+    // });
     super.initState();
   }
 

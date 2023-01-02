@@ -1,6 +1,7 @@
 // screens
 import 'package:SIMAt/env.dart';
 import 'package:SIMAt/screens/ganti-password/ganti-password.dart';
+import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
 import 'package:SIMAt/screens/home/home.dart';
 import 'package:SIMAt/screens/login-register-verification/screen.dart';
 import 'package:SIMAt/screens/pengajuan-izin/pengajuan-izin.dart';
@@ -9,6 +10,7 @@ import 'package:SIMAt/screens/riwayat-presensi/riwayat-presensi.dart';
 import 'package:SIMAt/screens/verification.dart';
 import 'package:SIMAt/utils/services/hide-keyboard.dart';
 import 'package:SIMAt/widgets/spinner.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -31,7 +33,7 @@ Future<String> initialize() async {
   await CredentialGetter.init();
   String token = await CredentialGetter.userAccessToken;
   // await new Future.delayed(Duration(seconds: 3));
-  // LocationBloc.init();
+  // if(kIsWeb) await LocationBloc.init_web();
   return token;
 }
 
