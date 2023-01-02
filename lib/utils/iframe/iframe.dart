@@ -1,6 +1,7 @@
 import 'package:geolocator/geolocator.dart';
 
-String redrawMaps(double lat1, double long1, double lat2, double long2, int radius) {
+String redrawMaps(
+    double lat1, double long1, double lat2, double long2, int radius) {
   // return """
   //   zoom = 19 - ratios.findIndex((d) => d >= D*6);
   //   D = distanceMeter(x1,y1,x2,y2) * 2;
@@ -124,13 +125,14 @@ String updatePosition(Position pos, Map<String, dynamic> target) {
       }
       document.dispatchEvent(new Event(POSITION_UPDATE));
     } catch (e) {
-      alert(e);
+      // alert(e);
     }
   """;
 }
 
 String homeMap(Position pos1, double lat2, double lng2, int radius) {
-  return map() + """
+  return map() +
+      """
     <script>
       const POSITION_UPDATE = 'position-update';
       // Initialize and add the map
@@ -194,22 +196,27 @@ String homeMap(Position pos1, double lat2, double lng2, int radius) {
         })
       }
       window.initMap = initMap;
-      """ + bypass() + """
+      """ +
+      bypass() +
+      """
     </script>
   </body>
 </html>
     """;
 }
 
-String detailPresensiMap(double? lat1, double? lng1, double? lat2, double? lng2) {
-  return map() + """
+String detailPresensiMap(
+    double? lat1, double? lng1, double? lat2, double? lng2) {
+  return map() +
+      """
     <script>
      // Initialize and add the map
      function initMap() {
         const coordinates = [
           { lat: $lat1, lng: $lng1 },
           { lat: $lat2, lng: $lng2 }
-        ]""" + r"""
+        ]""" +
+      r"""
 
         const map = new google.maps.Map(document.getElementById("map"), {
           zoom: 15,
@@ -236,13 +243,14 @@ String detailPresensiMap(double? lat1, double? lng1, double? lat2, double? lng2)
         map.fitBounds(markerBounds);
       }
       window.initMap = initMap;
-      """ + bypass() + """
+      """ +
+      bypass() +
+      """
     </script>
   </body>
 </html>
     """;
 }
-
 
 String webMap(Position pos1, double lat2, double lng2, int radius) {
   return """
@@ -373,7 +381,9 @@ String webMap(Position pos1, double lat2, double lng2, int radius) {
             // }, 8000)
           }
           window.initMap = initMap;
-          """ + bypass() + """
+          """ +
+      bypass() +
+      """
         </script>
       </body>
     </html>

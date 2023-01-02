@@ -80,7 +80,7 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
     return StreamBuilder(
       stream: LocationBloc.positionStatus$,
       builder: (BuildContext context, AsyncSnapshot<dynamic> positionSnapshot) {
-        if(!positionSnapshot.hasData || positionSnapshot.data == null) {
+        if (!positionSnapshot.hasData || positionSnapshot.data == null) {
           return CheckInButton(
             disabled: true,
             isCheckout: false,
@@ -129,18 +129,21 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
   Widget _androidWidgets() {
     return StreamBuilder(
       stream: LocationBloc.serviceStatus$,
-      builder: (BuildContext context, AsyncSnapshot<ServiceStatus> serviceStatusSnapshot) {
-        if(!serviceStatusSnapshot.hasData || serviceStatusSnapshot.data == ServiceStatus.disabled) {
-           return CheckInButton(
+      builder: (BuildContext context,
+          AsyncSnapshot<ServiceStatus> serviceStatusSnapshot) {
+        if (!serviceStatusSnapshot.hasData ||
+            serviceStatusSnapshot.data == ServiceStatus.disabled) {
+          return CheckInButton(
             disabled: true,
             isCheckout: false,
           );
         }
-        
+
         return StreamBuilder(
           stream: LocationBloc.positionStatus$,
-          builder: (BuildContext context, AsyncSnapshot<dynamic> positionSnapshot) {
-            if(!positionSnapshot.hasData || positionSnapshot.data == null) {
+          builder:
+              (BuildContext context, AsyncSnapshot<dynamic> positionSnapshot) {
+            if (!positionSnapshot.hasData || positionSnapshot.data == null) {
               return CheckInButton(
                 disabled: true,
                 isCheckout: false,
@@ -173,10 +176,10 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
                       return CheckInButton(disabled: true, isCheckout: false);
                     }
                     return CheckInButton(
-                        disabled:
-                            !_isTimeValid(locationSnapshot.data![0], time.data!) ||
-                                !LocationBloc.isInValidLocation() ||
-                                _isHoliday(locationSnapshot.data![0]),
+                        disabled: !_isTimeValid(
+                                locationSnapshot.data![0], time.data!) ||
+                            !LocationBloc.isInValidLocation() ||
+                            _isHoliday(locationSnapshot.data![0]),
                         isCheckout: _isCheckout(locationSnapshot.data?[0]));
                   },
                 );
@@ -233,6 +236,7 @@ class _CheckInButton extends State<CheckInButton> {
           await availableCameras().then((value) async {
             await Navigator.push(context,
                 MaterialPageRoute(builder: (_) => CameraPage(cameras: value)));
+            print("YO");
             if (cameraBloc.imageFile != null) {
               widget.isCheckout
                   ? await homeBloc.checkOut(
@@ -248,8 +252,9 @@ class _CheckInButton extends State<CheckInButton> {
                           "${timeBloc.currentDate} ${timeBloc.currentTime}",
                       photo: cameraBloc.imageFile!);
               cameraBloc.reset();
-              homeBloc.triggerReload();
             }
+            print("TEST");
+            homeBloc.triggerReload();
           });
       },
     );
