@@ -42,16 +42,16 @@ class _HomeState extends State<Home> {
       LocationBloc.init_web();
     }
 
-    homeBloc.reloadAttendance$.listen((event) {
-      _getAttendanceStatus();
-    });
+    // homeBloc.reloadAttendance$.listen((event) {
+    //   _getAttendanceStatus();
+    // });
   }
 
   @override
   void dispose() {
-    // homeBloc.dispose();
-    super.dispose();
+    homeBloc.dispose();
     timeBloc.dispose();
+    super.dispose();
   }
 
   Future<bool> _requestPermission() async {
@@ -59,7 +59,9 @@ class _HomeState extends State<Home> {
     if (result) {
       // homeBloc.init();
       // timeBloc.init();
-      !kIsWeb ? LocationBloc.init() : LocationBloc.init_web();
+      if(!LocationBloc.isListening()) {
+        !kIsWeb ? LocationBloc.init() : LocationBloc.init_web();
+      }
     }
     return result;
   }
@@ -185,19 +187,22 @@ class ImageRow extends StatefulWidget {
 }
 
 class _ImageRow extends State<ImageRow> {
+  StreamSubscription? subs;
   @override
   void initState() {
-    // Rx.combineLatestList(
-    //         [timeBloc.dateStream$.distinct(), homeBloc.reloadAttendance$])
-    //     .listen((event) {
-    //   homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
-    // });
+    subs = CombineLatestStream.list([
+      timeBloc.dateStream$.distinct(),
+      homeBloc.reloadAttendance$
+    ]).listen((event) {
+      homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
+    });
     super.initState();
   }
 
   @override
   void dispose() {
     // cameraBloc.dispose();
+    subs?.cancel();
     super.dispose();
   }
 

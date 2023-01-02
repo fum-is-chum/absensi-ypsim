@@ -185,7 +185,7 @@ class LocationBloc {
     _serviceStatusSubject.sink.add(status);
   }
 
-  static bool _isListening() => !(positionStreamSubscription == null ||
+  static bool isListening() => !(positionStreamSubscription == null ||
       positionStreamSubscription!.isPaused);
 
   static void toggleServiceStatusStream({bool openSettings = true}) {

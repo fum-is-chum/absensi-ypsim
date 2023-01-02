@@ -236,7 +236,6 @@ class _CheckInButton extends State<CheckInButton> {
           await availableCameras().then((value) async {
             await Navigator.push(context,
                 MaterialPageRoute(builder: (_) => CameraPage(cameras: value)));
-            print("YO");
             if (cameraBloc.imageFile != null) {
               widget.isCheckout
                   ? await homeBloc.checkOut(
@@ -252,9 +251,8 @@ class _CheckInButton extends State<CheckInButton> {
                           "${timeBloc.currentDate} ${timeBloc.currentTime}",
                       photo: cameraBloc.imageFile!);
               cameraBloc.reset();
+              homeBloc.triggerReload();
             }
-            print("TEST");
-            homeBloc.triggerReload();
           });
       },
     );

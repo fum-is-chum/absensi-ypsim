@@ -146,30 +146,14 @@ class _MyMapView extends State<MyMapView> {
   }
 
   void reload() async {
-    if (webView != null) {
-      webView = null;
-      await LocationBloc.getValidLocation().then((targetLocation) async {
-        await webView?.loadUrl(Uri.dataFromString(
-                homeMap(LocationBloc.position!, targetLocation['latitude'],
-                    targetLocation['longitude'], targetLocation['radius']),
-                mimeType: 'text/html')
-            .toString());
-      });
-      // if (!kIsWeb) {
-      //   // LocationBloc.updateLoadingStatus(true);
-      //   // await LocationBloc.getValidLocation().then((targetLocation) async {
-      //   //   await webView!.loadUrl(Uri.dataFromString(
-      //   //           homeMap(LocationBloc.position!, targetLocation['latitude'],
-      //   //               targetLocation['longitude'], targetLocation['radius']),
-      //   //           mimeType: 'text/html')
-      //   //       .toString());
-      //   // });
-      //   // LocationBloc.updateLoadingStatus(false);
-      // } else {
-      //   webView!.reload();
-      //   setState(() {});
-      // }
-    }
+    if(webView == null) return;
+    await LocationBloc.getValidLocation().then((targetLocation) async {
+      await webView!.loadUrl(Uri.dataFromString(
+              homeMap(LocationBloc.position!, targetLocation['latitude'],
+                  targetLocation['longitude'], targetLocation['radius']),
+              mimeType: 'text/html')
+          .toString());
+    });
   }
 
   @override
@@ -209,6 +193,7 @@ class _MyMapView extends State<MyMapView> {
   void dispose() {
     if (serviceStatus != null) serviceStatus!.cancel();
     if (positionStatus != null) positionStatus!.cancel();
+    // webView?.clearCache();`
     webView = null;
     super.dispose();
   }
@@ -283,27 +268,7 @@ class _MyMapView extends State<MyMapView> {
       // )
     ]);
   }
-
-  Future<List> _getLocationStatus() async {
-    List items = [];
-    List<Future> futures = [
-      // LocationBloc.isLocationOn,
-      LocationBloc.getValidLocation()
-    ];
-
-    await Future.wait(futures.map((e) {
-      return e.then((value) {
-        items.add(value);
-      });
-    }).toList());
-    // await Future.wait(futures.map((item) {
-    //   finalItem = await item;
-    //   finalItems.add(finalItem)
-    // }).toList())
-
-    return items;
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     LocationBloc.getValidLocation();
