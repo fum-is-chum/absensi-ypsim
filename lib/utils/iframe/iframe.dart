@@ -130,14 +130,14 @@ String updatePosition(Position pos, Map<String, dynamic> target) {
   """;
 }
 
-String homeMap(Position pos1, double lat2, double lng2, int radius) {
+String homeMap(Position? pos1, double lat2, double lng2, int radius) {
   return map() +
       """
     <script>
       const POSITION_UPDATE = 'position-update';
       // Initialize and add the map
       const coordinates = [
-        { lat: ${pos1.latitude}, lng: ${pos1.longitude} },
+        { lat: ${pos1?.latitude ?? null}, lng: ${pos1?.longitude ?? null} },
         { lat: $lat2, lng: $lng2 }
       ]; 
       function initMap() {
@@ -149,24 +149,26 @@ String homeMap(Position pos1, double lat2, double lng2, int radius) {
         const markers = []
 
         coordinates.forEach((coordinate, idx) => {
-          const marker = new google.maps.Marker({
-            position: coordinate,
-            map: map,
-            animation: idx == 0 ? null : google.maps.Animation.DROP,
-            icon: idx == 1 ? null : 
-              {
-                path: google.maps.SymbolPath.CIRCLE,
-                fillColor: '#4485f4',
-                fillOpacity: 1,
-                strokeColor: '#FFF',
-                strokeOpacity: 0.9,
-                strokeWeight: 2,
-                scale: 7
-              }
-          });
-          
-          markerBounds.extend(coordinate);
-          markers.push(marker);
+          if(coordinate.lat) {
+            const marker = new google.maps.Marker({
+              position: coordinate,
+              map: map,
+              animation: idx == 0 ? null : google.maps.Animation.DROP,
+              icon: idx == 1 ? null : 
+                {
+                  path: google.maps.SymbolPath.CIRCLE,
+                  fillColor: '#4485f4',
+                  fillOpacity: 1,
+                  strokeColor: '#FFF',
+                  strokeOpacity: 0.9,
+                  strokeWeight: 2,
+                  scale: 7
+                }
+            });
+            
+            markerBounds.extend(coordinate);
+            markers.push(marker);
+          }
         })
 
         const targetRadius = new google.maps.Circle({
