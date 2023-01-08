@@ -79,7 +79,8 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
   Widget _webWidget() {
     return StreamBuilder(
       stream: LocationBloc.positionStatus$,
-      builder: (BuildContext context, AsyncSnapshot<dynamic> positionSnapshot) {
+      builder:
+          (BuildContext context, AsyncSnapshot<Position?> positionSnapshot) {
         if (!positionSnapshot.hasData || positionSnapshot.data == null) {
           return CheckInButton(
             disabled: true,
@@ -116,6 +117,7 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
                     disabled:
                         !_isTimeValid(locationSnapshot.data![0], time.data!) ||
                             !LocationBloc.isInValidLocation() ||
+                            positionSnapshot.data!.isMocked ||
                             _isHoliday(locationSnapshot.data![0]),
                     isCheckout: _isCheckout(locationSnapshot.data?[0]));
               },
@@ -141,8 +143,8 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
 
         return StreamBuilder(
           stream: LocationBloc.positionStatus$,
-          builder:
-              (BuildContext context, AsyncSnapshot<dynamic> positionSnapshot) {
+          builder: (BuildContext context,
+              AsyncSnapshot<Position?> positionSnapshot) {
             if (!positionSnapshot.hasData || positionSnapshot.data == null) {
               return CheckInButton(
                 disabled: true,
@@ -179,6 +181,7 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
                         disabled: !_isTimeValid(
                                 locationSnapshot.data![0], time.data!) ||
                             !LocationBloc.isInValidLocation() ||
+                            positionSnapshot.data!.isMocked ||
                             _isHoliday(locationSnapshot.data![0]),
                         isCheckout: _isCheckout(locationSnapshot.data?[0]));
                   },
