@@ -123,14 +123,11 @@ class MyMapView extends StatefulWidget {
 class _MyMapView extends State<MyMapView> {
   WebViewController? webView;
   StreamSubscription<ServiceStatus>? serviceStatus;
-  StreamSubscription<List<dynamic>>? positionStatus;
+  StreamSubscription<Position?>? positionStatus;
 
-  Future<void> loadMaps(List<dynamic> data) async {
+  Future<void> loadMaps(Position? pos) async {
     // LocationBloc.updateLoadingStatus(true);
-    if (data[0] == -1) return;
-    Position? pos =
-        data[0]; // pos bisa jadi -1 jika loading, bungkus dlm try catch
-    Map<String, dynamic>? target = data[1];
+    Map<String, dynamic>? target = LocationBloc.targetLocation;
     if (pos != null && (target?.isNotEmpty ?? false)) {
       // LocationBloc.updatePosition(pos);
       if (webView != null) {
@@ -146,14 +143,19 @@ class _MyMapView extends State<MyMapView> {
   }
 
   void reload() async {
-    if(webView == null) return;
-    await LocationBloc.getValidLocation().then((targetLocation) async {
-      await webView!.loadUrl(Uri.dataFromString(
-              homeMap(LocationBloc.position!, targetLocation['latitude'],
-                  targetLocation['longitude'], targetLocation['radius']),
-              mimeType: 'text/html')
-          .toString());
-    });
+    setState(() {});
+    // if (webView == null) return;
+    // await LocationBloc.getValidLocation().then((targetLocation) async {
+    //   try {
+    //     await webView?.loadUrl(Uri.dataFromString(
+    //             homeMap(LocationBloc.position!, targetLocation['latitude'],
+    //                 targetLocation['longitude'], targetLocation['radius']),
+    //             mimeType: 'text/html')
+    //         .toString());
+    //   } catch (e) {
+    //     print('DEBUG: $e');
+    //   }
+    // });
   }
 
   @override
@@ -165,9 +167,8 @@ class _MyMapView extends State<MyMapView> {
       });
     }
 
-    positionStatus = CombineLatestStream.list(
-            [LocationBloc.positionStatus$, LocationBloc.targetLocation$])
-        .listen((value) {
+    positionStatus = LocationBloc.positionStatus$.listen((value) {
+      print(value);
       loadMaps(value);
     });
     // if (!kIsWeb) {
@@ -225,7 +226,7 @@ class _MyMapView extends State<MyMapView> {
               },
               initialUrl: Uri.dataFromString(
                       homeMap(
-                          LocationBloc.position!,
+                          LocationBloc.position,
                           targetLocation['latitude'],
                           targetLocation['longitude'],
                           targetLocation['radius']),
@@ -246,7 +247,7 @@ class _MyMapView extends State<MyMapView> {
           ),
         ].toSet(),
         initialUrl: Uri.dataFromString(
-                homeMap(LocationBloc.position!, targetLocation['latitude'],
+                homeMap(LocationBloc.position, targetLocation['latitude'],
                     targetLocation['longitude'], targetLocation['radius']),
                 mimeType: 'text/html')
             .toString(),
@@ -268,7 +269,7 @@ class _MyMapView extends State<MyMapView> {
       // )
     ]);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     LocationBloc.getValidLocation();
@@ -282,9 +283,8 @@ class _MyMapView extends State<MyMapView> {
                   serviceStatusSnapshot.data == ServiceStatus.disabled) {
                 return _MapStatusWidget('Hidupkan Akses Lokasi');
               }
-
-              return StreamBuilder(
-                  stream: LocationBloc.positionStatus$,
+              return FutureBuilder(
+                  future: LocationBloc.getCurrentPosition(),
                   builder: (BuildContext context,
                       AsyncSnapshot<dynamic> positionSnapshot) {
                     if (!positionSnapshot.hasData ||
@@ -310,8 +310,8 @@ class _MyMapView extends State<MyMapView> {
                         });
                   });
             })
-        : StreamBuilder(
-            stream: LocationBloc.positionStatus$,
+        : FutureBuilder(
+            future: LocationBloc.getCurrentPosition(),
             builder: (BuildContext context,
                 AsyncSnapshot<dynamic> positionSnapshot) {
               if (!positionSnapshot.hasData ||

@@ -15,7 +15,7 @@ class LocationBloc {
   static StreamSubscription<Position>? positionStreamSubscription;
   static StreamSubscription<ServiceStatus>? serviceStatusStreamSubscription;
 
-  static BehaviorSubject<dynamic> _positionSubject =
+  static BehaviorSubject<Position?> _positionSubject =
       new BehaviorSubject.seeded(null);
   static BehaviorSubject<Map<String, dynamic>> _targetLocation =
       BehaviorSubject.seeded({});
@@ -33,7 +33,7 @@ class LocationBloc {
   static Future<void> init() async {
     _positionSubject = new BehaviorSubject.seeded(null);
     if (_locationSettings == null) setLocationSettings();
-    getCurrentPosition().then((value) {
+    await getCurrentPosition().then((value) {
       if (value == null) {
         _updateServiceStatus(ServiceStatus.disabled);
       } else {
@@ -47,7 +47,7 @@ class LocationBloc {
     _positionSubject = new BehaviorSubject.seeded(null);
     if (_locationSettings == null) setLocationSettings();
     await getCurrentPosition();
-    toggleListening();
+    if (positionStreamSubscription == null) toggleListening();
   }
 
   static LocationSettings setLocationSettings() {
@@ -86,13 +86,15 @@ class LocationBloc {
 
   static Stream<ServiceStatus> get serviceStatus$ =>
       _serviceStatusSubject.asBroadcastStream();
-  static Stream<dynamic> get positionStatus$ =>
-      _positionSubject.asBroadcastStream();
+  static Stream<Position?> get positionStatus$ => _positionSubject
+      .debounceTime(const Duration(milliseconds: 500))
+      .asBroadcastStream();
   static Position? get position => _positionSubject.value;
   static Map<String, dynamic> get getTargetLocation => _targetLocation.value;
   static Stream<Map<String, dynamic>> get targetLocation$ =>
       _targetLocation.asBroadcastStream();
 
+  static get targetLocation => _targetLocation.value;
   static Future<Position?> getCurrentPosition() async {
     if (!kIsWeb) {
       final hasPermission = await _handlePermission();
@@ -189,8 +191,12 @@ class LocationBloc {
       positionStreamSubscription!.isPaused);
 
   static void toggleServiceStatusStream({bool openSettings = true}) {
+    // print('DEBUG $serviceStatusStreamSubscription $positionStreamSubscription');
     if (serviceStatusStreamSubscription == null) {
       final serviceStatusStream = Geolocator.getServiceStatusStream();
+      if (openSettings == false && positionStreamSubscription == null) {
+        toggleListening();
+      }
       serviceStatusStreamSubscription =
           serviceStatusStream.handleError((error) {
         serviceStatusStreamSubscription?.cancel();
@@ -198,14 +204,16 @@ class LocationBloc {
         Future.delayed(const Duration(seconds: 1))
             .then((value) => toggleServiceStatusStream());
       }).listen((serviceStatus) {
+        // print('BLOC: $serviceStatus');
         if (serviceStatus == ServiceStatus.enabled) {
-          positionStreamStarted = positionStreamSubscription == null;
-          _updatePosition(-1);
-          if (positionStreamStarted) {
-            toggleListening();
-          } else {
-            getCurrentPosition();
-          }
+          toggleListening();
+          // positionStreamStarted = positionStreamSubscription == null;
+          // _updatePosition(null);
+          // if (positionStreamStarted) {
+          //   toggleListening();
+          // } else {
+          //   getCurrentPosition();
+          // }
         } else {
           if (positionStreamSubscription != null) {
             positionStreamSubscription?.cancel();
@@ -215,12 +223,14 @@ class LocationBloc {
         }
         _updateServiceStatus(serviceStatus);
       });
+    } else {
+      // print('DEBUG TEST');
     }
   }
 
   static void toggleListening() {
     if (positionStreamSubscription == null) {
-      _updatePosition(-1);
+      _updatePosition(null);
       final positionStream =
           Geolocator.getPositionStream(locationSettings: _locationSettings);
       positionStreamSubscription = positionStream.handleError((error) {
@@ -229,6 +239,7 @@ class LocationBloc {
         Future.delayed(const Duration(seconds: 1))
             .then((value) => toggleListening());
       }).listen((pos) {
+        // print('BLOC: $pos');
         _updatePosition(pos);
       });
       // positionStreamSubscription?.pause();
@@ -291,11 +302,10 @@ class LocationBloc {
   // end - Location Service
 
   static int get getDistance {
-    if (_positionSubject.value == null ||
-        _positionSubject.value == -1 ||
-        getTargetLocation['latitude'] == null) return -1;
-    double x1 = _positionSubject.value.latitude;
-    double y1 = _positionSubject.value.longitude;
+    if (_positionSubject.value == null || getTargetLocation['latitude'] == null)
+      return -1;
+    double x1 = _positionSubject.value!.latitude;
+    double y1 = _positionSubject.value!.longitude;
     double x2 = getTargetLocation['latitude'];
     double y2 = getTargetLocation['longitude'];
     int radius = getTargetLocation['radius'];
@@ -306,11 +316,10 @@ class LocationBloc {
 
   static bool isInValidLocation() {
     //
-    if (_positionSubject.value == null ||
-        _positionSubject.value == -1 ||
-        getTargetLocation['latitude'] == null) return false;
-    double x1 = _positionSubject.value.latitude;
-    double y1 = _positionSubject.value.longitude;
+    if (_positionSubject.value == null || getTargetLocation['latitude'] == null)
+      return false;
+    double x1 = _positionSubject.value!.latitude;
+    double y1 = _positionSubject.value!.longitude;
     double x2 = getTargetLocation['latitude'];
     double y2 = getTargetLocation['longitude'];
     int radius = getTargetLocation['radius'];
