@@ -372,7 +372,7 @@ String webMap(Position? pos1, double lat2, double lng2, int radius) {
 
             targetRadius = new google.maps.Circle({
               map: map,
-              radius: 100,
+              radius: $radius,
               strokeColor: '#000000',
               strokeOpacity: 0.5,
               strokeWeight: 2,
