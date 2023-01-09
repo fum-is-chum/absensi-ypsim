@@ -54,7 +54,7 @@ class LocationBloc {
     if (defaultTargetPlatform == TargetPlatform.android) {
       _locationSettings = AndroidSettings(
         accuracy: LocationAccuracy.best,
-        distanceFilter: 5,
+        distanceFilter: 10,
         // forceLocationManager: true,
         intervalDuration: const Duration(seconds: 5),
         //(Optional) Set foreground notification config to keep the app alive
@@ -78,7 +78,7 @@ class LocationBloc {
     } else {
       _locationSettings = LocationSettings(
         accuracy: LocationAccuracy.best,
-        distanceFilter: 5,
+        distanceFilter: 10,
       );
     }
     return _locationSettings!;
@@ -87,7 +87,7 @@ class LocationBloc {
   static Stream<ServiceStatus> get serviceStatus$ =>
       _serviceStatusSubject.asBroadcastStream();
   static Stream<Position?> get positionStatus$ => _positionSubject
-      .debounceTime(const Duration(milliseconds: 500))
+      .debounceTime(Duration(milliseconds: kIsWeb ? 2000 : 500))
       .asBroadcastStream();
   static Position? get position => _positionSubject.value;
   static Map<String, dynamic> get getTargetLocation => _targetLocation.value;

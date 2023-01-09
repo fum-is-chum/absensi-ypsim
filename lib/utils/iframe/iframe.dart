@@ -260,7 +260,7 @@ String detailPresensiMap(
     """;
 }
 
-String webMap(Position pos1, double lat2, double lng2, int radius) {
+String webMap(Position? pos1, double lat2, double lng2, int radius) {
   return """
     <html>
       <head>
@@ -305,7 +305,7 @@ String webMap(Position pos1, double lat2, double lng2, int radius) {
         <script>
         // Initialize and add the map
           const coordinates = [
-            { lat: ${pos1.latitude}, lng: ${pos1.longitude} },
+            { lat: ${pos1?.latitude}, lng: ${pos1?.longitude} },
             { lat: $lat2, lng: $lng2 }
           ]; 
 

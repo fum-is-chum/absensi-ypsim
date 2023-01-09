@@ -168,8 +168,18 @@ class _MyMapView extends State<MyMapView> {
     }
 
     positionStatus = LocationBloc.positionStatus$.listen((value) {
-      // print(value);
-      loadMaps(value);
+      if (kIsWeb) {
+        if (webView != null) {
+          Map<String, dynamic> target = LocationBloc.targetLocation;
+          webView!.loadUrl(Uri.dataFromString(
+                  webMap(LocationBloc.position, target['latitude'],
+                      target['longitude'], target['radius']),
+                  mimeType: 'text/html')
+              .toString());
+        }
+      } else {
+        loadMaps(value);
+      }
     });
     // if (!kIsWeb) {
     // } else {
@@ -247,10 +257,11 @@ class _MyMapView extends State<MyMapView> {
           ),
         ].toSet(),
         initialUrl: Uri.dataFromString(
-                homeMap(LocationBloc.position, targetLocation['latitude'],
+                webMap(LocationBloc.position, targetLocation['latitude'],
                     targetLocation['longitude'], targetLocation['radius']),
                 mimeType: 'text/html')
             .toString(),
+        javascriptMode: JavascriptMode.unrestricted,
         onWebViewCreated: (WebViewController wv) {
           webView = wv;
         },
