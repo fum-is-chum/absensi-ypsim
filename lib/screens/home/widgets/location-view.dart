@@ -168,7 +168,7 @@ class _MyMapView extends State<MyMapView> {
     }
 
     positionStatus = LocationBloc.positionStatus$.listen((value) {
-      print(value);
+      // print(value);
       loadMaps(value);
     });
     // if (!kIsWeb) {

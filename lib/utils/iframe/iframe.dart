@@ -188,13 +188,19 @@ String homeMap(Position? pos1, double lat2, double lng2, int radius) {
         const event = new Event(POSITION_UPDATE);
 
         document.addEventListener(POSITION_UPDATE, () => {
-          const newMarkerbounds = new google.maps.LatLngBounds();
-          coordinates.forEach((coordinate, idx) => {
-            markers[idx].setPosition(coordinate);
-            newMarkerbounds.extend(coordinate);
-          })
-          targetRadius.setCenter(coordinates[1]);
-          map.fitBounds(newMarkerbounds);
+          try {
+            console.log("Position Updated: ", coordinates)
+            const newMarkerbounds = new google.maps.LatLngBounds();
+            coordinates.forEach((coordinate, idx) => {
+              markers[idx].setPosition(coordinate);
+              newMarkerbounds.extend(coordinate);
+            })
+            targetRadius.setCenter(coordinates[1]);
+            map.fitBounds(newMarkerbounds);
+            console.log("Map UI Updated")
+          } catch (e) {
+            console.error(e)
+          }
         })
       }
       window.initMap = initMap;
