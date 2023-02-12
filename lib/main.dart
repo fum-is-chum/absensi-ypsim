@@ -26,8 +26,8 @@ void main() {
     flavor: BuildFlavor.staging,
   );
   registerWebViewWebImplementation();
-  if (!kIsWeb && Environment.flavor == BuildFlavor.production)
-    checkForUpdates();
+  if (!kIsWeb)
+    checkForUpdates(); // comment line ini jika sedang di test di live server flutter
   initializeDateFormatting('id_ID', null).then((_) => runApp(AbsensiYPSIM()));
 }
 
