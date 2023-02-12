@@ -9,6 +9,7 @@ import 'package:SIMAt/screens/riwayat-presensi/riwayat-presensi.dart';
 import 'package:SIMAt/screens/verification.dart';
 import 'package:SIMAt/utils/services/hide-keyboard.dart';
 import 'package:SIMAt/widgets/spinner.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -25,7 +26,8 @@ void main() {
     flavor: BuildFlavor.staging,
   );
   registerWebViewWebImplementation();
-  if (Environment.flavor == BuildFlavor.production) checkForUpdates();
+  if (!kIsWeb && Environment.flavor == BuildFlavor.production)
+    checkForUpdates();
   initializeDateFormatting('id_ID', null).then((_) => runApp(AbsensiYPSIM()));
 }
 
