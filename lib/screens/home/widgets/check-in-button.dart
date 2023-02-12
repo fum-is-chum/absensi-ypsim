@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:SIMAt/screens/home/bloc/check-in-bloc.dart';
 import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
@@ -9,6 +10,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../bloc/home-bloc.dart';
@@ -57,12 +59,24 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
 
     late String start;
     late String end;
+
+    // cek apakah hari sabtu
+    bool isSaturday =
+        DateFormat('EEEE').format(DateTime.parse(date)) == 'Saturday';
     if (_isCheckout(data)) {
-      start = settings['check_out_start'];
-      end = settings['check_out_end'];
+      start = isSaturday
+          ? settings['saturday_check_out_start']
+          : settings['check_out_start'];
+      end = isSaturday
+          ? settings['saturday_check_out_end']
+          : settings['check_out_end'];
     } else {
-      start = settings['check_in_start'];
-      end = settings['check_in_end'];
+      start = isSaturday
+          ? settings['saturday_check_in_start']
+          : settings['check_in_start'];
+      end = isSaturday
+          ? settings['saturday_check_in_end']
+          : settings['check_in_end'];
     }
     DateTime _start = DateTime.parse("${date}T${start}");
     DateTime _end = DateTime.parse("${date}T${end}");
