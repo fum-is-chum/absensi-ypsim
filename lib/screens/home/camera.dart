@@ -10,15 +10,16 @@ import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 
 class CameraPage extends StatefulWidget {
-  const CameraPage({Key? key, required this.cameras}) : super(key: key);
+  const CameraPage({Key? key, required this.camera}) : super(key: key);
 
-  final List<CameraDescription>? cameras;
+  final CameraDescription? camera;
 
   @override
   State<CameraPage> createState() => _CameraPageState();
 }
 
-class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver, TickerProviderStateMixin {
+class _CameraPageState extends State<CameraPage>
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? _cameraController;
   bool _isRearCameraSelected = false;
   double _minAvailableExposureOffset = 0.0;
@@ -32,52 +33,56 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver, Ti
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
 
-    Future.delayed(Duration(seconds: 1)).then((value) => SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values)); // to re-show bars
+    Future.delayed(Duration(seconds: 1)).then((value) =>
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+            overlays: SystemUiOverlay.values)); // to re-show bars
   }
 
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-    initCamera(widget.cameras![widget.cameras!.length - 1]);
+    initCamera(widget.camera!);
     super.initState();
   }
-  
 
   Future takePicture() async {
     final CameraController? cameraController = _cameraController;
-    if (cameraController == null || !cameraController.value.isInitialized || cameraController.value.isTakingPicture) {
+    if (cameraController == null ||
+        !cameraController.value.isInitialized ||
+        cameraController.value.isTakingPicture) {
       return null;
     }
     try {
-      if(!kIsWeb) await cameraController.setFlashMode(FlashMode.off);
+      if (!kIsWeb) await cameraController.setFlashMode(FlashMode.off);
       XFile picture = await cameraController.takePicture();
       final imageBytes = await picture.readAsBytes();
       img.Image? originalImage = img.decodeImage(imageBytes);
       img.Image fixedImage = img.flipHorizontal(originalImage!);
 
-      if(!kIsWeb) {
+      if (!kIsWeb) {
         File file = File(picture.path);
 
         XFile fixedFile = new XFile((await file.writeAsBytes(
           img.encodeJpg(fixedImage),
           flush: true,
-        )).path);
+        ))
+            .path);
         bool result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PreviewPage(
-                    picture: fixedFile,
-                  )));
-        if(result) Navigator.pop(context, true);
+                builder: (context) => PreviewPage(
+                      picture: fixedFile,
+                    )));
+        if (result) Navigator.pop(context, true);
         return result;
-      } 
+      }
       bool result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PreviewPage(
-                picture: picture,
-              )));
-      if(result) Navigator.pop(context, true);
+          context,
+          MaterialPageRoute(
+              builder: (context) => PreviewPage(
+                    picture: picture,
+                  )));
+      if (result) Navigator.pop(context, true);
       return result;
     } on CameraException catch (e) {
       debugPrint('Error occured while taking picture: $e');
@@ -198,7 +203,6 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver, Ti
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-
   Future initCamera(CameraDescription cameraDescription) async {
     onNewCameraSelected(cameraDescription);
   }
@@ -206,7 +210,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver, Ti
   @override
   Widget build(BuildContext context) {
     final CameraController? cameraController = _cameraController;
-    if(cameraController == null) {
+    if (cameraController == null) {
       return Container();
     }
     var tmp = MediaQuery.of(context).size;
@@ -221,62 +225,55 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver, Ti
     final screenRatio = screenH / screenW;
     final previewRatio = previewH / previewW;
 
-
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            (cameraController.value.isInitialized)
-              ? ClipRRect(
-                  child: OverflowBox(
-                    maxHeight: screenRatio > previewRatio
-                        ? screenH
-                        : screenW / previewW * previewH,
-                    maxWidth: screenRatio > previewRatio
-                        ? screenH / previewH * previewW
-                        : screenW,
-                    child: CameraPreview(
-                      cameraController,
-                    ),
+        body: SafeArea(
+      child: Stack(fit: StackFit.expand, children: [
+        (cameraController.value.isInitialized)
+            ? ClipRRect(
+                child: OverflowBox(
+                  maxHeight: screenRatio > previewRatio
+                      ? screenH
+                      : screenW / previewW * previewH,
+                  maxWidth: screenRatio > previewRatio
+                      ? screenH / previewH * previewW
+                      : screenW,
+                  child: CameraPreview(
+                    cameraController,
                   ),
-                )
-              : Container(
-                  color: Colors.black,
-                  child: const Center(child: CircularProgressIndicator())),
-            IgnorePointer(
-              child: ClipPath(
-                clipper: InvertedCircleClipper(),
-                child: Container(
-                  color: Color.fromRGBO(0, 0, 0, 0.2),
                 ),
-              ),
+              )
+            : Container(
+                color: Colors.black,
+                child: const Center(child: CircularProgressIndicator())),
+        IgnorePointer(
+          child: ClipPath(
+            clipper: InvertedCircleClipper(),
+            child: Container(
+              color: Color.fromRGBO(0, 0, 0, 0.2),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.20,
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                decoration: const BoxDecoration(
+          ),
+        ),
+        Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.20,
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              decoration: const BoxDecoration(
                   // borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                   // color: Color(0x10000000)
-                ),
-                child: Row(
+                  ),
+              child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
-                        color: Color.fromARGB(210, 92, 92, 92)
-                      ),
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                          color: Color.fromARGB(210, 92, 92, 92)),
                       child: IconButton(
                         padding: EdgeInsets.zero,
                         iconSize: 24,
-                        icon: Icon(
-                          CupertinoIcons.xmark,
-                          color: Colors.white
-                        ),
+                        icon: Icon(CupertinoIcons.xmark, color: Colors.white),
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -287,32 +284,28 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver, Ti
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
-                        color: Color.fromARGB(210, 92, 92, 92)
-                      ),
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                          color: Color.fromARGB(210, 92, 92, 92)),
                       child: IconButton(
                         padding: EdgeInsets.zero,
                         iconSize: 24,
                         icon: Icon(
-                          _isRearCameraSelected
-                              ? CupertinoIcons.switch_camera
-                              : CupertinoIcons.switch_camera_solid,
-                          color: Colors.white
-                        ),
+                            _isRearCameraSelected
+                                ? CupertinoIcons.switch_camera
+                                : CupertinoIcons.switch_camera_solid,
+                            color: Colors.white),
                         onPressed: () {
-                          setState(
-                              () => _isRearCameraSelected = !_isRearCameraSelected);
-                          initCamera(widget.cameras![_isRearCameraSelected ? 0 : 1]);
+                          // setState(() =>
+                          //     _isRearCameraSelected = !_isRearCameraSelected);
+                          // initCamera(
+                          //     widget.camera[_isRearCameraSelected ? 0 : 1]);
                         },
                       ),
                     )
-                ]),
-              )
-            ),
-          ]
-        ),
-      )
-    );
+                  ]),
+            )),
+      ]),
+    ));
   }
 }
 
@@ -329,28 +322,24 @@ class _ShutterButton extends State<ShutterButton> {
 
   @override
   Widget build(BuildContext context) {
-    return disabled ? 
-    CircularProgressIndicator()
-    : IconButton(
-      onPressed: () async {
-        if(!disabled) {
-          disabled = true;
-          setState(() {
-            
-          });
-          if(!(await widget.onPressed())) {
-            disabled = false;
-            setState(() {
-              
-            });
-          }
-        }
-      },
-      iconSize: 64,
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(),
-      icon: const Icon(Icons.circle, color: Colors.white),
-    );
+    return disabled
+        ? CircularProgressIndicator()
+        : IconButton(
+            onPressed: () async {
+              if (!disabled) {
+                disabled = true;
+                setState(() {});
+                if (!(await widget.onPressed())) {
+                  disabled = false;
+                  setState(() {});
+                }
+              }
+            },
+            iconSize: 64,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            icon: const Icon(Icons.circle, color: Colors.white),
+          );
   }
 }
 
