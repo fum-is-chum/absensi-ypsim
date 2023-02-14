@@ -249,28 +249,27 @@ class _CheckInButton extends State<CheckInButton> {
             color: widget.isCheckout ? Colors.black : Colors.white),
       ),
       onPressed: () async {
-        if (!widget.disabled)
-          await availableCameras().then((value) async {
-            await Navigator.push(context,
-                MaterialPageRoute(builder: (_) => CameraPage(cameras: value)));
-            if (cameraBloc.imageFile != null) {
-              widget.isCheckout
-                  ? await homeBloc.checkOut(
-                      context: context,
-                      pos: LocationBloc.position!,
-                      dateTime:
-                          "${timeBloc.currentDate} ${timeBloc.currentTime}",
-                      photo: cameraBloc.imageFile!)
-                  : await homeBloc.checkIn(
-                      context: context,
-                      pos: LocationBloc.position!,
-                      dateTime:
-                          "${timeBloc.currentDate} ${timeBloc.currentTime}",
-                      photo: cameraBloc.imageFile!);
-              cameraBloc.reset();
-              homeBloc.triggerReload();
-            }
-          });
+        if (!widget.disabled) {
+          CameraDescription camera = (await availableCameras()).firstWhere(
+              (camera) => camera.lensDirection == CameraLensDirection.front);
+          await Navigator.push(context,
+              MaterialPageRoute(builder: (_) => CameraPage(camera: camera)));
+          if (cameraBloc.imageFile != null) {
+            widget.isCheckout
+                ? await homeBloc.checkOut(
+                    context: context,
+                    pos: LocationBloc.position!,
+                    dateTime: "${timeBloc.currentDate} ${timeBloc.currentTime}",
+                    photo: cameraBloc.imageFile!)
+                : await homeBloc.checkIn(
+                    context: context,
+                    pos: LocationBloc.position!,
+                    dateTime: "${timeBloc.currentDate} ${timeBloc.currentTime}",
+                    photo: cameraBloc.imageFile!);
+            cameraBloc.reset();
+            homeBloc.triggerReload();
+          }
+        }
       },
     );
   }
