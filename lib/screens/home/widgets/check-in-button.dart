@@ -62,7 +62,8 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
 
     // cek apakah hari sabtu
     bool isSaturday =
-        DateFormat('EEEE').format(DateTime.parse(date)) == 'Saturday';
+        DateFormat('EEEE').format(DateTime.parse(date)) == 'Saturday' &&
+            settings['saturday_check_in_start'] != null;
     if (_isCheckout(data)) {
       start = isSaturday
           ? settings['saturday_check_out_start']
