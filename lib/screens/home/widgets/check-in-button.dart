@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:SIMAt/screens/home/bloc/check-in-bloc.dart';
 import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
@@ -9,6 +10,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../bloc/home-bloc.dart';
@@ -57,12 +59,25 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
 
     late String start;
     late String end;
+
+    // cek apakah hari sabtu
+    bool isSaturday =
+        DateFormat('EEEE').format(DateTime.parse(date)) == 'Saturday' &&
+            settings['saturday_check_in_start'] != null;
     if (_isCheckout(data)) {
-      start = settings['check_out_start'];
-      end = settings['check_out_end'];
+      start = isSaturday
+          ? settings['saturday_check_out_start']
+          : settings['check_out_start'];
+      end = isSaturday
+          ? settings['saturday_check_out_end']
+          : settings['check_out_end'];
     } else {
-      start = settings['check_in_start'];
-      end = settings['check_in_end'];
+      start = isSaturday
+          ? settings['saturday_check_in_start']
+          : settings['check_in_start'];
+      end = isSaturday
+          ? settings['saturday_check_in_end']
+          : settings['check_in_end'];
     }
     DateTime _start = DateTime.parse("${date}T${start}");
     DateTime _end = DateTime.parse("${date}T${end}");
@@ -235,28 +250,27 @@ class _CheckInButton extends State<CheckInButton> {
             color: widget.isCheckout ? Colors.black : Colors.white),
       ),
       onPressed: () async {
-        if (!widget.disabled)
-          await availableCameras().then((value) async {
-            await Navigator.push(context,
-                MaterialPageRoute(builder: (_) => CameraPage(cameras: value)));
-            if (cameraBloc.imageFile != null) {
-              widget.isCheckout
-                  ? await homeBloc.checkOut(
-                      context: context,
-                      pos: LocationBloc.position!,
-                      dateTime:
-                          "${timeBloc.currentDate} ${timeBloc.currentTime}",
-                      photo: cameraBloc.imageFile!)
-                  : await homeBloc.checkIn(
-                      context: context,
-                      pos: LocationBloc.position!,
-                      dateTime:
-                          "${timeBloc.currentDate} ${timeBloc.currentTime}",
-                      photo: cameraBloc.imageFile!);
-              cameraBloc.reset();
-              homeBloc.triggerReload();
-            }
-          });
+        if (!widget.disabled) {
+          CameraDescription camera = (await availableCameras()).firstWhere(
+              (camera) => camera.lensDirection == CameraLensDirection.front);
+          await Navigator.push(context,
+              MaterialPageRoute(builder: (_) => CameraPage(camera: camera)));
+          if (cameraBloc.imageFile != null) {
+            widget.isCheckout
+                ? await homeBloc.checkOut(
+                    context: context,
+                    pos: LocationBloc.position!,
+                    dateTime: "${timeBloc.currentDate} ${timeBloc.currentTime}",
+                    photo: cameraBloc.imageFile!)
+                : await homeBloc.checkIn(
+                    context: context,
+                    pos: LocationBloc.position!,
+                    dateTime: "${timeBloc.currentDate} ${timeBloc.currentTime}",
+                    photo: cameraBloc.imageFile!);
+            cameraBloc.reset();
+            homeBloc.triggerReload();
+          }
+        }
       },
     );
   }
