@@ -120,7 +120,7 @@ class _CameraPageState extends State<CameraPage>
 
     final CameraController cameraController = CameraController(
       cameraDescription,
-      kIsWeb ? ResolutionPreset.medium : ResolutionPreset.medium,
+      kIsWeb ? ResolutionPreset.low : ResolutionPreset.low,
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
