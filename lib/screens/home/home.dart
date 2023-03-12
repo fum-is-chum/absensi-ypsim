@@ -59,7 +59,7 @@ class _HomeState extends State<Home> {
     if (result) {
       // homeBloc.init();
       // timeBloc.init();
-      if(!LocationBloc.isListening()) {
+      if (!LocationBloc.isListening()) {
         !kIsWeb ? LocationBloc.init() : LocationBloc.init_web();
       }
     }
@@ -94,9 +94,19 @@ class _HomeState extends State<Home> {
           timeBloc.triggerReload();
         },
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           primary: false,
           child: Column(
             children: [
+              SizedBox(
+                height: 8,
+              ),
+              Text(
+                'Tarik kebawah untuk melakukan penyegaran',
+                style: TextStyle(
+                  color: Color.fromARGB(136, 96, 125, 139),
+                ),
+              ),
               ImageRow(),
               SizedBox(height: 20),
               CheckInCard(),
@@ -190,10 +200,9 @@ class _ImageRow extends State<ImageRow> {
   StreamSubscription? subs;
   @override
   void initState() {
-    subs = CombineLatestStream.list([
-      timeBloc.dateStream$.distinct(),
-      homeBloc.reloadAttendance$
-    ]).listen((event) {
+    subs = CombineLatestStream.list(
+            [timeBloc.dateStream$.distinct(), homeBloc.reloadAttendance$])
+        .listen((event) {
       homeBloc.getAttendanceStatus(date: timeBloc.currentDate);
     });
     super.initState();
