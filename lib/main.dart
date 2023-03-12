@@ -9,7 +9,6 @@ import 'package:SIMAt/screens/riwayat-presensi/riwayat-presensi.dart';
 import 'package:SIMAt/screens/verification.dart';
 import 'package:SIMAt/utils/services/hide-keyboard.dart';
 import 'package:SIMAt/widgets/spinner.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -26,8 +25,8 @@ void main() {
     flavor: BuildFlavor.staging,
   );
   registerWebViewWebImplementation();
-  if (!kIsWeb)
-    checkForUpdates(); // comment line ini jika sedang di test di live server flutter
+  // if (!kIsWeb)
+  //   checkForUpdates(); // comment line ini jika sedang di test di live server flutter
   initializeDateFormatting('id_ID', null).then((_) => runApp(AbsensiYPSIM()));
 }
 
