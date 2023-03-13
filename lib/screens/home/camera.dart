@@ -30,6 +30,7 @@ class _CameraPageState extends State<CameraPage>
   @override
   void dispose() {
     // SystemChrome.restoreSystemUIOverlays();
+    _cameraController?.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
 
