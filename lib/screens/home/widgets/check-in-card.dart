@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:SIMAt/screens/home/bloc/home-bloc.dart';
 import 'package:SIMAt/screens/home/home.dart';
 import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:SIMAt/utils/services/shared-service.dart';
@@ -8,8 +10,9 @@ import 'package:intl/intl.dart';
 
 class CheckInCard extends StatelessWidget {
   const CheckInCard({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -46,12 +49,13 @@ class CheckInCard extends StatelessWidget {
             ),
           ),
           Container(
-            height: 180,
-            child: Stack(
-              children: [
-              Padding(
-                  padding: EdgeInsets.all(12),
-                  child: RichText(
+            height: 220,
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       style: TextStyle(
@@ -92,8 +96,12 @@ class CheckInCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                ),
-              ],
+                  SizedBox(
+                    height: 8,
+                  ),
+                  CheckInOutRange()
+                ],
+              ),
             ),
           ),
         ],
@@ -102,8 +110,48 @@ class CheckInCard extends StatelessWidget {
   }
 }
 
+class CheckInOutRange extends StatefulWidget {
+  const CheckInOutRange({Key? key}) : super(key: key);
+
+  @override
+  State<CheckInOutRange> createState() => _CheckInOutRange();
+}
+
+class _CheckInOutRange extends State<CheckInOutRange> {
+  String _checkInOutRange(Map<String, dynamic> settings) {
+    String checkInStart =
+        (settings['check_in_start'] as String).substring(0, 5);
+    String checkInEnd = (settings['check_in_end'] as String).substring(0, 5);
+
+    String checkOutStart =
+        (settings['check_out_start'] as String).substring(0, 5);
+    String checkOutEnd = (settings['check_out_end'] as String).substring(0, 5);
+    return "Batas waktu check in\t\t\t: $checkInStart - $checkInEnd WIB\nBatas waktu check out\t: $checkOutStart - $checkOutEnd WIB";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: HomeBloc().attendanceStatus$,
+      builder:
+          (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+        inspect(snapshot.data);
+        if (!snapshot.hasData ||
+            snapshot.data == null ||
+            snapshot.data!["time_settings"] == null) {
+          return Text("");
+        }
+        return Text(
+          _checkInOutRange(snapshot.data!["time_settings"]),
+          style: TextStyle(fontSize: 16),
+        );
+      },
+    );
+  }
+}
+
 class TimerDisplay extends StatefulWidget {
-  const TimerDisplay({Key? key}): super(key: key);
+  const TimerDisplay({Key? key}) : super(key: key);
 
   @override
   State<TimerDisplay> createState() => _TimerDisplay();
@@ -149,23 +197,24 @@ class _TimerDisplay extends State<TimerDisplay> {
     _timer = Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {
-          counts[2]++;
+        counts[2]++;
 
-          if(counts[2] > 59) {
-            counts[2] = 0;
-            counts[1]++;
-          }
+        if (counts[2] > 59) {
+          counts[2] = 0;
+          counts[1]++;
+        }
 
-          if(counts[1] > 59) {
-            counts[1] = 0;
-            counts[0]++;
-          }
+        if (counts[1] > 59) {
+          counts[1] = 0;
+          counts[0]++;
+        }
 
-          if(counts[0] > 23) {
-            counts[0] = 0;
-          }
+        if (counts[0] > 23) {
+          counts[0] = 0;
+        }
 
-          timeBloc.updateCount("${counts[0] < 10 ? "0" : ""}${counts[0]}:${counts[1] < 10 ? "0" : ""}${counts[1]}:${counts[2] < 10 ? "0" : ""}${counts[2]}");
+        timeBloc.updateCount(
+            "${counts[0] < 10 ? "0" : ""}${counts[0]}:${counts[1] < 10 ? "0" : ""}${counts[1]}:${counts[2] < 10 ? "0" : ""}${counts[2]}");
       },
     );
   }

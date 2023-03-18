@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:SIMAt/screens/home/bloc/check-in-bloc.dart';
 import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
@@ -7,7 +6,7 @@ import 'package:SIMAt/screens/home/camera.dart';
 import 'package:SIMAt/screens/home/home.dart';
 import 'package:SIMAt/utils/constants/Theme.dart';
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
@@ -85,64 +84,6 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
     return !(_curr.isBefore(_start) || _curr.isAfter(_end));
   }
 
-  bool _disabled(dynamic status, Position? pos) {
-    return status == null ||
-        (pos == null && !kIsWeb) ||
-        status == ServiceStatus.disabled;
-  }
-
-  Widget _webWidget() {
-    return StreamBuilder(
-      stream: LocationBloc.positionStatus$,
-      builder:
-          (BuildContext context, AsyncSnapshot<Position?> positionSnapshot) {
-        if (!positionSnapshot.hasData || positionSnapshot.data == null) {
-          return CheckInButton(
-            disabled: true,
-            isCheckout: false,
-          );
-        }
-
-        return StreamBuilder(
-          stream: CombineLatestStream.list([
-            homeBloc.attendanceStatus$,
-            LocationBloc.targetLocation$,
-          ]),
-          builder: (BuildContext context,
-              AsyncSnapshot<List<dynamic>> locationSnapshot) {
-            bool attendanceIsValid =
-                locationSnapshot.data?[0]['personal_calender'] != null;
-            bool targetLocationIsValid = locationSnapshot.data?[1] != null;
-
-            if (!locationSnapshot.hasData ||
-                !attendanceIsValid ||
-                !targetLocationIsValid) {
-              return CheckInButton(
-                  disabled: true,
-                  isCheckout: _isCheckout(locationSnapshot.data?[0]));
-            }
-
-            return StreamBuilder(
-              stream: timeBloc.count$,
-              builder: (BuildContext context, AsyncSnapshot<String> time) {
-                if (!time.hasData || time.data == null) {
-                  return CheckInButton(disabled: true, isCheckout: false);
-                }
-                return CheckInButton(
-                    disabled:
-                        !_isTimeValid(locationSnapshot.data![0], time.data!) ||
-                            !LocationBloc.isInValidLocation() ||
-                            positionSnapshot.data!.isMocked ||
-                            _isHoliday(locationSnapshot.data![0]),
-                    isCheckout: _isCheckout(locationSnapshot.data?[0]));
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-
   Widget _androidWidgets() {
     return StreamBuilder(
       stream: LocationBloc.serviceStatus$,
@@ -193,11 +134,11 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
                       return CheckInButton(disabled: true, isCheckout: false);
                     }
                     return CheckInButton(
-                        disabled: !_isTimeValid(
-                                locationSnapshot.data![0], time.data!) ||
+                        disabled:
+                            // !_isTimeValid(locationSnapshot.data![0], time.data!) ||
                             !LocationBloc.isInValidLocation() ||
-                            positionSnapshot.data!.isMocked ||
-                            _isHoliday(locationSnapshot.data![0]),
+                                positionSnapshot.data!.isMocked ||
+                                _isHoliday(locationSnapshot.data![0]),
                         isCheckout: _isCheckout(locationSnapshot.data?[0]));
                   },
                 );
@@ -211,7 +152,7 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return kIsWeb ? _webWidget() : _androidWidgets();
+    return _androidWidgets();
   }
 }
 
