@@ -1,15 +1,11 @@
-import 'dart:typed_data';
-
 import 'package:SIMAt/models/api-response.dart';
 import 'package:SIMAt/screens/home/models/check-in.dart';
 import 'package:SIMAt/utils/interceptors/dio-interceptor.dart';
 import 'package:SIMAt/utils/misc/credential-getter.dart';
 import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:SIMAt/widgets/spinner.dart';
-import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:path/path.dart';
 import 'package:rxdart/rxdart.dart';
@@ -35,34 +31,27 @@ class HomeBloc {
     _reloadAttendanceStatus.close();
   }
 
-  Stream<bool> get reloadAttendance$ => _reloadAttendanceStatus.asBroadcastStream();
+  Stream<bool> get reloadAttendance$ =>
+      _reloadAttendanceStatus.asBroadcastStream();
   void triggerReload() {
     _reloadAttendanceStatus.sink.add(!_reloadAttendanceStatus.value);
   }
 
-  Stream<Map<String, dynamic>> get attendanceStatus$ => _attendanceStatus.asBroadcastStream();
+  Stream<Map<String, dynamic>> get attendanceStatus$ =>
+      _attendanceStatus.asBroadcastStream();
 
   Map<String, dynamic> get attendanceStatus => _attendanceStatus.value;
 
-  Future<bool> getAttendanceStatus({
-    required String date
-  }) async {
+  Future<bool> getAttendanceStatus({required String date}) async {
     sp.show();
     try {
-      Map<String, dynamic> data = ApiResponse.fromJson((await _getAttendanceStatus(date: date)).data!).Result;
+      Map<String, dynamic> data =
+          ApiResponse.fromJson((await _getAttendanceStatus(date: date)).data!)
+              .Result;
       // khusus endpoint getAttendanceStatus, pastikan time_settings != null
       this._attendanceStatus.sink.add(data);
       sp.hide();
       return true;
-      // if(data['time_settings'] == null) {
-      //   sp.hide();
-      //   await handleError('Time Settings untuk user ini belum ditentukan');
-      //   return false;
-      // } else {
-      //   this._attendanceStatus.sink.add(data);
-      //   sp.hide();
-      //   return true;
-      // }
     } catch (e) {
       sp.hide();
       await handleError(e);
@@ -78,7 +67,8 @@ class HomeBloc {
   }) async {
     sp.show();
     try {
-      Response response = await _checkIn(pos: pos, dateTime: dateTime, photo: photo);
+      Response response =
+          await _checkIn(pos: pos, dateTime: dateTime, photo: photo);
       sp.hide();
       return true;
     } catch (e) {
@@ -86,9 +76,9 @@ class HomeBloc {
       await handleError(e);
       return false;
     }
-   }
+  }
 
-   Future<bool> checkOut({
+  Future<bool> checkOut({
     required BuildContext context,
     required Position pos,
     required String dateTime,
@@ -96,7 +86,8 @@ class HomeBloc {
   }) async {
     sp.show();
     try {
-      Response response = await _checkOut(pos: pos, dateTime: dateTime, photo: photo);
+      Response response =
+          await _checkOut(pos: pos, dateTime: dateTime, photo: photo);
       sp.hide();
       return true;
     } catch (e) {
@@ -104,13 +95,12 @@ class HomeBloc {
       await handleError(e);
       return false;
     }
-   }
+  }
 
-  Future<Response> _checkIn({
-    required Position pos,
-    required String dateTime,
-    required dynamic photo
-  }) async {
+  Future<Response> _checkIn(
+      {required Position pos,
+      required String dateTime,
+      required dynamic photo}) async {
     CheckInOutModel checkInModel = CheckInOutModel();
     checkInModel.employee_id = await CredentialGetter.employeeId;
     checkInModel.latitude = pos.latitude;
@@ -119,45 +109,21 @@ class HomeBloc {
     checkInModel.time = dateTime.substring(11, 19);
     FormData formData;
 
-    if(!kIsWeb) {
-      formData = FormData.fromMap({
-        ...checkInModel.toJson(),
-        'photo': MultipartFile.fromBytes(
-                  photo.readAsBytesSync(),
-                  filename: basename(photo.path)
-        ),
-      });
-    } else {
-      Uint8List bytes = await (photo as XFile).readAsBytes();
-      formData = FormData.fromMap({
-        ...checkInModel.toJson(),
-        'photo': MultipartFile.fromBytes(
-                  bytes,
-                  filename: basename(photo.path)
-        ),
-      });
-    }
+    formData = FormData.fromMap({
+      ...checkInModel.toJson(),
+      'photo': MultipartFile.fromBytes(photo.readAsBytesSync(),
+          filename: basename(photo.path)),
+    });
 
-    return DioClient.dioWithResponseType(ResponseType.plain).post(
-      '/attendance/checkIn',
-      data: formData,
-      options: Options(
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Accept': '*/*',
-          'Connection': 'keep-alive',
-          'Accept-Encoding': 'gzip, deflat, br',
-          'RequireToken': ''
-        }
-      )
-    );
+    // return DioClient.plainDio.post('/attendance/checkIn', data: formData);
+    return DioClient.plainDio.post('/attendance/checkIn',
+        data: formData, options: Options(headers: {'RequireToken': ''}));
   }
 
-  Future<Response> _checkOut({
-    required Position pos,
-    required String dateTime,
-    required dynamic photo
-  }) async {
+  Future<Response> _checkOut(
+      {required Position pos,
+      required String dateTime,
+      required dynamic photo}) async {
     CheckInOutModel checkOutModel = CheckInOutModel();
     checkOutModel.employee_id = await CredentialGetter.employeeId;
     checkOutModel.latitude = pos.latitude;
@@ -166,55 +132,21 @@ class HomeBloc {
     checkOutModel.time = dateTime.substring(11, 19);
     FormData formData;
 
-    if(!kIsWeb) {
-      formData = FormData.fromMap({
-        ...checkOutModel.toJson(),
-        'photo': MultipartFile.fromBytes(
-                  photo.readAsBytesSync(),
-                  filename: basename(photo.path)
-        ),
-      });
-    } else {
-      Uint8List bytes = await (photo as XFile).readAsBytes();
-      formData = FormData.fromMap({
-        ...checkOutModel.toJson(),
-        'photo': MultipartFile.fromBytes(
-                  bytes,
-                  filename: basename(photo.path)
-        ),
-      });
-    }
-
-    return DioClient.dioWithResponseType(ResponseType.plain).post(
-      '/attendance/checkOut',
-      data: formData,
-      options: Options(
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Accept': '*/*',
-          'Connection': 'keep-alive',
-          'Accept-Encoding': 'gzip, deflat, br',
-          'RequireToken': ''
-        }
-      )
-    );
+    formData = FormData.fromMap({
+      ...checkOutModel.toJson(),
+      'photo': MultipartFile.fromBytes(photo.readAsBytesSync(),
+          filename: basename(photo.path)),
+    });
+    return DioClient.plainDio.post('/attendance/checkOut',
+        data: formData, options: Options(headers: {'RequireToken': ''}));
   }
 
-  Future<Response> _getAttendanceStatus({
-    required String date
-  }) async {
+  Future<Response> _getAttendanceStatus({required String date}) async {
     Map<String, dynamic> data = {};
     data['employee_id'] = await CredentialGetter.employeeId;
     data['date'] = date;
 
-    return DioClient.dio.post(
-      '/attendance/status',
-      data: data,
-      options: Options(
-        headers: {
-          'RequireToken': ''
-        }
-      )
-    );
+    return DioClient.dio.post('/attendance/status',
+        data: data, options: Options(headers: {'RequireToken': ''}));
   }
 }
