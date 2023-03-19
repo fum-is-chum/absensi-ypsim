@@ -126,7 +126,7 @@ class _CheckInOutRange extends State<CheckInOutRange> {
     String checkOutStart =
         (settings['check_out_start'] as String).substring(0, 5);
     String checkOutEnd = (settings['check_out_end'] as String).substring(0, 5);
-    return "Batas waktu check in\t\t\t: $checkInStart - $checkInEnd WIB\nBatas waktu check out\t: $checkOutStart - $checkOutEnd WIB";
+    return "Range check in\t: $checkInStart - $checkInEnd WIB\nRange check out\t: $checkOutStart - $checkOutEnd WIB";
   }
 
   @override
