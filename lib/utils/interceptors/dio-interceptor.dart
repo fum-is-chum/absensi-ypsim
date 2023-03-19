@@ -40,10 +40,19 @@ class DioClient {
       }))
     ..interceptors.add(LoggingInterceptors());
 
+  static Dio _plainDio = Dio(BaseOptions(
+    baseUrl: "${Environment.baseUrl}/api",
+  ))
+    ..interceptors.add(TokenInterceptor());
+
   static Dio get dio {
     if (_dio.options.responseType != ResponseType.json)
       _dio.options.responseType = ResponseType.json;
     return _dio;
+  }
+
+  static Dio get plainDio {
+    return _plainDio;
   }
 
   static Dio get reloginDio => _reloginDio;
