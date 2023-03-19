@@ -49,7 +49,7 @@ class CheckInCard extends StatelessWidget {
             ),
           ),
           Container(
-            height: 220,
+            height: 230,
             child: Padding(
               padding: EdgeInsets.all(12),
               child: Column(
