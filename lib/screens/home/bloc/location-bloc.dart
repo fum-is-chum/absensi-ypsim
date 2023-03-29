@@ -191,7 +191,7 @@ class LocationBloc {
       positionStreamSubscription!.isPaused);
 
   static void toggleServiceStatusStream({bool openSettings = true}) {
-    // print('DEBUG $serviceStatusStreamSubscription $positionStreamSubscription');
+    print('DEBUG $serviceStatusStreamSubscription $positionStreamSubscription');
     if (serviceStatusStreamSubscription == null) {
       final serviceStatusStream = Geolocator.getServiceStatusStream();
       if (openSettings == false && positionStreamSubscription == null) {
@@ -199,25 +199,20 @@ class LocationBloc {
       }
       serviceStatusStreamSubscription =
           serviceStatusStream.handleError((error) {
-        serviceStatusStreamSubscription?.cancel();
-        serviceStatusStreamSubscription = null;
+        serviceStatusStreamSubscription
+            ?.cancel()
+            .whenComplete(() => serviceStatusStreamSubscription = null);
         Future.delayed(const Duration(seconds: 1))
             .then((value) => toggleServiceStatusStream());
       }).listen((serviceStatus) {
-        // print('BLOC: $serviceStatus');
+        print('BLOC: $serviceStatus');
         if (serviceStatus == ServiceStatus.enabled) {
           toggleListening();
-          // positionStreamStarted = positionStreamSubscription == null;
-          // _updatePosition(null);
-          // if (positionStreamStarted) {
-          //   toggleListening();
-          // } else {
-          //   getCurrentPosition();
-          // }
         } else {
           if (positionStreamSubscription != null) {
-            positionStreamSubscription?.cancel();
-            positionStreamSubscription = null;
+            positionStreamSubscription
+                ?.cancel()
+                .whenComplete(() => positionStreamSubscription = null);
           }
           _updatePosition(null);
         }
@@ -233,13 +228,15 @@ class LocationBloc {
       _updatePosition(null);
       final positionStream =
           Geolocator.getPositionStream(locationSettings: _locationSettings);
-      positionStreamSubscription = positionStream.handleError((error) {
-        positionStreamSubscription?.cancel();
-        positionStreamSubscription = null;
+      positionStreamSubscription =
+          positionStream.asBroadcastStream().handleError((error) {
+        positionStreamSubscription
+            ?.cancel()
+            .whenComplete(() => positionStreamSubscription = null);
         Future.delayed(const Duration(seconds: 1))
             .then((value) => toggleListening());
       }).listen((pos) {
-        // print('BLOC: $pos');
+        print('BLOC: $pos');
         _updatePosition(pos);
       });
       // positionStreamSubscription?.pause();
@@ -250,8 +247,9 @@ class LocationBloc {
 
   static void dispose() {
     if (positionStreamSubscription != null) {
-      positionStreamSubscription!.cancel();
-      positionStreamSubscription = null;
+      positionStreamSubscription!
+          .cancel()
+          .whenComplete(() => positionStreamSubscription = null);
     }
     // super.dispose();
   }

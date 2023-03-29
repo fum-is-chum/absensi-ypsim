@@ -59,8 +59,8 @@ class _RiwayatPresensi extends State<RiwayatPresensi> {
                   pinned: true,
                   // floating: true,
                   // snap: false,
-                  expandedHeight: 128 + (kIsWeb ? 16 : 0),
-                  collapsedHeight: 128 + (kIsWeb ? 16 : 0),
+                  expandedHeight: 128 + 16,
+                  collapsedHeight: 128 + 16,
                   flexibleSpace: FlexibleSpaceBar(
                     background: Container(
                         // duration: Duration(milliseconds: 500),
@@ -81,9 +81,7 @@ class _RiwayatPresensi extends State<RiwayatPresensi> {
                         )),
                   ),
                 ),
-                SliverToBoxAdapter(
-                  child: HistoryList()
-                )
+                SliverToBoxAdapter(child: HistoryList())
               ],
             ),
           )),
@@ -141,13 +139,13 @@ class _ListWidget extends State<HistoryList> {
 
   Widget _buildItem(
       BuildContext context, int index, Animation<double> animation) {
-    
     return FadeTransition(
       opacity: animation,
       child: HistoryPresensiItem(
         item: RiwayatPresensiModel.fromJson(data[index]),
         tap: () async {
-          await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          await Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) {
             // if(DateTime.parse(data[index]['startDate']).isBefore())
             return RiwayatPresensiDetail(
                 item: RiwayatPresensiModel.fromJson(data[index]));
@@ -195,7 +193,7 @@ class _ListWidget extends State<HistoryList> {
                   if (err != null)
                     return CustomScrollView(
                       slivers: [
-                       SliverToBoxAdapter(
+                        SliverToBoxAdapter(
                           child: Padding(
                             padding: const EdgeInsets.only(top: 12),
                             child: Text(
@@ -208,7 +206,8 @@ class _ListWidget extends State<HistoryList> {
                     );
 
                   return CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(parent: const BouncingScrollPhysics()),
+                    physics: const AlwaysScrollableScrollPhysics(
+                        parent: const BouncingScrollPhysics()),
                     slivers: [
                       SliverAnimatedList(
                         key: _listKey,
@@ -254,21 +253,25 @@ class _TanggalField extends State<TanggalField> {
                 showDatePicker(
                         context: context,
                         initialDate: DateTime.parse(widget.isAkhir &&
-                                DateTime.parse(riwayatPresensiBloc.filter.startDate!)
+                                DateTime.parse(
+                                        riwayatPresensiBloc.filter.startDate!)
                                     .isBefore(DateTime.parse(
                                         riwayatPresensiBloc.filter.endDate!))
                             ? riwayatPresensiBloc.filter.endDate!
                             : riwayatPresensiBloc.filter.startDate!),
                         firstDate: widget.isAkhir
-                            ? DateTime.parse(riwayatPresensiBloc.filter.startDate!)
+                            ? DateTime.parse(
+                                riwayatPresensiBloc.filter.startDate!)
                             : DateTime(2022),
                         lastDate: DateTime(DateTime.now().year + 10))
                     .then((DateTime? value) {
                   if (value != null) {
                     if (widget.isAkhir) {
-                      riwayatPresensiBloc.filter.endDate = formatDateOnly(value);
+                      riwayatPresensiBloc.filter.endDate =
+                          formatDateOnly(value);
                     } else {
-                      riwayatPresensiBloc.filter.startDate = formatDateOnly(value);
+                      riwayatPresensiBloc.filter.startDate =
+                          formatDateOnly(value);
                     }
                     _controller.text = formatDateOnly(value);
                     riwayatPresensiBloc.triggerReload();
@@ -283,7 +286,8 @@ class _TanggalField extends State<TanggalField> {
         onTap: () {
           showDatePicker(
                   context: context,
-                  initialDate: DateTime.parse(riwayatPresensiBloc.filter.startDate!),
+                  initialDate:
+                      DateTime.parse(riwayatPresensiBloc.filter.startDate!),
                   firstDate: widget.isAkhir
                       ? DateTime.parse(riwayatPresensiBloc.filter.startDate!)
                       : DateTime.fromMillisecondsSinceEpoch(0),

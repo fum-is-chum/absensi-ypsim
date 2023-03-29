@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'dart:io';
 
@@ -18,7 +16,7 @@ import '../models/pengajuan-izin-model.dart';
 class PengajuanIzinBloc {
   late PengajuanIzinModel _pengajuanIzinModel;
   Spinner sp = new Spinner();
-  
+
   PengajuanIzinBloc() {
     _pengajuanIzinModel = PengajuanIzinModel();
   }
@@ -32,25 +30,25 @@ class PengajuanIzinBloc {
   Map<String, dynamic> getRawValue() => _pengajuanIzinModel.toJson();
 
   Future<File?> fetchFile() async {
-    if(_pengajuanIzinModel.file != null) {
-      await createFileOfPdfUrl(null, _pengajuanIzinModel.file!).then((value) => _pengajuanIzinModel.file = value);
+    if (_pengajuanIzinModel.file != null) {
+      await createFileOfPdfUrl(null, _pengajuanIzinModel.file!)
+          .then((value) => _pengajuanIzinModel.file = value);
       return _pengajuanIzinModel.file;
     }
     return null;
   }
 
   Future<bool> updateIzin(BuildContext context) async {
-    try{
+    try {
       sp.show();
       await update();
       sp.hide();
       await ArtSweetAlert.show(
         context: context,
         artDialogArgs: ArtDialogArgs(
-          type: ArtSweetAlertType.success,
-          title: "Berhasil",
-          text: 'Izin berhasil diedit'
-        ),
+            type: ArtSweetAlertType.success,
+            title: "Berhasil",
+            text: 'Izin berhasil diedit'),
       );
       return true;
     } catch (e) {
@@ -61,18 +59,16 @@ class PengajuanIzinBloc {
   }
 
   Future<bool> createIzin(BuildContext context) async {
-    try{
+    try {
       sp.show();
       Response resp = await create();
       sp.hide();
       await ArtSweetAlert.show(
-        context: context,
-        artDialogArgs: ArtDialogArgs(
-          type: ArtSweetAlertType.success,
-          title: "Berhasil",
-          text: 'Izin berhasil diajukan'
-        )
-      );
+          context: context,
+          artDialogArgs: ArtDialogArgs(
+              type: ArtSweetAlertType.success,
+              title: "Berhasil",
+              text: 'Izin berhasil diajukan'));
       return true;
     } catch (e) {
       sp.hide();
@@ -87,25 +83,22 @@ class PengajuanIzinBloc {
     // var formData = FormData.fromMap(_pengajuanIzinModel);
     var formData = FormData.fromMap({
       ..._pengajuanIzinModel.toJson(),
-      'file': _pengajuanIzinModel.file != null ?
-              MultipartFile.fromBytes(
-              !kIsWeb ? (_pengajuanIzinModel.file as File).readAsBytesSync() : _pengajuanIzinModel.file,
-              filename: 'izin') 
-              : null
+      'file': _pengajuanIzinModel.file != null
+          ? MultipartFile.fromBytes(
+              (_pengajuanIzinModel.file as File).readAsBytesSync(),
+              filename: 'izin')
+          : null
     });
-    
-    return DioClient.dioWithResponseType(ResponseType.plain).post(
-      '/permission/$userId',
-      data: formData,
-      options: Options(
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Connection': 'keep-alive',
-          'Accept-Encoding': 'gzip, deflat, br',
-          'RequireToken': ''
-        }
-      )
-    );
+
+    return DioClient.dioWithResponseType(ResponseType.plain)
+        .post('/permission/$userId',
+            data: formData,
+            options: Options(headers: {
+              'Content-Type': 'multipart/form-data',
+              'Connection': 'keep-alive',
+              'Accept-Encoding': 'gzip, deflat, br',
+              'RequireToken': ''
+            }));
   }
 
   Future<Response> update() async {
@@ -114,24 +107,21 @@ class PengajuanIzinBloc {
     // var formData = FormData.fromMap(_pengajuanIzinModel);
     FormData formData = FormData.fromMap({
       ..._pengajuanIzinModel.toJson(),
-      'file': _pengajuanIzinModel.file != null ?
-              MultipartFile.fromBytes(
-              !kIsWeb ? (_pengajuanIzinModel.file as File).readAsBytesSync() : _pengajuanIzinModel.file,
-              filename: 'izin') 
-              : null
+      'file': _pengajuanIzinModel.file != null
+          ? MultipartFile.fromBytes(
+              (_pengajuanIzinModel.file as File).readAsBytesSync(),
+              filename: 'izin')
+          : null
     });
 
-    return DioClient.dioWithResponseType(ResponseType.plain).post(
-      '/permission/update/$permissionId',
-      data: formData,
-      options: Options(
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Connection': 'keep-alive',
-          'Accept-Encoding': 'gzip, deflat, br',
-          'RequireToken': ''
-        }
-      )
-    );
+    return DioClient.dioWithResponseType(ResponseType.plain)
+        .post('/permission/update/$permissionId',
+            data: formData,
+            options: Options(headers: {
+              'Content-Type': 'multipart/form-data',
+              'Connection': 'keep-alive',
+              'Accept-Encoding': 'gzip, deflat, br',
+              'RequireToken': ''
+            }));
   }
 }

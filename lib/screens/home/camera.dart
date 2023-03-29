@@ -54,34 +54,24 @@ class _CameraPageState extends State<CameraPage>
       return null;
     }
     try {
-      if (!kIsWeb) await cameraController.setFlashMode(FlashMode.off);
+      await cameraController.setFlashMode(FlashMode.off);
       XFile picture = await cameraController.takePicture();
       final imageBytes = await picture.readAsBytes();
       img.Image? originalImage = img.decodeImage(imageBytes);
       img.Image fixedImage = img.flipHorizontal(originalImage!);
 
-      if (!kIsWeb) {
-        File file = File(picture.path);
+      File file = File(picture.path);
 
-        XFile fixedFile = new XFile((await file.writeAsBytes(
-          img.encodeJpg(fixedImage),
-          flush: true,
-        ))
-            .path);
-        bool result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => PreviewPage(
-                      picture: fixedFile,
-                    )));
-        if (result) Navigator.pop(context, true);
-        return result;
-      }
+      XFile fixedFile = new XFile((await file.writeAsBytes(
+        img.encodeJpg(fixedImage),
+        flush: true,
+      ))
+          .path);
       bool result = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => PreviewPage(
-                    picture: picture,
+                    picture: fixedFile,
                   )));
       if (result) Navigator.pop(context, true);
       return result;
@@ -121,7 +111,7 @@ class _CameraPageState extends State<CameraPage>
 
     final CameraController cameraController = CameraController(
       cameraDescription,
-      kIsWeb ? ResolutionPreset.medium : ResolutionPreset.medium,
+      ResolutionPreset.medium,
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
@@ -143,15 +133,14 @@ class _CameraPageState extends State<CameraPage>
       await cameraController.initialize();
       await Future.wait(<Future<Object?>>[
         // The exposure mode is currently not supported on the web.
-        ...!kIsWeb
-            ? <Future<Object?>>[
-                cameraController.getMinExposureOffset().then(
-                    (double value) => _minAvailableExposureOffset = value),
-                cameraController
-                    .getMaxExposureOffset()
-                    .then((double value) => _maxAvailableExposureOffset = value)
-              ]
-            : <Future<Object?>>[],
+        ...<Future<Object?>>[
+          cameraController
+              .getMinExposureOffset()
+              .then((double value) => _minAvailableExposureOffset = value),
+          cameraController
+              .getMaxExposureOffset()
+              .then((double value) => _maxAvailableExposureOffset = value)
+        ],
         cameraController
             .getMaxZoomLevel()
             .then((double value) => _maxAvailableZoom = value),

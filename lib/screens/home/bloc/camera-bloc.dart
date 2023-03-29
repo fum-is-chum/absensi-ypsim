@@ -11,14 +11,14 @@ class CameraBloc {
   factory CameraBloc() => _shared;
 
   String snapTime = '';
-  late BehaviorSubject<dynamic> _imageFile = BehaviorSubject<dynamic>.seeded(null);
+  late BehaviorSubject<dynamic> _imageFile =
+      BehaviorSubject<dynamic>.seeded(null);
 
-  
   Stream<dynamic> get imageStream => _imageFile.stream;
   void reset() {
     _imageFile.sink.add(null);
   }
-  
+
   dynamic get imageFile => _imageFile.value;
 
   // Future openCamera() async {
@@ -34,26 +34,16 @@ class CameraBloc {
   //     // setState(() => this.image = imageTemp);
   //   } on PlatformException catch(e) {
   //     print('Failed to pick image: $e');
-  //   } 
+  //   }
   //   return;
   // }
 
-
   pickImage(XFile img) {
     try {
-      // XFile? img = await ImagePicker().pickImage(
-      //   source: ImageSource.camera,
-      //   imageQuality: 50,
-      //   preferredCameraDevice: CameraDevice.front
-      // );
-      // this._imageFile.sink.add(File(img.path));
-      !kIsWeb ? this._imageFile.sink.add(File(img.path)) : this._imageFile.sink.add(img);
-      // snapTime = formatTimeOnly(DateTime.now()) + ' WIB';
-      // final File imageTemp = File();
-      // setState(() => this.image = imageTemp);
-    } on PlatformException catch(e) {
+      this._imageFile.sink.add(File(img.path));
+    } on PlatformException catch (e) {
       print('Failed to pick image: $e');
-    } 
+    }
     return;
   }
 
