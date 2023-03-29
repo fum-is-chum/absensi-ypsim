@@ -156,7 +156,7 @@ String homeMap(Position? pos1, double lat2, double lng2, int radius) {
 
         document.addEventListener(POSITION_UPDATE, () => {
           try {
-            console.log("Position Updated: ", coordinates)
+
             const newMarkerbounds = new google.maps.LatLngBounds();
             coordinates.forEach((coordinate, idx) => {
               markers[idx].setPosition(coordinate);
@@ -164,7 +164,6 @@ String homeMap(Position? pos1, double lat2, double lng2, int radius) {
             })
             targetRadius.setCenter(coordinates[1]);
             map.fitBounds(newMarkerbounds);
-            console.log("Map UI Updated")
           } catch (e) {
             console.error(e)
           }
