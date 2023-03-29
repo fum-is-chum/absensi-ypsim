@@ -20,25 +20,28 @@ RiwayatIzinDetailBloc _riwayatIzinBloc = RiwayatIzinDetailBloc();
 class RiwayatIzinDetail extends StatelessWidget {
   final RiwayatIzinModel item;
 
-  RiwayatIzinDetail({Key? key, required this.item}): super(key: key);
-  
+  RiwayatIzinDetail({Key? key, required this.item}) : super(key: key);
+
   List<Widget> _actionWidget(BuildContext context) {
-    if(item.status == 'Menunggu') 
+    if (item.status == 'Menunggu')
       return [
         IconButton(
-          onPressed: () async {
-            await _riwayatIzinBloc.getDetail(context, item.id).then((value) {
-              if(value != null) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => 
-                  PengajuanIzin(editData: value,)
-                ));
-              }
-            });
-          },
-          icon: Icon(Icons.edit_note,
-            size: 32.0,
-          )
-        )
+            onPressed: () async {
+              await _riwayatIzinBloc.getDetail(context, item.id).then((value) {
+                if (value != null) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => PengajuanIzin(
+                                editData: value,
+                              )));
+                }
+              });
+            },
+            icon: Icon(
+              Icons.edit_note,
+              size: 32.0,
+            ))
       ];
     return [];
   }
@@ -81,8 +84,8 @@ class RiwayatIzinDetail extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Text(item.status),
-                (() { 
-                  if(item.reason != null)
+                (() {
+                  if (item.reason != null)
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -96,14 +99,15 @@ class RiwayatIzinDetail extends StatelessWidget {
                       ],
                     );
                   return const SizedBox();
-                } ()),
+                }()),
                 SizedBox(height: 16),
                 Text(
                   "Tanggal Pengajuan",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
-                Text(formatDateOnly(item.created_at, format: "EEEE, d MMMM yyyy")),
+                Text(formatDateOnly(item.created_at,
+                    format: "EEEE, d MMMM yyyy")),
                 SizedBox(height: 16),
                 Text(
                   "Tanggal Mulai",
@@ -132,33 +136,34 @@ class RiwayatIzinDetail extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 (() {
-                  if(item.file == null)
-                    return Text('Tidak ada Lampiran');
+                  if (item.file == null) return Text('Tidak ada Lampiran');
                   return InkWell(
                     onTap: () {
-                      if(item.file != null) _riwayatIzinBloc.launchURL(item.file!);
+                      if (item.file != null)
+                        _riwayatIzinBloc.launchURL(item.file!);
                     },
-                    child: Text(item.file!.substring(item.file!.lastIndexOf('/') + 1),
-                      style: TextStyle(
-                        decoration: TextDecoration.underline
-                      ),
+                    child: Text(
+                      item.file!.substring(item.file!.lastIndexOf('/') + 1),
+                      style: TextStyle(decoration: TextDecoration.underline),
                     ),
                   );
                 }()),
-                SizedBox(height: 16,),
+                SizedBox(
+                  height: 16,
+                ),
                 (() {
-                  if(item.file != null) {
-                    return LampiranView(url: "${Environment.baseUrl}${item.file!}");
+                  if (item.file != null) {
+                    return LampiranView(
+                        url: "${Environment.baseUrl}${item.file!}");
                   }
                   return Container();
-                } ())
+                }())
               ],
             ),
           ),
         ));
   }
 }
-
 
 class LampiranView extends StatefulWidget {
   final String url;
@@ -170,71 +175,79 @@ class LampiranView extends StatefulWidget {
 }
 
 class _LampiranView extends State<LampiranView> {
+  late final WebViewController _controller;
   static const imgExts = ['.jpg', '.jpeg', '.png'];
-  @override 
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..loadHtmlString(Uri.dataFromString(
+              """
+    <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            *{
+              box-sizing: border-box;
+            }
+            html,body{
+              width: 100%;
+              height: 100%; 
+              margin: 0px;
+            }
+            iframe {
+              height: 100%;
+              width: 100%;
+              background: url(""" +
+                  widget.url +
+                  """) no-repeat;
+              background-size: contain;
+            }
+          </style>
+        </head>
+        <body>
+          <iframe id="file-view" class="frame" frameBorder="0"></iframe>
+        </body>
+      </html>""",
+              mimeType: 'text/html')
+          .toString())
+      ..setJavaScriptMode(JavaScriptMode.unrestricted);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if(imgExts.any((element) => widget.url.toLowerCase().indexOf(element) != -1))
+    if (imgExts
+        .any((element) => widget.url.toLowerCase().indexOf(element) != -1))
       return Container(
-        height: 500,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.black,
-            width: 1.0,
-          ),
-        ),
-        child: WebView(
-          gestureRecognizers: [
-            Factory<OneSequenceGestureRecognizer>(
-              () => EagerGestureRecognizer(),
+          height: 500,
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.black,
+              width: 1.0,
             ),
-          ].toSet(),
-          onWebViewCreated: (WebViewController wv) {
-            setState(() {
-              
-            });
-          },
-          initialUrl: Uri.dataFromString("""
-            <!DOCTYPE html>
-              <html lang="en">
-                <head>
-                  <meta charset="UTF-8">
-                  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                  <style>
-                    *{
-                      box-sizing: border-box;
-                    }
-                    html,body{
-                      width: 100%;
-                      height: 100%; 
-                      margin: 0px;
-                    }
-                    iframe {
-                      height: 100%;
-                      width: 100%;
-                      background: url(${widget.url}) no-repeat;
-                      background-size: contain;
-                    }
-                  </style>
-                </head>
-                <body>
-                  <iframe id="file-view" class="frame" frameBorder="0"></iframe>
-                </body>
-              </html>""", 
-              mimeType: 'text/html'
-            ).toString(),
-          javascriptMode: JavascriptMode.unrestricted,
-        )
-      );
-    else if(widget.url.toLowerCase().indexOf('.pdf') != -1)
+          ),
+          child: WebViewWidget(
+            controller: _controller,
+            gestureRecognizers: [
+              Factory<OneSequenceGestureRecognizer>(
+                () => EagerGestureRecognizer(),
+              ),
+            ].toSet(),
+          ));
+    else if (widget.url.toLowerCase().indexOf('.pdf') != -1)
       return Container(
         height: 500,
         child: FutureBuilder(
           future: createFileOfPdfUrl(context, widget.url),
           builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-            if(!snapshot.hasData)
-              return loadingSpinner();
-            return PDFScreen(path: snapshot.data!.path,);
+            if (!snapshot.hasData) return loadingSpinner();
+            return PDFScreen(
+              path: snapshot.data!.path,
+            );
           },
         ),
       );

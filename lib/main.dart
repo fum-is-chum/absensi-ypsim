@@ -14,8 +14,6 @@ import 'package:in_app_update/in_app_update.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import '/utils/misc/credential-getter.dart';
-import 'register_web_webview_stub.dart'
-    if (dart.library.html) 'register_web_webview.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -24,17 +22,13 @@ void main() {
   Environment.init(
     flavor: BuildFlavor.staging,
   );
-  registerWebViewWebImplementation();
-  // if (!kIsWeb)
-  //   checkForUpdates(); // comment line ini jika sedang di test di live server flutter
+  // checkForUpdates(); // comment line ini jika sedang di test di live server flutter
   initializeDateFormatting('id_ID', null).then((_) => runApp(AbsensiYPSIM()));
 }
 
 Future<String> initialize() async {
   await CredentialGetter.init();
   String token = await CredentialGetter.userAccessToken;
-  // await new Future.delayed(Duration(seconds: 3));
-  // if(kIsWeb) await LocationBloc.init_web();
   return token;
 }
 

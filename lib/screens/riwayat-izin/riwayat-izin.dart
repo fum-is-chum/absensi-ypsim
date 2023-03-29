@@ -57,30 +57,6 @@ class _HistoryIzin extends State<RiwayatIzin> {
                   backgroundColor: MaterialColors.bgColorScreen,
                   iconTheme: IconThemeData(color: Colors.black),
                   pinned: true,
-                  // floating: true,
-                  // snap: false,
-                  // expandedHeight: 128 + (kIsWeb ? 16 : 0),
-                  // collapsedHeight: 128 + (kIsWeb ? 16 : 0),
-                  // flexibleSpace: FlexibleSpaceBar(
-                  //   background: Container(
-                  //     // duration: Duration(milliseconds: 500),
-                  //     padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
-                  //     child: Row(
-                  //       mainAxisAlignment: MainAxisAlignment.center,
-                  //       children: [
-                  //         SizedBox(
-                  //           child: TanggalField(),
-                  //           width: MediaQuery.of(context).size.width / 2.3,
-                  //         ),
-                  //         SizedBox(width: 20),
-                  //         SizedBox(
-                  //           child: TanggalField(isAkhir: true),
-                  //           width: MediaQuery.of(context).size.width / 2.3,
-                  //         ),
-                  //       ],
-                  //     )
-                  //   ),
-                  // ),
                 ),
                 SliverToBoxAdapter(child: RiwayatIzinList())
               ],
