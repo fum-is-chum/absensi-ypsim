@@ -20,7 +20,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Environment.init(
-    flavor: BuildFlavor.production,
+    flavor: BuildFlavor.staging,
   );
   checkForUpdates(); // comment line ini jika sedang di test di live server flutter
   initializeDateFormatting('id_ID', null).then((_) => runApp(AbsensiYPSIM()));
