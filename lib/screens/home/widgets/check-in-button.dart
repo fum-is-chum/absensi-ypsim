@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:SIMAt/screens/home/bloc/check-in-bloc.dart';
 import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
