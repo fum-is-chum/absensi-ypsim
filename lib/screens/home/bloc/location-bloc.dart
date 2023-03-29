@@ -87,7 +87,7 @@ class LocationBloc {
   static Stream<ServiceStatus> get serviceStatus$ =>
       _serviceStatusSubject.asBroadcastStream();
   static Stream<Position?> get positionStatus$ => _positionSubject
-      .debounceTime(Duration(milliseconds: kIsWeb ? 2000 : 500))
+      .debounceTime(Duration(milliseconds: 500))
       .asBroadcastStream();
   static Position? get position => _positionSubject.value;
   static Map<String, dynamic> get getTargetLocation => _targetLocation.value;
@@ -96,12 +96,10 @@ class LocationBloc {
 
   static get targetLocation => _targetLocation.value;
   static Future<Position?> getCurrentPosition() async {
-    if (!kIsWeb) {
-      final hasPermission = await _handlePermission();
+    final hasPermission = await _handlePermission();
 
-      if (!hasPermission) {
-        return null;
-      }
+    if (!hasPermission) {
+      return null;
     }
 
     // print("Test");
@@ -255,7 +253,6 @@ class LocationBloc {
   }
 
   static void getLastKnownPosition() async {
-    if (kIsWeb) return;
     final position = await Geolocator.getLastKnownPosition();
     if (position != null) {
       _updatePosition(position);
@@ -288,12 +285,10 @@ class LocationBloc {
   }
 
   static void _openAppSettings() async {
-    if (kIsWeb) return;
     final opened = await Geolocator.openAppSettings();
   }
 
   static Future<void> _openLocationSettings() async {
-    if (kIsWeb) return;
     await Geolocator.openLocationSettings();
     return;
   }
