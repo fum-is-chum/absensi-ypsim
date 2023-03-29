@@ -32,7 +32,7 @@ class _LoginView extends State<LoginView> {
     super.dispose();
     // _bloc.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final _introductionanimation =
@@ -74,24 +74,26 @@ class _LoginView extends State<LoginView> {
                     children: [
                       Image.asset(
                         "assets/img/logo-ypsim.jpeg",
-                        width: 150, 
+                        width: 150,
                         fit: BoxFit.fitWidth,
                       ),
                       Padding(
-                        padding: EdgeInsets.only(top:12),
-                        child: Text(
-                          "SIMAt" , 
-                          style: TextStyle(
-                            fontSize: 20.0, 
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 5.0,
-                          ),
-                        )
-                      ),
+                          padding: EdgeInsets.only(top: 12),
+                          child: Text(
+                            "SIMAt (Staging)",
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 5.0,
+                            ),
+                          )),
                       Padding(
                         padding: EdgeInsets.only(top: 12),
                         child: TextFormField(
-                          initialValue: Environment.flavor == BuildFlavor.staging ? 'alvin' : '',
+                          initialValue:
+                              Environment.flavor == BuildFlavor.staging
+                                  ? 'alvin'
+                                  : '',
                           decoration: InputDecoration(
                             labelText: "Username",
                             isDense: true,
@@ -129,9 +131,8 @@ class _LoginView extends State<LoginView> {
                               _formKey.currentState!.save();
                               if (await _bloc.loginUser())
                                 // _formKey.currentState!.reset();
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context, '/home', (Route<dynamic> route) => false
-                                );
+                                Navigator.pushNamedAndRemoveUntil(context,
+                                    '/home', (Route<dynamic> route) => false);
                             }
                           },
                         ),
@@ -166,7 +167,6 @@ class PasswordField extends StatefulWidget {
 }
 
 class _PasswordField extends State<PasswordField> {
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<bool>(
@@ -176,21 +176,22 @@ class _PasswordField extends State<PasswordField> {
         return Padding(
           padding: EdgeInsets.only(top: 12),
           child: TextFormField(
-            initialValue: Environment.flavor == BuildFlavor.staging ? '12345678' : '',
+            initialValue:
+                Environment.flavor == BuildFlavor.staging ? '12345678' : '',
             decoration: InputDecoration(
-              labelText: "Kata Sandi",
-              isDense: true,
-              suffixIcon: IconButton(
-                padding: EdgeInsets.zero,
-                icon: snapshot.data ?? true
-                    ? const Icon(Icons.visibility_outlined)
-                    : const Icon(Icons.visibility_off_outlined),
-                color: MaterialColors.muted,
-                iconSize: 24,
-                onPressed: () {
-                  _bloc.toggle();
-                },
-              )),
+                labelText: "Kata Sandi",
+                isDense: true,
+                suffixIcon: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: snapshot.data ?? true
+                      ? const Icon(Icons.visibility_outlined)
+                      : const Icon(Icons.visibility_off_outlined),
+                  color: MaterialColors.muted,
+                  iconSize: 24,
+                  onPressed: () {
+                    _bloc.toggle();
+                  },
+                )),
             obscureText: snapshot.data ?? true,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (String? value) {
