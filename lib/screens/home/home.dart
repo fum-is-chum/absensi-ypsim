@@ -38,13 +38,6 @@ class _HomeState extends State<Home> {
     });
     homeBloc.init();
     timeBloc.init();
-    if (kIsWeb) {
-      LocationBloc.init_web();
-    }
-
-    // homeBloc.reloadAttendance$.listen((event) {
-    //   _getAttendanceStatus();
-    // });
   }
 
   @override
@@ -60,7 +53,7 @@ class _HomeState extends State<Home> {
       // homeBloc.init();
       // timeBloc.init();
       if (!LocationBloc.isListening()) {
-        !kIsWeb ? LocationBloc.init() : LocationBloc.init_web();
+        LocationBloc.init();
       }
     }
     return result;
@@ -172,20 +165,17 @@ class _HomeState extends State<Home> {
           // key: _scaffoldKey,
           drawer: MaterialDrawer(currentPage: "Home"),
           body: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: kIsWeb
-                ? _widget()
-                : FutureBuilder(
-                    future: _requestPermission(),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (!snapshot.hasData) {
-                        return loadingSpinner();
-                      }
-                      return _widget();
-                    }),
-          )),
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: FutureBuilder(
+                  future: _requestPermission(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (!snapshot.hasData) {
+                      return loadingSpinner();
+                    }
+                    return _widget();
+                  }))),
     );
   }
 }

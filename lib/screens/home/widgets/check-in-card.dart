@@ -135,7 +135,7 @@ class _CheckInOutRange extends State<CheckInOutRange> {
       stream: HomeBloc().attendanceStatus$,
       builder:
           (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
-        inspect(snapshot.data);
+        // inspect(snapshot.data);
         if (!snapshot.hasData ||
             snapshot.data == null ||
             snapshot.data!["time_settings"] == null) {
