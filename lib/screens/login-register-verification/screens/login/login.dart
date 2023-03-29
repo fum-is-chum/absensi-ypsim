@@ -80,7 +80,7 @@ class _LoginView extends State<LoginView> {
                       Padding(
                           padding: EdgeInsets.only(top: 12),
                           child: Text(
-                            "SIMAt (Staging)",
+                            "SIMAt",
                             style: TextStyle(
                               fontSize: 20.0,
                               fontWeight: FontWeight.bold,
