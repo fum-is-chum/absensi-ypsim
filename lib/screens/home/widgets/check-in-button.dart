@@ -1,17 +1,15 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:SIMAt/screens/home/bloc/check-in-bloc.dart';
 import 'package:SIMAt/screens/home/bloc/location-bloc.dart';
 import 'package:SIMAt/screens/home/camera.dart';
 import 'package:SIMAt/screens/home/home.dart';
 import 'package:SIMAt/utils/constants/Theme.dart';
+import 'package:SIMAt/utils/services/shared-service.dart';
 import 'package:camera/camera.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../bloc/home-bloc.dart';
 
@@ -48,42 +46,42 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
     return data['is_holiday'] ?? false;
   }
 
-  bool _isTimeValid(Map<String, dynamic>? data, String current) {
-    if (data == null) return false;
-    String date = data['personal_calender']['date'];
-    Map<String, dynamic>? settings = data['time_settings'];
-    // handle jika settings null
-    if (settings == null) return false;
-    if (data['personal_calender']['check_in'] != null &&
-        data['personal_calender']['check_out'] != null) return false;
+  // bool _isTimeValid(Map<String, dynamic>? data, String current) {
+  //   if (data == null) return false;
+  //   String date = data['personal_calender']['date'];
+  //   Map<String, dynamic>? settings = data['time_settings'];
+  //   // handle jika settings null
+  //   if (settings == null) return false;
+  //   if (data['personal_calender']['check_in'] != null &&
+  //       data['personal_calender']['check_out'] != null) return false;
 
-    late String start;
-    late String end;
+  //   late String start;
+  //   late String end;
 
-    // cek apakah hari sabtu
-    bool isSaturday =
-        DateFormat('EEEE').format(DateTime.parse(date)) == 'Saturday' &&
-            settings['saturday_check_in_start'] != null;
-    if (_isCheckout(data)) {
-      start = isSaturday
-          ? settings['saturday_check_out_start']
-          : settings['check_out_start'];
-      end = isSaturday
-          ? settings['saturday_check_out_end']
-          : settings['check_out_end'];
-    } else {
-      start = isSaturday
-          ? settings['saturday_check_in_start']
-          : settings['check_in_start'];
-      end = isSaturday
-          ? settings['saturday_check_in_end']
-          : settings['check_in_end'];
-    }
-    DateTime _start = DateTime.parse("${date}T${start}");
-    DateTime _end = DateTime.parse("${date}T${end}");
-    DateTime _curr = DateTime.parse("${date}T${current}");
-    return !(_curr.isBefore(_start) || _curr.isAfter(_end));
-  }
+  //   // cek apakah hari sabtu
+  //   bool isSaturday =
+  //       DateFormat('EEEE').format(DateTime.parse(date)) == 'Saturday' &&
+  //           settings['saturday_check_in_start'] != null;
+  //   if (_isCheckout(data)) {
+  //     start = isSaturday
+  //         ? settings['saturday_check_out_start']
+  //         : settings['check_out_start'];
+  //     end = isSaturday
+  //         ? settings['saturday_check_out_end']
+  //         : settings['check_out_end'];
+  //   } else {
+  //     start = isSaturday
+  //         ? settings['saturday_check_in_start']
+  //         : settings['check_in_start'];
+  //     end = isSaturday
+  //         ? settings['saturday_check_in_end']
+  //         : settings['check_in_end'];
+  //   }
+  //   DateTime _start = DateTime.parse("${date}T${start}");
+  //   DateTime _end = DateTime.parse("${date}T${end}");
+  //   DateTime _curr = DateTime.parse("${date}T${current}");
+  //   return !(_curr.isBefore(_start) || _curr.isAfter(_end));
+  // }
 
   Widget _androidWidgets() {
     return StreamBuilder(
@@ -99,52 +97,17 @@ class _CheckInButtonContainer extends State<CheckInButtonContainer> {
         }
 
         return StreamBuilder(
-          stream: LocationBloc.positionStatus$,
+          stream: homeBloc.attendanceStatus$,
           builder: (BuildContext context,
-              AsyncSnapshot<Position?> positionSnapshot) {
-            if (!positionSnapshot.hasData || positionSnapshot.data == null) {
-              return CheckInButton(
-                disabled: true,
-                isCheckout: false,
-              );
-            }
-
-            return StreamBuilder(
-              stream: CombineLatestStream.list([
-                homeBloc.attendanceStatus$,
-                LocationBloc.targetLocation$,
-              ]),
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<dynamic>> locationSnapshot) {
-                bool attendanceIsValid =
-                    locationSnapshot.data?[0]['personal_calender'] != null;
-                bool targetLocationIsValid = locationSnapshot.data?[1] != null;
-
-                if (!locationSnapshot.hasData ||
-                    !attendanceIsValid ||
-                    !targetLocationIsValid) {
-                  return CheckInButton(
-                      disabled: true,
-                      isCheckout: _isCheckout(locationSnapshot.data?[0]));
-                }
-
-                return StreamBuilder(
-                  stream: timeBloc.count$,
-                  builder: (BuildContext context, AsyncSnapshot<String> time) {
-                    if (!time.hasData || time.data == null) {
-                      return CheckInButton(disabled: true, isCheckout: false);
-                    }
-                    return CheckInButton(
-                        disabled:
-                            // !_isTimeValid(locationSnapshot.data![0], time.data!) ||
-                            !LocationBloc.isInValidLocation() ||
-                                positionSnapshot.data!.isMocked ||
-                                _isHoliday(locationSnapshot.data![0]),
-                        isCheckout: _isCheckout(locationSnapshot.data?[0]));
-                  },
-                );
-              },
-            );
+              AsyncSnapshot<Map<String, dynamic>> attendanceSnapshot) {
+            bool valid = attendanceSnapshot.hasData &&
+                attendanceSnapshot.data != null &&
+                attendanceSnapshot.data!['personal_calender'] != null &&
+                !_isHoliday(attendanceSnapshot.data!);
+            return CheckInButton(
+                disabled: !valid,
+                isCheckout:
+                    !valid ? false : _isCheckout(attendanceSnapshot.data!));
           },
         );
       },
@@ -174,6 +137,25 @@ class _CheckInButton extends State<CheckInButton> {
     super.dispose();
   }
 
+  bool _isInValidLocation() {
+    bool valid = LocationBloc.isInValidLocation();
+    if (!valid) {
+      handleError(
+          "Anda berada di luar jangkauan presensi, silahkan lihat posisi anda pada tampilan map di bawah tombol check-in/out");
+      return false;
+    }
+    return valid;
+  }
+
+  bool _isMocked() {
+    bool isMocked = LocationBloc.position?.isMocked ?? false;
+    if (isMocked) {
+      handleError(
+          "Mock/Fake location terdeteksi! Silahkan matikan Mock/Fake location!");
+    }
+    return isMocked;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -192,7 +174,7 @@ class _CheckInButton extends State<CheckInButton> {
             color: widget.isCheckout ? Colors.black : Colors.white),
       ),
       onPressed: () async {
-        if (!widget.disabled) {
+        if (!widget.disabled && _isInValidLocation() && !_isMocked()) {
           CameraDescription camera = (await availableCameras()).firstWhere(
               (camera) => camera.lensDirection == CameraLensDirection.front);
           await Navigator.push(context,
