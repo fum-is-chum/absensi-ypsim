@@ -46,36 +46,9 @@ String map() {
 }
 
 String bypass() {
-  return r"""// hack Google Maps to bypass API v3 key (needed since 22 June 2016 http://googlegeodevelopers.blogspot.com.es/2016/06/building-for-scale-updates-to-google.html)
-    var target = document.head;
-      var observer = new MutationObserver(function(mutations) {
-          for (var i = 0; mutations[i]; ++i) { // notify when script to hack is added in HTML head
-            if(mutations[i].addedNodes.length > 0) {
-              try {
-                if (mutations[i].addedNodes[0].nodeName == "SCRIPT" && mutations[i].addedNodes[0].src.match(/\/AuthenticationService.Authenticate?/g) || mutations[i].addedNodes[0].src.match(/\/QuotaService.RecordEvent?/g)) {
-                    var str = mutations[i].addedNodes[0].src.match(/[?&]callback=.*[&$]/g);
-                    if (str) {
-                        if (str[0][str[0].length - 1] == '&') {
-                            str = str[0].substring(10, str[0].length - 1);
-                        } else {
-                            str = str[0].substring(10);
-                        }
-                        var split = str.split(".");
-                        var object = split[0];
-                        var method = split[1];
-                        window[object][method] = null; // remove censorship message function _xdc_._jmzdv6 (AJAX callback name "_jmzdv6" differs depending on URL)
-                        window[object] = {}; // when we removed the complete object _xdc_, Google Maps tiles did not load when we moved the map with the mouse (no problem with OpenStreetMap)
-                    }
-                    // observer.disconnect();
-                }
-              } catch (e) {
-                
-              }
-            }
-          }
-      });
-      var config = { attributes: true, childList: true, characterData: true }
-      observer.observe(target, config);""";
+  return r"""
+    var target=document.head,observer=new MutationObserver(function(e){for(var t=0;e[t];++t)if(e[t].addedNodes.length>0)try{if("SCRIPT"==e[t].addedNodes[0].nodeName&&e[t].addedNodes[0].src.match(/\/AuthenticationService.Authenticate?/g)||e[t].addedNodes[0].src.match(/\/QuotaService.RecordEvent?/g)){var a=e[t].addedNodes[0].src.match(/[?&]callback=.*[&$]/g);if(a){var d=(a="&"==a[0][a[0].length-1]?a[0].substring(10,a[0].length-1):a[0].substring(10)).split("."),r=d[0],c=d[1];window[r][c]=null,window[r]={}}}}catch(s){}}),config={attributes:!0,childList:!0,characterData:!0};observer.observe(target,config);
+    """;
 }
 
 String updatePosition(Position pos, Map<String, dynamic> target) {
@@ -90,6 +63,8 @@ String updatePosition(Position pos, Map<String, dynamic> target) {
         lat: ${target['latitude']},
         lng: ${target['longitude']}
       }
+
+      radius = ${target['radius']}
       document.dispatchEvent(new Event(POSITION_UPDATE));
     } catch (e) {
       // alert(e);
@@ -106,7 +81,9 @@ String homeMap(Position? pos1, double lat2, double lng2, int radius) {
       const coordinates = [
         { lat: ${pos1?.latitude ?? null}, lng: ${pos1?.longitude ?? null} },
         { lat: $lat2, lng: $lng2 }
-      ]; 
+      ];
+      
+      let radius = $radius;
       function initMap() {
         const map = new google.maps.Map(document.getElementById("map"), {
           zoom: 15,
@@ -140,7 +117,7 @@ String homeMap(Position? pos1, double lat2, double lng2, int radius) {
 
         const targetRadius = new google.maps.Circle({
           map: map,
-          radius: $radius,
+          radius: radius,
           strokeColor: '#000000',
           strokeOpacity: 0.5,
           strokeWeight: 2,
@@ -156,12 +133,13 @@ String homeMap(Position? pos1, double lat2, double lng2, int radius) {
 
         document.addEventListener(POSITION_UPDATE, () => {
           try {
-
             const newMarkerbounds = new google.maps.LatLngBounds();
             coordinates.forEach((coordinate, idx) => {
               markers[idx].setPosition(coordinate);
               newMarkerbounds.extend(coordinate);
             })
+
+            targetRadius.setRadius(radius);
             targetRadius.setCenter(coordinates[1]);
             map.fitBounds(newMarkerbounds);
           } catch (e) {
@@ -224,142 +202,4 @@ String detailPresensiMap(
   </body>
 </html>
     """;
-}
-
-String webMap(Position? pos1, double lat2, double lng2, int radius) {
-  return """
-    <html>
-      <head>
-        <title>Add Map</title>
-        <meta name="referrer" content="no-referrer"> 
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-
-        <!-- <link rel="stylesheet" type="text/css" href="./style.css" /> -->
-        <!-- <script type="module" src="./index.js"></script> -->
-        <style>
-          *{
-            box-sizing: border-box;
-          }
-          html,body{
-            margin: 0;
-          }
-          #map {
-            height: 100%;
-            /* The height is 400 pixels */
-            width: 100%;
-            /* The width is the width of the web page */
-          }
-        </style>
-      </head>
-      <body>
-        <!--The div element for the map -->
-        <div id="map"></div>
-
-        <!-- 
-        The `defer` attribute causes the callback to execute after the full HTML
-        document has been parsed. For non-blocking uses, avoiding race conditions,
-        and consistent behavior across browsers, consider loading using Promises
-        with https://www.npmjs.com/package/@googlemaps/js-api-loader.
-        -->
-        <script
-          src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"
-          defer
-        ></script>
-        <script>
-        // Initialize and add the map
-          const coordinates = [
-            { lat: ${pos1?.latitude}, lng: ${pos1?.longitude} },
-            { lat: $lat2, lng: $lng2 }
-          ]; 
-
-          const markers = [];
-          let targetRadius;
-          let map;
-          
-          // const getLocation = () => {
-          //   if(navigator.geolocation){
-          //     // timeout at 60000 milliseconds (60 seconds)
-          //     var options = {timeout:60000};
-          //     navigator.geolocation.getCurrentPosition(updateLocation, errorHandler, options);
-          //   } else{
-          //       alert("Sorry, browser does not support geolocation!");
-          //   }
-          // }
-
-          // const updateLocation = (pos) => {
-          //   alert('update');
-          //   const newMarkerbounds = new google.maps.LatLngBounds();
-          //   coordinates[0].lat = pos.coords.latitude;
-          //   coordinates[0].lng = pos.coords.longitude;
-            
-          //   coordinates.forEach((coordinate, idx) => {
-          //     markers[idx].setPosition(coordinate);
-          //     newMarkerbounds.extend(coordinate);
-          //   })
-          //   targetRadius.setCenter(coordinates[1]);
-          //   map.fitBounds(newMarkerbounds);
-          // }
-
-          // const errorHandler = (err) => {
-          //   if(err.code == 1) {
-          //       // alert("Error: Access is denied!");
-          //   } else if( err.code == 2) {
-          //       // alert("Error: Position is unavailable!");
-          //   }
-          // }
-
-          const initMap = () => {
-            map = new google.maps.Map(document.getElementById("map"));
-            const markerBounds = new google.maps.LatLngBounds();
-
-            coordinates.forEach((coordinate, idx) => {
-              const marker = new google.maps.Marker({
-                position: coordinate,
-                map: map,
-                animation: idx == 0 ? null : google.maps.Animation.DROP,
-                icon: idx == 1 ? null : 
-                  {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    fillColor: '#4485f4',
-                    fillOpacity: 1,
-                    strokeColor: '#FFF',
-                    strokeOpacity: 0.9,
-                    strokeWeight: 2,
-                    scale: 7
-                  }
-              });
-
-              markerBounds.extend(coordinate);
-              markers.push(marker);
-            })
-
-            targetRadius = new google.maps.Circle({
-              map: map,
-              radius: $radius,
-              strokeColor: '#000000',
-              strokeOpacity: 0.5,
-              strokeWeight: 2,
-              fillColor: '#000000',
-              fillOpacity: 0.2,
-              center: coordinates[1]
-            })
-
-            map.fitBounds(markerBounds);
-
-            // lacak perubahan posisi
-            // setInterval(() => {
-            //   getLocation();
-            // }, 8000)
-          }
-          window.initMap = initMap;
-          """ +
-      bypass() +
-      """
-        </script>
-      </body>
-    </html>
-  """;
 }

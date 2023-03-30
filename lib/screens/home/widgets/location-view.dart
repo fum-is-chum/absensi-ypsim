@@ -124,9 +124,9 @@ class MyMapView extends StatefulWidget {
 
 class _MyMapView extends State<MyMapView> {
   late WebViewController? webView = null;
-  StreamSubscription<ServiceStatus>? serviceStatus;
   StreamSubscription<Position?>? positionStatus;
 
+  BehaviorSubject<int> loadingSubject = new BehaviorSubject.seeded(0);
   Future<void> loadMaps(Position? pos) async {
     Map<String, dynamic>? target = LocationBloc.targetLocation;
     if (pos != null && (target?.isNotEmpty ?? false)) {
@@ -136,34 +136,36 @@ class _MyMapView extends State<MyMapView> {
     }
   }
 
-  void reload() async {
+  void reload() {
+    loadingSubject.sink.add(0);
+    Future.wait([
+      LocationBloc.getValidLocation(),
+      LocationBloc.getCurrentPosition()
+    ]).then((result) {
+      loadingSubject.sink.add(1);
+    }).catchError((_) {
+      loadingSubject.sink.add(-1);
+    });
+
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    LocationBloc.getValidLocation();
-    serviceStatus = LocationBloc.serviceStatus$.listen((event) {
-      if (event == ServiceStatus.enabled) {
-        LocationBloc.getValidLocation();
-        // webView = null;
-      }
-      // setState(() {});
-    });
-
     positionStatus = LocationBloc.positionStatus$.listen((value) {
       // print("1");
       loadMaps(value);
     });
+
+    reload();
   }
 
   @override
   void dispose() {
-    if (serviceStatus != null)
-      serviceStatus!.cancel().whenComplete(() => serviceStatus = null);
     if (positionStatus != null)
       positionStatus!.cancel().whenComplete(() => positionStatus = null);
+    loadingSubject.close();
     super.dispose();
   }
 
@@ -196,51 +198,44 @@ class _MyMapView extends State<MyMapView> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: LocationBloc.serviceStatus$.delay(const Duration(seconds: 1)),
+        stream: LocationBloc.serviceStatus$,
         builder: (BuildContext context,
             AsyncSnapshot<ServiceStatus> serviceStatusSnapshot) {
           if (!serviceStatusSnapshot.hasData ||
               serviceStatusSnapshot.data == ServiceStatus.disabled) {
             return _MapStatusWidget('Hidupkan Akses Lokasi');
           }
-          return FutureBuilder(
-              future: LocationBloc.getCurrentPosition(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<dynamic> positionSnapshot) {
-                if (!positionSnapshot.hasData ||
-                    positionSnapshot.data == null ||
-                    positionSnapshot.data == -1) {
+
+          return StreamBuilder(
+              stream: loadingSubject.asBroadcastStream(),
+              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                if (!snapshot.hasData || snapshot.data == 0) {
                   return _MapStatusWidget('Sedang mengambil lokasi',
                       loading: true);
                 }
-                return StreamBuilder(
-                    stream: LocationBloc.targetLocation$,
-                    initialData: LocationBloc.getTargetLocation,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<Map<String, dynamic>> snapshot) {
-                      if (!snapshot.hasData ||
-                          snapshot.data == null ||
-                          snapshot.data?['latitude'] == null) {
-                        return _MapStatusWidget(
-                            'Sedang mengambil radius absensi',
-                            loading: true);
-                      }
 
-                      if (webView == null) {
-                        webView = WebViewController()
-                          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                          ..loadRequest(Uri.dataFromString(
-                              homeMap(
-                                  LocationBloc.position,
-                                  snapshot.data!['latitude'],
-                                  snapshot.data!['longitude'],
-                                  snapshot.data!['radius']),
-                              mimeType: 'text/html',
-                              encoding: Encoding.getByName('utf-8')));
-                      }
+                if (snapshot.data == -1) {
+                  return _MapStatusWidget(
+                      'Gagal mengambil lokasi, silahkan tekan tombol refresh',
+                      loading: false);
+                }
 
-                      return _androidWidgets(snapshot.data!);
-                    });
+                if (webView == null) {
+                  webView = WebViewController()
+                    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                    ..loadRequest(Uri.dataFromString(
+                        homeMap(
+                            LocationBloc.position,
+                            LocationBloc.getTargetLocation['latitude'],
+                            LocationBloc.getTargetLocation['longitude'],
+                            LocationBloc.getTargetLocation['radius']),
+                        mimeType: 'text/html',
+                        encoding: Encoding.getByName('utf-8')));
+                } else {
+                  loadMaps(LocationBloc.position);
+                }
+
+                return _androidWidgets(LocationBloc.getTargetLocation);
               });
         });
   }

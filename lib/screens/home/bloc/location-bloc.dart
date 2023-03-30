@@ -33,13 +33,13 @@ class LocationBloc {
   static Future<void> init() async {
     _positionSubject = new BehaviorSubject.seeded(null);
     if (_locationSettings == null) setLocationSettings();
-    await getCurrentPosition().then((value) {
-      if (value == null) {
+    await Geolocator.isLocationServiceEnabled().then((value) {
+      if (!value) {
         _updateServiceStatus(ServiceStatus.disabled);
       } else {
         _updateServiceStatus(ServiceStatus.enabled);
       }
-      toggleServiceStatusStream(openSettings: value == null);
+      toggleServiceStatusStream(openSettings: !value);
     });
   }
 
@@ -189,7 +189,7 @@ class LocationBloc {
       positionStreamSubscription!.isPaused);
 
   static void toggleServiceStatusStream({bool openSettings = true}) {
-    print('DEBUG $serviceStatusStreamSubscription $positionStreamSubscription');
+    // print('DEBUG $serviceStatusStreamSubscription $positionStreamSubscription');
     if (serviceStatusStreamSubscription == null) {
       final serviceStatusStream = Geolocator.getServiceStatusStream();
       if (openSettings == false && positionStreamSubscription == null) {
@@ -203,7 +203,7 @@ class LocationBloc {
         Future.delayed(const Duration(seconds: 1))
             .then((value) => toggleServiceStatusStream());
       }).listen((serviceStatus) {
-        print('BLOC: $serviceStatus');
+        // print('BLOC: $serviceStatus');
         if (serviceStatus == ServiceStatus.enabled) {
           toggleListening();
         } else {
@@ -234,7 +234,7 @@ class LocationBloc {
         Future.delayed(const Duration(seconds: 1))
             .then((value) => toggleListening());
       }).listen((pos) {
-        print('BLOC: $pos');
+        // print('BLOC: $pos');
         _updatePosition(pos);
       });
       // positionStreamSubscription?.pause();
