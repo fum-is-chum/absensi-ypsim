@@ -109,7 +109,7 @@ class LocationBloc {
       _updatePosition(position);
       return position;
     } catch (e) {
-      return null;
+      throw e;
     }
   }
 
@@ -208,9 +208,9 @@ class LocationBloc {
           toggleListening();
         } else {
           if (positionStreamSubscription != null) {
-            positionStreamSubscription
-                ?.cancel()
-                .whenComplete(() => positionStreamSubscription = null);
+            // positionStreamSubscription
+            //     ?.cancel()
+            //     .whenComplete(() => positionStreamSubscription = null);
           }
           _updatePosition(null);
         }
