@@ -127,8 +127,9 @@ class _MyMapView extends State<MyMapView> {
   StreamSubscription<Position?>? positionStatus;
 
   BehaviorSubject<int> loadingSubject = new BehaviorSubject.seeded(0);
-  Future<void> loadMaps(Position? pos) async {
+  Future<void> loadMaps() async {
     Map<String, dynamic>? target = LocationBloc.targetLocation;
+    Position? pos = LocationBloc.position;
     if (pos != null && (target?.isNotEmpty ?? false)) {
       try {
         await webView?.runJavaScript(updatePosition(pos, target!));
@@ -144,10 +145,9 @@ class _MyMapView extends State<MyMapView> {
     ]).then((result) {
       loadingSubject.sink.add(1);
     }).catchError((_) {
+      inspect(_);
       loadingSubject.sink.add(-1);
     });
-
-    setState(() {});
   }
 
   @override
@@ -155,10 +155,8 @@ class _MyMapView extends State<MyMapView> {
     super.initState();
     positionStatus = LocationBloc.positionStatus$.listen((value) {
       // print("1");
-      loadMaps(value);
+      loadMaps();
     });
-
-    reload();
   }
 
   @override
@@ -206,6 +204,7 @@ class _MyMapView extends State<MyMapView> {
             return _MapStatusWidget('Hidupkan Akses Lokasi');
           }
 
+          reload();
           return StreamBuilder(
               stream: loadingSubject.asBroadcastStream(),
               builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
@@ -219,7 +218,6 @@ class _MyMapView extends State<MyMapView> {
                       'Gagal mengambil lokasi, silahkan tekan tombol refresh',
                       loading: false);
                 }
-
                 if (webView == null) {
                   webView = WebViewController()
                     ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -232,7 +230,7 @@ class _MyMapView extends State<MyMapView> {
                         mimeType: 'text/html',
                         encoding: Encoding.getByName('utf-8')));
                 } else {
-                  loadMaps(LocationBloc.position);
+                  loadMaps();
                 }
 
                 return _androidWidgets(LocationBloc.getTargetLocation);
