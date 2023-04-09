@@ -33,8 +33,9 @@ class LocationBloc {
   static Future<void> init() async {
     _positionSubject = new BehaviorSubject.seeded(null);
     if (_locationSettings == null) setLocationSettings();
-    await Geolocator.isLocationServiceEnabled().then((value) {
+    await Geolocator.isLocationServiceEnabled().then((value) async {
       if (!value) {
+        await _handlePermission();
         _updateServiceStatus(ServiceStatus.disabled);
       } else {
         _updateServiceStatus(ServiceStatus.enabled);
