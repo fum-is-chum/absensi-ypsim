@@ -31,25 +31,21 @@ class HomeBloc {
     _reloadAttendanceStatus.close();
   }
 
-  Stream<bool> get reloadAttendance$ =>
-      _reloadAttendanceStatus.asBroadcastStream();
+  Stream<bool> get reloadAttendance$ => _reloadAttendanceStatus.asBroadcastStream();
   void triggerReload() {
     _reloadAttendanceStatus.sink.add(!_reloadAttendanceStatus.value);
   }
 
-  Stream<Map<String, dynamic>> get attendanceStatus$ =>
-      _attendanceStatus.asBroadcastStream();
+  Stream<Map<String, dynamic>> get attendanceStatus$ => _attendanceStatus.asBroadcastStream();
 
   Map<String, dynamic> get attendanceStatus => _attendanceStatus.value;
 
   Future<bool> getAttendanceStatus({required String date}) async {
     sp.show();
     try {
-      Map<String, dynamic> data =
-          ApiResponse.fromJson((await _getAttendanceStatus(date: date)).data!)
-              .Result;
+      Map<String, dynamic> data = ApiResponse.fromJson((await _getAttendanceStatus(date: date)).data!).Result;
       // khusus endpoint getAttendanceStatus, pastikan time_settings != null
-      this._attendanceStatus.sink.add(data);
+      if (!_attendanceStatus.isClosed) this._attendanceStatus.sink.add(data);
       sp.hide();
       return true;
     } catch (e) {
@@ -67,8 +63,7 @@ class HomeBloc {
   }) async {
     sp.show();
     try {
-      Response response =
-          await _checkIn(pos: pos, dateTime: dateTime, photo: photo);
+      Response response = await _checkIn(pos: pos, dateTime: dateTime, photo: photo);
       sp.hide();
       return true;
     } catch (e) {
@@ -86,8 +81,7 @@ class HomeBloc {
   }) async {
     sp.show();
     try {
-      Response response =
-          await _checkOut(pos: pos, dateTime: dateTime, photo: photo);
+      Response response = await _checkOut(pos: pos, dateTime: dateTime, photo: photo);
       sp.hide();
       return true;
     } catch (e) {
@@ -97,10 +91,7 @@ class HomeBloc {
     }
   }
 
-  Future<Response> _checkIn(
-      {required Position pos,
-      required String dateTime,
-      required dynamic photo}) async {
+  Future<Response> _checkIn({required Position pos, required String dateTime, required dynamic photo}) async {
     CheckInOutModel checkInModel = CheckInOutModel();
     checkInModel.employee_id = await CredentialGetter.employeeId;
     checkInModel.latitude = pos.latitude;
@@ -111,19 +102,14 @@ class HomeBloc {
 
     formData = FormData.fromMap({
       ...checkInModel.toJson(),
-      'photo': MultipartFile.fromBytes(photo.readAsBytesSync(),
-          filename: basename(photo.path)),
+      'photo': MultipartFile.fromBytes(photo.readAsBytesSync(), filename: basename(photo.path)),
     });
 
     // return DioClient.plainDio.post('/attendance/checkIn', data: formData);
-    return DioClient.plainDio.post('/attendance/checkIn',
-        data: formData, options: Options(headers: {'RequireToken': ''}));
+    return DioClient.plainDio.post('/attendance/checkIn', data: formData, options: Options(headers: {'RequireToken': ''}));
   }
 
-  Future<Response> _checkOut(
-      {required Position pos,
-      required String dateTime,
-      required dynamic photo}) async {
+  Future<Response> _checkOut({required Position pos, required String dateTime, required dynamic photo}) async {
     CheckInOutModel checkOutModel = CheckInOutModel();
     checkOutModel.employee_id = await CredentialGetter.employeeId;
     checkOutModel.latitude = pos.latitude;
@@ -134,11 +120,9 @@ class HomeBloc {
 
     formData = FormData.fromMap({
       ...checkOutModel.toJson(),
-      'photo': MultipartFile.fromBytes(photo.readAsBytesSync(),
-          filename: basename(photo.path)),
+      'photo': MultipartFile.fromBytes(photo.readAsBytesSync(), filename: basename(photo.path)),
     });
-    return DioClient.plainDio.post('/attendance/checkOut',
-        data: formData, options: Options(headers: {'RequireToken': ''}));
+    return DioClient.plainDio.post('/attendance/checkOut', data: formData, options: Options(headers: {'RequireToken': ''}));
   }
 
   Future<Response> _getAttendanceStatus({required String date}) async {
@@ -146,7 +130,6 @@ class HomeBloc {
     data['employee_id'] = await CredentialGetter.employeeId;
     data['date'] = date;
 
-    return DioClient.dio.post('/attendance/status',
-        data: data, options: Options(headers: {'RequireToken': ''}));
+    return DioClient.dio.post('/attendance/status', data: data, options: Options(headers: {'RequireToken': ''}));
   }
 }

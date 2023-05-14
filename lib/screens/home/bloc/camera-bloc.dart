@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -11,12 +10,11 @@ class CameraBloc {
   factory CameraBloc() => _shared;
 
   String snapTime = '';
-  late BehaviorSubject<dynamic> _imageFile =
-      BehaviorSubject<dynamic>.seeded(null);
+  late BehaviorSubject<dynamic> _imageFile = BehaviorSubject<dynamic>.seeded(null);
 
   Stream<dynamic> get imageStream => _imageFile.stream;
   void reset() {
-    _imageFile.sink.add(null);
+    if (!_imageFile.isClosed) _imageFile.sink.add(null);
   }
 
   dynamic get imageFile => _imageFile.value;
@@ -40,7 +38,7 @@ class CameraBloc {
 
   pickImage(XFile img) {
     try {
-      this._imageFile.sink.add(File(img.path));
+      if (!_imageFile.isClosed) this._imageFile.sink.add(File(img.path));
     } on PlatformException catch (e) {
       print('Failed to pick image: $e');
     }
