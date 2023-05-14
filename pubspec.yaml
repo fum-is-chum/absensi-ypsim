@@ -23,10 +23,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  async: 2.8.2
+  async: 2.9.0
   carousel_slider: 4.1.1
   # flutter_inappwebview: 5.4.3+7
-  webview_flutter: 4.0.6
+  webview_flutter: 4.0.7
   font_awesome_flutter: 10.1.0
   geolocator: 9.0.1
   # image_picker: 0.8.5+3
