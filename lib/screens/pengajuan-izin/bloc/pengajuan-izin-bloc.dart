@@ -9,7 +9,7 @@ import 'package:art_sweetalert/art_sweetalert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as path;
 
 import '../models/pengajuan-izin-model.dart';
 
@@ -86,7 +86,7 @@ class PengajuanIzinBloc {
       'file': _pengajuanIzinModel.file != null
           ? MultipartFile.fromBytes(
               (_pengajuanIzinModel.file as File).readAsBytesSync(),
-              filename: 'izin')
+              filename: path.basename((_pengajuanIzinModel.file as File).path))
           : null
     });
 

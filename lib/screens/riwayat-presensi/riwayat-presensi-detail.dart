@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:SIMAt/env.dart';
 import 'package:SIMAt/screens/home/home.dart';
 import 'package:SIMAt/screens/riwayat-presensi/models/riwayat-presensi-model.dart';
@@ -139,14 +141,14 @@ class _LokasiAbsensiMap extends State<LokasiAbsensiMap> {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadHtmlString(Uri.dataFromString(
-              detailPresensiMap(
-                  widget.item.latitude_check_in,
-                  widget.item.longitude_check_in,
-                  widget.item.latitude_check_out,
-                  widget.item.longitude_check_out),
-              mimeType: 'text/html')
-          .toString());
+      ..loadRequest(Uri.dataFromString(
+          detailPresensiMap(
+              widget.item.latitude_check_in,
+              widget.item.longitude_check_in,
+              widget.item.latitude_check_out,
+              widget.item.longitude_check_out),
+          mimeType: 'text/html',
+          encoding: Encoding.getByName('utf-8')));
   }
 
   @override
