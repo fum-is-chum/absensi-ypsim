@@ -15,9 +15,12 @@ class LocationBloc {
   static StreamSubscription<Position>? positionStreamSubscription;
   static StreamSubscription<ServiceStatus>? serviceStatusStreamSubscription;
 
-  static BehaviorSubject<Position?> _positionSubject = new BehaviorSubject.seeded(null);
-  static BehaviorSubject<Map<String, dynamic>> _targetLocation = BehaviorSubject.seeded({});
-  static BehaviorSubject<ServiceStatus> _serviceStatusSubject = new BehaviorSubject.seeded(ServiceStatus.disabled);
+  static BehaviorSubject<Position?> _positionSubject =
+      new BehaviorSubject.seeded(null);
+  static BehaviorSubject<Map<String, dynamic>> _targetLocation =
+      BehaviorSubject.seeded({});
+  static BehaviorSubject<ServiceStatus> _serviceStatusSubject =
+      new BehaviorSubject.seeded(ServiceStatus.disabled);
   static LocationSettings? _locationSettings;
   static bool positionStreamStarted = false;
 
@@ -30,9 +33,10 @@ class LocationBloc {
   static Future<void> init() async {
     _positionSubject = new BehaviorSubject.seeded(null);
     if (_locationSettings == null) setLocationSettings();
-    await Geolocator.isLocationServiceEnabled().then((value) {
+    await Geolocator.isLocationServiceEnabled().then((value) async {
       if (!value) {
         _updateServiceStatus(ServiceStatus.disabled);
+        await getCurrentPosition();
       } else {
         _updateServiceStatus(ServiceStatus.enabled);
       }
@@ -40,12 +44,12 @@ class LocationBloc {
     });
   }
 
-  static Future<void> init_web() async {
-    _positionSubject = new BehaviorSubject.seeded(null);
-    if (_locationSettings == null) setLocationSettings();
-    await getCurrentPosition();
-    if (positionStreamSubscription == null) toggleListening();
-  }
+  // static Future<void> init_web() async {
+  //   _positionSubject = new BehaviorSubject.seeded(null);
+  //   if (_locationSettings == null) setLocationSettings();
+  //   await getCurrentPosition();
+  //   if (positionStreamSubscription == null) toggleListening();
+  // }
 
   static LocationSettings setLocationSettings() {
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -62,7 +66,8 @@ class LocationBloc {
         //   enableWakeLock: true,
         // )
       );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+    } else if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
       _locationSettings = AppleSettings(
         accuracy: LocationAccuracy.bestForNavigation,
         activityType: ActivityType.fitness,
@@ -80,11 +85,15 @@ class LocationBloc {
     return _locationSettings!;
   }
 
-  static Stream<ServiceStatus> get serviceStatus$ => _serviceStatusSubject.asBroadcastStream();
-  static Stream<Position?> get positionStatus$ => _positionSubject.debounceTime(Duration(milliseconds: 500)).asBroadcastStream();
+  static Stream<ServiceStatus> get serviceStatus$ =>
+      _serviceStatusSubject.asBroadcastStream();
+  static Stream<Position?> get positionStatus$ => _positionSubject
+      .debounceTime(Duration(milliseconds: 500))
+      .asBroadcastStream();
   static Position? get position => _positionSubject.value;
   static Map<String, dynamic> get getTargetLocation => _targetLocation.value;
-  static Stream<Map<String, dynamic>> get targetLocation$ => _targetLocation.asBroadcastStream();
+  static Stream<Map<String, dynamic>> get targetLocation$ =>
+      _targetLocation.asBroadcastStream();
 
   static get targetLocation => _targetLocation.value;
   static Future<Position?> getCurrentPosition() async {
@@ -177,7 +186,8 @@ class LocationBloc {
     if (!_serviceStatusSubject.isClosed) _serviceStatusSubject.sink.add(status);
   }
 
-  static bool isListening() => !(positionStreamSubscription == null || positionStreamSubscription!.isPaused);
+  static bool isListening() => !(positionStreamSubscription == null ||
+      positionStreamSubscription!.isPaused);
 
   static void toggleServiceStatusStream({bool openSettings = true}) {
     // print('DEBUG $serviceStatusStreamSubscription $positionStreamSubscription');
@@ -186,9 +196,13 @@ class LocationBloc {
       if (openSettings == false && positionStreamSubscription == null) {
         toggleListening();
       }
-      serviceStatusStreamSubscription = serviceStatusStream.handleError((error) {
-        serviceStatusStreamSubscription?.cancel().whenComplete(() => serviceStatusStreamSubscription = null);
-        Future.delayed(const Duration(seconds: 1)).then((value) => toggleServiceStatusStream());
+      serviceStatusStreamSubscription =
+          serviceStatusStream.handleError((error) {
+        serviceStatusStreamSubscription
+            ?.cancel()
+            .whenComplete(() => serviceStatusStreamSubscription = null);
+        Future.delayed(const Duration(seconds: 1))
+            .then((value) => toggleServiceStatusStream());
       }).listen((serviceStatus) {
         // print('BLOC: $serviceStatus');
         if (serviceStatus == ServiceStatus.enabled) {
@@ -211,10 +225,15 @@ class LocationBloc {
   static void toggleListening() {
     if (positionStreamSubscription == null) {
       _updatePosition(null);
-      final positionStream = Geolocator.getPositionStream(locationSettings: _locationSettings);
-      positionStreamSubscription = positionStream.asBroadcastStream().handleError((error) {
-        positionStreamSubscription?.cancel().whenComplete(() => positionStreamSubscription = null);
-        Future.delayed(const Duration(seconds: 1)).then((value) => toggleListening());
+      final positionStream =
+          Geolocator.getPositionStream(locationSettings: _locationSettings);
+      positionStreamSubscription =
+          positionStream.asBroadcastStream().handleError((error) {
+        positionStreamSubscription
+            ?.cancel()
+            .whenComplete(() => positionStreamSubscription = null);
+        Future.delayed(const Duration(seconds: 1))
+            .then((value) => toggleListening());
       }).listen((pos) {
         // print('BLOC: $pos');
         _updatePosition(pos);
@@ -227,7 +246,9 @@ class LocationBloc {
 
   static void dispose() {
     if (positionStreamSubscription != null) {
-      positionStreamSubscription!.cancel().whenComplete(() => positionStreamSubscription = null);
+      positionStreamSubscription!
+          .cancel()
+          .whenComplete(() => positionStreamSubscription = null);
     }
     // super.dispose();
   }
@@ -275,7 +296,8 @@ class LocationBloc {
   // end - Location Service
 
   static int get getDistance {
-    if (_positionSubject.value == null || getTargetLocation['latitude'] == null) return -1;
+    if (_positionSubject.value == null || getTargetLocation['latitude'] == null)
+      return -1;
     double x1 = _positionSubject.value!.latitude;
     double y1 = _positionSubject.value!.longitude;
     double x2 = getTargetLocation['latitude'];
@@ -288,21 +310,24 @@ class LocationBloc {
 
   static bool isInValidLocation() {
     //
-    if (_positionSubject.value == null || getTargetLocation['latitude'] == null) return false;
+    if (_positionSubject.value == null || getTargetLocation['latitude'] == null)
+      return false;
     double x1 = _positionSubject.value!.latitude;
     double y1 = _positionSubject.value!.longitude;
     double x2 = getTargetLocation['latitude'];
     double y2 = getTargetLocation['longitude'];
     int radius = getTargetLocation['radius'];
 
-    return Geolocator.distanceBetween(x1, y1, x2, y2).round() <= radius; // return distance in meter
+    return Geolocator.distanceBetween(x1, y1, x2, y2).round() <=
+        radius; // return distance in meter
   }
 
   static Future<Map<String, dynamic>> getValidLocation() async {
     // sp.show();
     try {
       if (!_targetLocation.isClosed) _targetLocation.sink.add({});
-      ApiResponse response = ApiResponse.fromJson((await _getValidLocation()).data);
+      ApiResponse response =
+          ApiResponse.fromJson((await _getValidLocation()).data);
       Map<String, dynamic> result = response.Result;
 
       if (!_targetLocation.isClosed) _targetLocation.sink.add(result);
@@ -316,6 +341,7 @@ class LocationBloc {
   }
 
   static Future<Response> _getValidLocation() {
-    return DioClient.dio.get('/get-validation-location', options: Options(headers: {'RequireToken': ''}));
+    return DioClient.dio.get('/get-validation-location',
+        options: Options(headers: {'RequireToken': ''}));
   }
 }
