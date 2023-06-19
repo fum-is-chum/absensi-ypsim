@@ -118,14 +118,39 @@ class CheckInOutRange extends StatefulWidget {
 }
 
 class _CheckInOutRange extends State<CheckInOutRange> {
-  String _checkInOutRange(Map<String, dynamic> settings) {
-    String checkInStart =
-        (settings['check_in_start'] as String).substring(0, 5);
-    String checkInEnd = (settings['check_in_end'] as String).substring(0, 5);
+  // Tampilkan range waktu check-in dan check-out
+  String _checkInOutRange(Map<String, dynamic>? personalCalendar,
+      Map<String, dynamic>? timeSettings) {
+    if (personalCalendar == null || personalCalendar.isEmpty) {
+      return "Error, personal_calendar is null!";
+    }
+    if (timeSettings == null || timeSettings.isEmpty) {
+      return "Error, personal_calendar is null!";
+    }
 
-    String checkOutStart =
-        (settings['check_out_start'] as String).substring(0, 5);
-    String checkOutEnd = (settings['check_out_end'] as String).substring(0, 5);
+    // Pengecekan hari sabtu
+    String checkInStart;
+    String checkInEnd;
+    String checkOutStart;
+    String checkOutEnd;
+
+    bool isSaturday =
+        DateFormat('EEEE').format(DateTime.parse(personalCalendar['date'])) ==
+                'Saturday' &&
+            timeSettings['saturday_check_in_start'] != null;
+
+    if (isSaturday) {
+      checkInStart = timeSettings['saturday_check_in_start'].substring(0, 5);
+      checkInEnd = timeSettings['saturday_check_in_end'].substring(0, 5);
+      checkOutStart = timeSettings['saturday_check_out_start'].substring(0, 5);
+      checkOutEnd = timeSettings['saturday_check_out_end'].substring(0, 5);
+    } else {
+      checkInStart = timeSettings['check_in_start'].substring(0, 5);
+      checkInEnd = timeSettings['check_in_end'].substring(0, 5);
+      checkOutStart = timeSettings['check_out_start'].substring(0, 5);
+      checkOutEnd = timeSettings['check_out_end'].substring(0, 5);
+    }
+
     return "Range check in\t: $checkInStart - $checkInEnd WIB\nRange check out\t: $checkOutStart - $checkOutEnd WIB";
   }
 
@@ -142,7 +167,8 @@ class _CheckInOutRange extends State<CheckInOutRange> {
           return Text("");
         }
         return Text(
-          _checkInOutRange(snapshot.data!["time_settings"]),
+          _checkInOutRange(snapshot.data?['personal_calender'],
+              snapshot.data?["time_settings"]),
           style: TextStyle(fontSize: 16),
         );
       },
