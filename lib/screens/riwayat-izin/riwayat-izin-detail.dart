@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:SIMAt/env.dart';
@@ -182,8 +183,9 @@ class _LampiranView extends State<LampiranView> {
   void initState() {
     super.initState();
     _controller = WebViewController()
-      ..loadHtmlString(Uri.dataFromString(
-              """
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.dataFromString(
+          """
     <!DOCTYPE html>
       <html lang="en">
         <head>
@@ -203,8 +205,8 @@ class _LampiranView extends State<LampiranView> {
               height: 100%;
               width: 100%;
               background: url(""" +
-                  widget.url +
-                  """) no-repeat;
+              widget.url +
+              """) no-repeat;
               background-size: contain;
             }
           </style>
@@ -213,9 +215,8 @@ class _LampiranView extends State<LampiranView> {
           <iframe id="file-view" class="frame" frameBorder="0"></iframe>
         </body>
       </html>""",
-              mimeType: 'text/html')
-          .toString())
-      ..setJavaScriptMode(JavaScriptMode.unrestricted);
+          mimeType: 'text/html',
+          encoding: Encoding.getByName('utf-8')));
   }
 
   @override
